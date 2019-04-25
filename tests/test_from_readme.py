@@ -30,7 +30,7 @@
 import unittest
 from oauth1.oauth import OAuth
 import oauth1.authenticationutils as authenticationutils
-from os.path import dirname, realpath, join
+from os.path import dirname, realpath, join, os
 from oauth1.signer import OAuthSigner
 
 
@@ -38,13 +38,16 @@ class OAuthReadmeTest(unittest.TestCase):
 
 
     def test_from_readme(self):
-        uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
-        method = "POST"
+        if os.path.exists('./fake-key.p12'):
+            uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
+            method = "POST"
 
-        signing_key = authenticationutils.load_signing_key("./fake-key.p12", "fakepassword")
-        consumer_key = OAuthSigner("uLXKmWNmIkzIGKfA2injnNQqpZaxaBSKxa3ixEVu2f283c95!33b9b2bd960147e387fa6f3f238f07170000000000000000", signing_key)
+            signing_key = authenticationutils.load_signing_key("./fake-key.p12", "fakepassword")
+            consumer_key = OAuthSigner("uLXKmWNmIkzIGKfA2injnNQqpZaxaBSKxa3ixEVu2f283c95!33b9b2bd960147e387fa6f3f238f07170000000000000000", signing_key)
 
-        header = OAuth().get_authorization_header(uri, method, "payload", consumer_key, signing_key)
+            header = OAuth().get_authorization_header(uri, method, "payload", consumer_key, signing_key)
+        else:
+            print("Please add a ./fake-key.12 file to enable key tests")
 
 
 
