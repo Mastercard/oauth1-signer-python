@@ -18,8 +18,7 @@ install:
        && unzip sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip || echo 'Skipping Sonar Scanner installation'
 
 # command to run tests
-script:
-  - pytest
+script: pytest
 after_success:
   - |
     test "$WITH_SONAR_ANALYSIS" = "true" && sonar-scanner-$SONAR_SCANNER_VERSION/bin/sonar-scanner \
