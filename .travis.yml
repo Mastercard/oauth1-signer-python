@@ -24,12 +24,8 @@ script:
 after_success:
   - |
     test "$WITH_SONAR_ANALYSIS" = "true" && sonar-scanner-$SONAR_SCANNER_VERSION/bin/sonar-scanner \
-      -Dsonar.projectName=$SONAR_PROJECT_NAME \
-      -Dsonar.projectKey=$SONAR_PROJECT_KEY \
-      -Dsonar.organization=$SONAR_ORGANIZATION_KEY \
-      -Dsonar.sources=./src \
-      -Dsonar.tests=./test \
-      -Dsonar.testExecutionReportPaths=test-results.xml \
-      -Dsonar.javascript.lcov.reportPaths=.nyc_output/coverage.lcov \
-      -Dsonar.host.url=$SONAR_URL \
-      -Dsonar.login=$SONAR_TOKEN || echo 'Skipping Sonar Scanner execution'
+      -Dsonar.projectKey=mickfGit_oauth1-signer-python-1 \
+      -Dsonar.organization=mickfgit-github \
+      -Dsonar.sources=. \
+      -Dsonar.host.url=https://sonarcloud.io \
+      -Dsonar.login=e6d24974bc2fdd19e72c18c4260f8e0dd267e8ec
