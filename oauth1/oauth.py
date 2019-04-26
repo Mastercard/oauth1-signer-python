@@ -39,8 +39,6 @@ class OAuth():
 
     def get_authorization_header(self, uri, method, payload, consumer_key, signing_key):
 
-        query_params = OAuth.get_query_params(uri)
-
         oauth_parameters = OAuth.get_oauth_parameters(self, uri, method, payload, consumer_key, signing_key)
 
         # Get the updated base parameteres dict
@@ -175,6 +173,4 @@ class OAuthParameters(object):
         return self.base_parameters
 
     def __str__(self):
-        output ='\nOAuth Version {self.get(OAuthParameters.OAUTH_VERSION)} \nOAuth BODY_HASH_KEY {self.get(OAuthParameters.OAUTH_BODY_HASH_KEY)} \nOAuth OAUTH_CONSUMER_KEY {self.get(OAuthParameters.OAUTH_CONSUMER_KEY)} \nOAuth OAUTH_NONCE_KEY {self.get(OAuthParameters.OAUTH_NONCE_KEY)} \nOAuth OAUTH_KEY {self.get(OAuthParameters.OAUTH_KEY)} \nOAuth AUTHORIZATION {self.get(OAuthParameters.AUTHORIZATION)} \nOAuth OAUTH_SIGNATURE_KEY {self.get(OAuthParameters.OAUTH_SIGNATURE_KEY)} \nOAuth OAUTH_SIGNATURE_METHOD_KEY {self.get(OAuthParameters.OAUTH_SIGNATURE_METHOD_KEY)} \nOAuth OAUTH_TIMESTAMP_KEY {self.get(OAuthParameters.OAUTH_TIMESTAMP_KEY)} \nblah'
-        output1 = 'test\n'
         return f'\n OAuth Version {self.get(OAuthParameters.OAUTH_VERSION)} \n OAuth BODY_HASH_KEY {self.get(OAuthParameters.OAUTH_BODY_HASH_KEY)} \n OAuth OAUTH_CONSUMER_KEY {self.get(OAuthParameters.OAUTH_CONSUMER_KEY)} \n OAuth OAUTH_NONCE_KEY {self.get(OAuthParameters.OAUTH_NONCE_KEY)} \n OAuth OAUTH_SIGNATURE_KEY {self.get(OAuthParameters.OAUTH_SIGNATURE_KEY)} \n OAuth OAUTH_SIGNATURE_METHOD_KEY {self.get(OAuthParameters.OAUTH_SIGNATURE_METHOD_KEY)} \n OAuth OAUTH_TIMESTAMP_KEY {self.get(OAuthParameters.OAUTH_TIMESTAMP_KEY)}'
