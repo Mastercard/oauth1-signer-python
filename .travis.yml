@@ -2,11 +2,33 @@ dist: xenial   # required for Python >= 3.7
 language: python
 python:
   - "3.7"
+    env:
+      # Do not run analysis on PR (secure env variables like SONAR_TOKEN are not always available)
+      - WITH_SONAR_ANALYSIS=$([ "$TRAVIS_PULL_REQUEST" = "false" ] && echo true || echo false)
+      - SONAR_SCANNER_VERSION=3.3.0.1492
   # PyPy versions
   # - "pypy3.5"
 # command to install dependencies
 install:
   - pip3 install -r requirements.txt
   - pip3 install .
+  - |
+    test "$WITH_SONAR_ANALYSIS" = "true" \
+       && wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip \
+       && unzip sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip || echo 'Skipping Sonar Scanner installation'
+
 # command to run tests
-script: pytest
+script:
+  - pytest
+after_success:
+  - |
+    test "$WITH_SONAR_ANALYSIS" = "true" && sonar-scanner-$SONAR_SCANNER_VERSION/bin/sonar-scanner \
+      -Dsonar.projectName=$SONAR_PROJECT_NAME \
+      -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+      -Dsonar.organization=$SONAR_ORGANIZATION_KEY \
+      -Dsonar.sources=. \
+      -Dsonar.tests=./tests \
+      -Dsonar.testExecutionReportPaths=test-results.xml \
+      -Dsonar.javascript.lcov.reportPaths=.nyc_output/coverage.lcov \
+      -Dsonar.host.url=$SONAR_URL \
+      -Dsonar.login=$SONAR_TOKEN || echo 'Skipping Sonar Scanner execution'
