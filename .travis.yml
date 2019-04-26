@@ -1,14 +1,7 @@
 dist: xenial   # required for Python >= 3.7
 language: python
 python: "3.7"
-matrix:
-  fast_finish: true
-  include:
-  - python: "3.7"
-    env: 
-      # Do not run analysis on PR (secure env variables like SONAR_TOKEN are not always available)
-      - WITH_SONAR_ANALYSIS=$([ "$TRAVIS_PULL_REQUEST" = "false" ] && echo true || echo false)
-      - SONAR_SCANNER_VERSION=3.3.0.1492
+
   
 install:
   - pip3 install -r requirements.txt
