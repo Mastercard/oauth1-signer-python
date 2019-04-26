@@ -1,7 +1,7 @@
 dist: xenial   # required for Python >= 3.7
 language: python
-python:
-  - "3.7"
+matrix:
+  - python: "3.7"
     env: 
       # Do not run analysis on PR (secure env variables like SONAR_TOKEN are not always available)
       - WITH_SONAR_ANALYSIS=$([ "$TRAVIS_PULL_REQUEST" = "false" ] && echo true || echo false)
