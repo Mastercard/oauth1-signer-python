@@ -103,8 +103,7 @@ class OAuth():
         """
         characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
         charlen    = len(characters)
-        i = 0
-        return "".join([characters[randint(0,charlen-1)] for i in range(0,length)])
+        return "".join([characters[randint(0,charlen-1)] for dummy_i in range(0,length)])
 
 
     def get_query_params(uri):
