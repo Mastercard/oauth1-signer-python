@@ -26,6 +26,7 @@
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
+from oauth1.oauth import OAuth
 
 
 class OAuthSigner():
@@ -36,7 +37,7 @@ class OAuthSigner():
 
     def sign_request(self, uri, request):
         #  Generates the OAuth header for the request, adds the header to the request and returns the request object
-        oauth_key = oauth.get_authorization_header(uri, request.method, request.data, request.params, self.consumer_key, self.signing_key)
+        oauth_key = OAuth().get_authorization_header(uri, request.method, request.data, self.consumer_key, self.signing_key)
         request.headers["Authorization"] = oauth_key
         return request
 
