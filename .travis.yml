@@ -34,6 +34,6 @@ after_success:
       -Dsonar.organization=mickfgit-github \
       -Dsonar.sources=./oauth1 \
       -Dsonar.tests=./tests \
-      -Dsonar.javascript.lcov.reportPaths=.nyc_output/coverage.lcov \
+      -Dsonar.python.coverage.reportPaths=.nyc_output/coverage.lcov \
       -Dsonar.host.url=https://sonarcloud.io \
       -Dsonar.login=e6d24974bc2fdd19e72c18c4260f8e0dd267e8ec
