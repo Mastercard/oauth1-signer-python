@@ -45,9 +45,9 @@ class UtilsTest(unittest.TestCase):
 
 
     def test_load_signing_key_should_return_key(self):
-        if os.path.exists('./fake-key.p12'):
-            key_container_path = "./fake-key.p12";
-            key_password = "fakepassword";
+        if os.path.exists('./test_key_container.p12'):
+            key_container_path = "./test_key_container.p12";
+            key_password = "Password1";
 
             signing_key = authenticationutils.load_signing_key(key_container_path, key_password)
             self.assertTrue(signing_key.check)
@@ -58,7 +58,7 @@ class UtilsTest(unittest.TestCase):
             private_key_bytes = crypto.dump_privatekey(crypto.FILETYPE_PEM, signing_key)
             self.assertTrue(private_key_bytes)
         else:
-            print("Please add a ./fake-key.12 file to enable key tests")
+            print("Please add a ./test_key_container.p12 file to enable key tests")
 
         
 

@@ -38,16 +38,16 @@ class OAuthReadmeTest(unittest.TestCase):
 
 
     def test_from_readme(self):
-        if os.path.exists('./fake-key.p12'):
+        if os.path.exists('./test_key_container.p12'):
             uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
             method = "POST"
 
-            signing_key = authenticationutils.load_signing_key("./fake-key.p12", "fakepassword")
+            signing_key = authenticationutils.load_signing_key("./test_key_container.p12", "Password1")
             consumer_key = OAuthSigner("uLXKmWNmIkzIGKfA2injnNQqpZaxaBSKxa3ixEVu2f283c95!33b9b2bd960147e387fa6f3f238f07170000000000000000", signing_key)
 
             header = OAuth().get_authorization_header(uri, method, "payload", consumer_key, signing_key)
         else:
-            print("Please add a ./fake-key.12 file to enable key tests")
+            print("Please add a ./test_key_container.p12 file to enable key tests")
 
 
 
