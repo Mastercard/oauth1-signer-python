@@ -32,10 +32,9 @@ Utility file having common functions
 
 import hashlib
 import base64
+import re
 
 from urllib.parse import urlparse, quote, quote_plus, parse_qsl
-
-_verbose = False
 
 def validate_url(url):
     """
@@ -71,20 +70,16 @@ def normalize_params(url, params):
         combined_list += params.items()
 
     # Needs to be encoded before sorting
-    encoded_list = [encodePair(key, value) for (key, value) in combined_list]
-    if _verbose:
-        print('encoded_list:')
-        for p in encoded_list:
-            print(p)
+    encoded_list = [encode_pair(key, value) for (key, value) in combined_list]
     sorted_list = sorted(encoded_list, key=lambda x:x)
 
     return "&".join(sorted_list)
 
 
-def encodePair(key, value):
-    encodedKey = oauth_query_string_element_encode(key)
-    encodedValue = oauth_query_string_element_encode(value if isinstance(value, bytes) else str(value))
-    return "%s=%s" % (encodedKey, encodedValue)
+def encode_pair(key, value):
+    encoded_key = oauth_query_string_element_encode(key)
+    encoded_value = oauth_query_string_element_encode(value if isinstance(value, bytes) else str(value))
+    return "%s=%s" % (encoded_key, encoded_value)
 
 def oauth_query_string_element_encode(value):
     """
@@ -97,8 +92,6 @@ def oauth_query_string_element_encode(value):
     encoded = str.replace(encoded, ':', '%3A')
     encoded = str.replace(encoded, '+', '%2B')
     encoded = str.replace(encoded, '*', '%2A')
-    if _verbose:
-        print('oauth_query_string_element_encode: %s -> %s' % (value, encoded))
     return encoded
 
 def normalize_url(url):
@@ -113,9 +106,8 @@ def normalize_url(url):
         if netloc.endswith(":80"):
             netloc = netloc[:-3]
 
-    elif parse.scheme=="https":
-        if netloc.endswith(":443"):
-            netloc = netloc[:-4]
+    elif parse.scheme=="https" and netloc.endswith(":443"):
+        netloc = netloc[:-4]
 
     # add a '/' at the end of the netloc if there in no path
     if not parse.path:
@@ -129,11 +121,9 @@ def uri_rfc3986_encode(value):
     RFC 3986 encodes the value
     """
     encoded = quote_plus(value)
-    # encoded = str.replace(encoded, ' ', '%20')
     encoded = str.replace(encoded, ':', '%3A')
     encoded = str.replace(encoded, '+', '%2B')
     encoded = str.replace(encoded, '*', '%2A')
-    # encoded = str.replace(encoded, '~', '%7E')
     return encoded
 
 
@@ -148,7 +138,6 @@ def base64_encode(text):
     """
     Base64 encodes the given input
     """
-    # text = text.encode('ascii')
     encode = base64.b64encode(text)
     if isinstance(encode, (bytearray, bytes)):
         return encode.decode('ascii')

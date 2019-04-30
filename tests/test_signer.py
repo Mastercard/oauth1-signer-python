@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-#
+#
 #
 # Copyright (c) 2019 MasterCard International Incorporated
 # All rights reserved.
@@ -26,18 +27,34 @@
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-from oauth1.oauth import OAuth
+import unittest
+import oauth1.signer as Signer
+from os.path import dirname, realpath, join, os
+from requests import Request
+from oauth1.signer import OAuthSigner
+import oauth1.authenticationutils as authenticationutils
 
 
-class OAuthSigner():
 
-    def __init__(self, consumer_key, signing_key):
-        self.consumer_key = consumer_key
-        self.signing_key = signing_key
+class SignerTest(unittest.TestCase):
 
-    def sign_request(self, uri, request):
-        #  Generates the OAuth header for the request, adds the header to the request and returns the request object
-        oauth_key = OAuth().get_authorization_header(uri, request.method, request.data, self.consumer_key, self.signing_key)
-        request.headers["Authorization"] = oauth_key
-        return request
 
+    def test_sign_request(self):
+        if os.path.exists('./test_key_container.p12'):
+            signing_key = authenticationutils.load_signing_key('./test_key_container.p12', "Password1")
+            consumer_key = OAuthSigner("YOUR CONSUMER KEY", signing_key)
+            uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
+        
+            request = Request()
+            request.method = "POST"
+            request.data = ""
+            
+            signer = OAuthSigner(consumer_key, signing_key)
+            request = signer.sign_request(uri, request)
+        else:
+            print("Please add a ./test_key_container.p12 file to enable key tests")
+        
+
+        
+if __name__ == '__main__':
+    unittest.main()
