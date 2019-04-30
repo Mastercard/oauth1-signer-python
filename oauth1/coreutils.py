@@ -32,10 +32,9 @@ Utility file having common functions
 
 import hashlib
 import base64
+import re
 
 from urllib.parse import urlparse, quote, quote_plus, parse_qsl
-
-_verbose = False
 
 def validate_url(url):
     """
@@ -72,10 +71,6 @@ def normalize_params(url, params):
 
     # Needs to be encoded before sorting
     encoded_list = [encode_pair(key, value) for (key, value) in combined_list]
-    if _verbose:
-        print('encoded_list:')
-        for p in encoded_list:
-            print(p)
     sorted_list = sorted(encoded_list, key=lambda x:x)
 
     return "&".join(sorted_list)
@@ -97,8 +92,6 @@ def oauth_query_string_element_encode(value):
     encoded = str.replace(encoded, ':', '%3A')
     encoded = str.replace(encoded, '+', '%2B')
     encoded = str.replace(encoded, '*', '%2A')
-    if _verbose:
-        print('oauth_query_string_element_encode: %s -> %s' % (value, encoded))
     return encoded
 
 def normalize_url(url):
