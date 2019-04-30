@@ -61,6 +61,9 @@ class UtilsTest(unittest.TestCase):
             print("Please add a ./test_key_container.p12 file to enable key tests")
 
         
+    def test_validate_url(self):
+        self.assertFalse(Util.validate_url("whats this rubbish"))
+        self.assertTrue(Util.validate_url("https://developer.mastercard.com"))
 
         
 if __name__ == '__main__':
