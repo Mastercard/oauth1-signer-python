@@ -172,5 +172,3 @@ class OAuthParameters(object):
     def get_base_parameters_dict(self):
         return self.base_parameters
 
-    def __str__(self):
-        return f'\n OAuth Version {self.get(OAuthParameters.OAUTH_VERSION)} \n OAuth BODY_HASH_KEY {self.get(OAuthParameters.OAUTH_BODY_HASH_KEY)} \n OAuth OAUTH_CONSUMER_KEY {self.get(OAuthParameters.OAUTH_CONSUMER_KEY)} \n OAuth OAUTH_NONCE_KEY {self.get(OAuthParameters.OAUTH_NONCE_KEY)} \n OAuth OAUTH_SIGNATURE_KEY {self.get(OAuthParameters.OAUTH_SIGNATURE_KEY)} \n OAuth OAUTH_SIGNATURE_METHOD_KEY {self.get(OAuthParameters.OAUTH_SIGNATURE_METHOD_KEY)} \n OAuth OAUTH_TIMESTAMP_KEY {self.get(OAuthParameters.OAUTH_TIMESTAMP_KEY)}'
