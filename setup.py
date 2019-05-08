@@ -41,10 +41,9 @@ setup(name='mastercard-oauth1-signer',
         'Intended Audience :: Developers',
         'Natural Language :: English',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',	
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Software Development :: Libraries :: Python Modules'
         ],
-        tests_require=['mock','nose','coverage','urllib3[secure]'],
-        install_requires=['requests', 'pyOpenSSL', 'urllib3[secure]', 'cryptography', 'future']
+        install_requires=['cryptography', 'python-dateutil']
 )
