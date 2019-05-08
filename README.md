@@ -10,19 +10,17 @@
   * [Prerequisites](#prerequisites)
   * [Adding the Library to Your Project](#adding-the-library-to-your-project)
   * [Sample Code](#sample-code)
-    * [Breakdown of the Sample](#sample-breakdown)
-      * [Loading the Signing Key](#loading-the-signing-key)
-      * [Creating the OAuth Authorization for a GET](#creating-the-oauth-get)
-      * [Creating the OAuth Authorization for a POST](#creating-the-oauth-post)
+    * [Loading the Signing Key](#loading-the-signing-key)
+    * [Creating the OAuth Authorization for a GET](#creating-the-oauth-get)
+    * [Creating the OAuth Authorization for a POST](#creating-the-oauth-post)
 
 
 
 ## Overview <a name="overview"></a>
-This is an alpha version of the Pyhon library for generating a Mastercard API compliant OAuth signature.
-As such it is a work-in-progress, not for commercial use, and unsupported. This warning will be removed when the bundle is finalised.
+This is the Python version of the Mastercard compliant OAuth signature libraries.
 
 ### Compatibility <a name="compatibility"></a>
-Python 3.7.x
+Python 3.6, 3.7
 
 ### References <a name="references"></a>
 * [OAuth 1.0a specification](https://tools.ietf.org/html/rfc5849)
@@ -39,7 +37,7 @@ As part of this set up, you'll receive credentials for your app:
 ### Adding the Library to Your Project <a name="adding-the-library-to-your-project"></a>
 
 #### PIP
-`pip3 install git+https://github.com/Mastercard/oauth1-signer-python.git`
+`pip install mastercard-oauth1-signer`
 
 #### or Clone 
 `git clone https://github.com/Mastercard/oauth1-signer-python.git`
@@ -67,7 +65,7 @@ from urllib.parse import urlencode
 ##### Get a signing key from the .p12 file (replace place-holder strings with values from your project in developer zone). <a name="loading-the-signing-key"></a>
 ``` python
 signing_key = authenticationutils.load_signing_key('your-keyFile.p12', 'the-keystore-password')
-consumer_key = 'your-consumer-key-from-devzone'
+consumer_key = 'your-consumer-key-from-developer.mastercard.com'
 
 baseUrl = 'https://sandbox.api.mastercard.com' # remove 'sandbox.' if calling production
 ```
