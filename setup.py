@@ -45,5 +45,5 @@ setup(name='mastercard-oauth1-signer',
         'Programming Language :: Python :: 3.7',
         'Topic :: Software Development :: Libraries :: Python Modules'
         ],
-        install_requires=['cryptography', 'python-dateutil']
+        install_requires=['cryptography', 'pyOpenSSL', 'python-dateutil']
 )
