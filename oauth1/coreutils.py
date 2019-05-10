@@ -129,7 +129,7 @@ def uri_rfc3986_encode(value):
 
 def sha256_encode(text):
     """
-    Returns the digest of SHA-1 of the text
+    Returns the digest of SHA-256 of the text
     """
     return hashlib.sha256(str(text).encode('utf-8')).digest()
 
