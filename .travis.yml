@@ -5,8 +5,8 @@ git:
 matrix:
   fast_finish: true
   include:
-  - python: "3.6"`
-  - python: "3.7"`
+  - python: "3.6"
+  - python: "3.7"
     env:
       # Do not run analysis on PR (secure env variables like SONAR_TOKEN are not always available)
       - WITH_SONAR_ANALYSIS=$([ "$TRAVIS_PULL_REQUEST" = "false" ] && echo true || echo false)
@@ -26,10 +26,11 @@ script:
 after_success:
   - |
     test "$WITH_SONAR_ANALYSIS" = "true" && sonar-scanner-$SONAR_SCANNER_VERSION/bin/sonar-scanner \
-      -Dsonar.projectKey=mickfGit_oauth1-signer-python-1 \
-      -Dsonar.organization=mickfgit-github \
+      -Dsonar.projectName=$SONAR_PROJECT_NAME \
+      -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+      -Dsonar.organization=$SONAR_ORGANIZATION_KEY  \
       -Dsonar.sources=./oauth1 \
       -Dsonar.tests=./tests \
-      -Dsonar.python.coverage.reportPaths=coverage-reports/coverage-1.xml \
-      -Dsonar.host.url=https://sonarcloud.io \
-      -Dsonar.login=e6d24974bc2fdd19e72c18c4260f8e0dd267e8ec
+      -Dsonar.python.coverage.reportPaths=./coverage.xml \
+      -Dsonar.host.url=$SONAR_URL \
+      -Dsonar.login=$SONAR_TOKEN
