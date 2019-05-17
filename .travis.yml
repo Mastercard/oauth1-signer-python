@@ -20,6 +20,12 @@ install:
        && wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip \
        && unzip sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip || echo 'Skipping Sonar Scanner installation'
 
+addons:
+  sonarcloud:
+    organization: $SONAR_ORGANIZATION_KEY
+    token:
+      secure: $SONAR_TOKEN
+
 # command to run tests
 script:
   - pytest
