@@ -38,6 +38,6 @@ after_success:
       -Dsonar.organization=$SONAR_ORGANIZATION_KEY  \
       -Dsonar.sources=./oauth1 \
       -Dsonar.tests=./tests \
-      -Dsonar.python.coverage.reportPaths=.coverage \
+      -Dsonar.python.coverage.reportPaths=coverage.xml \
       -Dsonar.host.url=$SONAR_URL \
       -Dsonar.login=$SONAR_TOKEN
