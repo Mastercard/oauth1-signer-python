@@ -30,7 +30,7 @@ addons:
 # command to run tests
 script:
   - pip3 install coverage
-  - coverage setup.py test
+  - coverage run setup.py test
 
 after_success:
   - |
