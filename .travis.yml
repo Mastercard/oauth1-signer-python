@@ -28,7 +28,15 @@ addons:
 
 # command to run tests
 script:
-  - sonar-scanner -Dsonar.projectKey=$SONAR_PROJECT_KEY
+  - sonar-scanner -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+      -Dsonar.projectKey=$SONAR_PROJECT_KEY \
+      -Dsonar.organization=$SONAR_ORGANIZATION_KEY  \
+      -Dsonar.sources=./oauth1 \
+      -Dsonar.tests=./tests \
+      -Dsonar.python.coverage.reportPaths=.coverage \
+      -Dsonar.host.url=$SONAR_URL \
+      -Dsonar.login=$SONAR_TOKEN
+
 after_success:
   - |
     test "$WITH_SONAR_ANALYSIS" = "true" && sonar-scanner-$SONAR_SCANNER_VERSION/bin/sonar-scanner \
