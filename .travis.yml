@@ -31,6 +31,7 @@ addons:
 script:
   - pip3 install coverage
   - coverage run setup.py test
+  - coverage xml
 
 after_success:
   - |
