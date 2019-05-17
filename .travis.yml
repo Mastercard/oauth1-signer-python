@@ -28,7 +28,7 @@ addons:
 
 # command to run tests
 script:
-  - pytest
+  - sonar-scanner
 after_success:
   - |
     test "$WITH_SONAR_ANALYSIS" = "true" && sonar-scanner-$SONAR_SCANNER_VERSION/bin/sonar-scanner \
