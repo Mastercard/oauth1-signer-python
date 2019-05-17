@@ -14,7 +14,6 @@ matrix:
   
 install:
   - pip3 install -r requirements.txt
-  - pip3 install coverage
   - pip3 install .
   - |
     test "$WITH_SONAR_ANALYSIS" = "true" \
@@ -30,6 +29,7 @@ addons:
 
 # command to run tests
 script:
+  - pip3 install coverage
   - coverage setup.py test
 
 after_success:
