@@ -22,7 +22,8 @@ install:
 
 # command to run tests
 script:
-  - pytest
+  - coverage run --source=./oauth1/ -m pytest --junitxml=tests.xml
+  - coverage xml -o coverage.xml
 after_success:
   - |
     test "$WITH_SONAR_ANALYSIS" = "true" && sonar-scanner-$SONAR_SCANNER_VERSION/bin/sonar-scanner \
@@ -31,6 +32,7 @@ after_success:
       -Dsonar.organization=$SONAR_ORGANIZATION_KEY  \
       -Dsonar.sources=./oauth1 \
       -Dsonar.tests=./tests \
+      -Dsonar.python.xunit.reportPath=./tests.xml \
       -Dsonar.python.coverage.reportPaths=./coverage.xml \
       -Dsonar.host.url=$SONAR_URL \
       -Dsonar.login=$SONAR_TOKEN
