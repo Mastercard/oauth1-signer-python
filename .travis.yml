@@ -20,9 +20,19 @@ install:
        && wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip \
        && unzip sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip || echo 'Skipping Sonar Scanner installation'
 
+addons:
+  sonarcloud:
+    organization: $SONAR_ORGANIZATION_KEY
+    token:
+      secure: $SONAR_TOKEN
+
+
 # command to run tests
 script:
-  - pytest
+  - pip3 install coverage
+  - coverage run setup.py test
+  - coverage xml
+
 after_success:
   - |
     test "$WITH_SONAR_ANALYSIS" = "true" && sonar-scanner-$SONAR_SCANNER_VERSION/bin/sonar-scanner \
@@ -31,6 +41,6 @@ after_success:
       -Dsonar.organization=$SONAR_ORGANIZATION_KEY  \
       -Dsonar.sources=./oauth1 \
       -Dsonar.tests=./tests \
-      -Dsonar.python.coverage.reportPaths=./coverage.xml \
+      -Dsonar.python.coverage.reportPaths=coverage.xml \
       -Dsonar.host.url=$SONAR_URL \
       -Dsonar.login=$SONAR_TOKEN
