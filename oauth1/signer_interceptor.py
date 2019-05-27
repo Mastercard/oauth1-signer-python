@@ -42,6 +42,8 @@ def add_signing_layer(self, api_client, key_file, key_password, consumer_key):
     api_signer = SignerInterceptor(key_file, key_password, consumer_key)
     api_client.request = api_signer.oauth_signing(api_client.request)
 
+def get_signing_layer(self, api_client):
+    return api_client.request
 
 
 
