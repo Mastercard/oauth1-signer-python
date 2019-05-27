@@ -17,11 +17,11 @@ class SignerInterceptor(object):
         """Decorator for API request. func is APIClient.request"""
 
         @wraps(func)
-        def request_function(*args, **kwargs):
+        def request_function(*args, **kwargs):  # pragma: no cover
             in_body = kwargs.get("body", None)
 
             auth_header = OAuth().get_authorization_header(args[1], args[0], in_body,
-                                                           self._consumer_key, self._signing_key)
+                                                           self.consumer_key, self.signing_key)
 
             in_headers = kwargs.get("headers", None)
             if not in_headers:
