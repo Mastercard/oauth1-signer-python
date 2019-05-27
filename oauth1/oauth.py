@@ -28,6 +28,7 @@
 #
 from random import randint
 import time
+import json
 
 import oauth1.coreutils as util
 from OpenSSL import crypto
@@ -59,8 +60,11 @@ class OAuth():
         oauth_parameters.set_oauth_timestamp(OAuth.get_timestamp())
         oauth_parameters.set_oauth_signature_method("RSA-SHA256")
         oauth_parameters.set_oauth_version("1.0")
+
+        payload_str = json.dumps(payload) if type(payload) is dict else payload
+
         if method != "GET" and method != "DELETE" and method != "HEAD":
-            encoded_hash = util.base64_encode(util.sha256_encode(payload))
+            encoded_hash = util.base64_encode(util.sha256_encode(payload_str))
             oauth_parameters.set_oauth_body_hash(encoded_hash)
 
         # Get the base string
