@@ -2,6 +2,7 @@ import json
 from functools import wraps
 from oauth1.oauth import OAuth
 from oauth1 import authenticationutils
+from urllib.parse import urlencode
 
 
 class SignerInterceptor(object):
@@ -19,8 +20,13 @@ class SignerInterceptor(object):
         @wraps(func)
         def request_function(*args, **kwargs):  # pragma: no cover
             in_body = kwargs.get("body", None)
+            query_params = kwargs.get("query_params", None)
 
-            auth_header = OAuth().get_authorization_header(args[1], args[0], in_body,
+            uri = args[1]
+            if query_params:
+                uri += '?' + urlencode(query_params)
+
+            auth_header = OAuth().get_authorization_header(uri, args[0], in_body,
                                                            self.consumer_key, self.signing_key)
 
             in_headers = kwargs.get("headers", None)

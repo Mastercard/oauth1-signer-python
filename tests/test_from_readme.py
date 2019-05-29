@@ -37,6 +37,7 @@ from oauth1.signer import OAuthSigner
 class OAuthReadmeTest(unittest.TestCase):
 
 
+    """ can't call the service because the test keys can't access the service, you'll need to insert a valid key file, password, and consumer key """
     def test_from_readme(self):
         if os.path.exists('./test_key_container.p12'):
             uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
