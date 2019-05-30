@@ -38,6 +38,7 @@ class SignerInterceptor(object):
 
             return func(*args, **kwargs)
 
+        request_function.__oauth__ = True
         return request_function
       
 
