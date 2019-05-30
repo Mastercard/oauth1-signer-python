@@ -1,6 +1,12 @@
 # oauth1-signer-python
 
-[![](https://img.shields.io/badge/license-MIT-yellow.svg)](https://github.com/Mastercard/oauth1-signer-java/blob/master/LICENSE)
+[![](https://travis-ci.org/MastercardDevs/oauth1-signer-python.svg?branch=master)](https://travis-ci.org/MastercardDevs/oauth1-signer-python)
+[![](https://sonarcloud.io/api/project_badges/measure?project=MastercardDevs_oauth1-signer-python&metric=alert_status)](https://sonarcloud.io/dashboard?id=MastercardDevs_oauth1-signer-python)
+[![](https://sonarcloud.io/api/project_badges/measure?project=MastercardDevs_oauth1-signer-python&metric=coverage)](https://sonarcloud.io/dashboard?id=MastercardDevs_oauth1-signer-python)
+[![](https://sonarcloud.io/api/project_badges/measure?project=MastercardDevs_oauth1-signer-python&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=MastercardDevs_oauth1-signer-python)
+[![](https://img.shields.io/pypi/v/mastercard-oauth1-signer.svg?style=flat&color=blue)](https://pypi.org/project/mastercard-oauth1-signer)
+[![](https://img.shields.io/badge/license-MIT-yellow.svg)](https://github.com/MastercardDevs/oauth1-signer-python/blob/master/LICENSE)
+
 
 ## Table of Contents
 - [Overview](#overview)
@@ -13,6 +19,7 @@
     * [Loading the Signing Key](#loading-the-signing-key)
     * [Creating the OAuth Authorization for a GET](#creating-the-oauth-get)
     * [Creating the OAuth Authorization for a POST](#creating-the-oauth-post)
+    * [Complete code to use interceptors](#using-interceptors)
 
 
 
@@ -110,3 +117,30 @@ print(r.text)
 ```
 
 
+
+##### Complete snippet to use interceptors : <a name="using-interceptors"></a>
+
+``` python
+            signing_key = authenticationutils.load_signing_key('your-keyFile.p12', 'the-keystore-password')
+            consumer_key = 'your-consumer-key-from-developer.mastercard.com'
+
+            baseUrl = 'https://sandbox.api.mastercard.com'
+
+            service_cli = APIClientYourService()
+            add_signing_layer(self, service_cli, key_file, key_password, consumer_key)
+
+            queryMap = {
+                "Format": "JSON", # change this to toggle between and XML or JSON response
+                "fxDate": "2016-09-30",
+                "transCurr": "ALL",
+                "crdhldBillCurr": "DZD",
+                "bankFee": "5",
+                "transAmt": "23"
+            }
+
+            uri = baseUrl + "/settlement/currencyrate/conversion-rate"
+
+            r = test_cli.request('GET', uri, query_params=queryMap)
+            print(r.text)
+
+```
