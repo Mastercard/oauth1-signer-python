@@ -59,7 +59,7 @@ class OAuthInterceptorTest(unittest.TestCase):
 
 
     """ these will fail because the test keys can't access the service, you'll need to insert a valid key file, password, and consumer key """
-    def test_without_interceptor(self):
+    def localonly_test_without_interceptor(self):
         if os.path.exists('./test_key_container.p12'):
             key_file = './test_key_container.p12'
             key_password = "Password1"
@@ -85,7 +85,7 @@ class OAuthInterceptorTest(unittest.TestCase):
             print(r.text)
 
     """ these will fail because the test keys can't access the service, you'll need to insert a valid key file, password, and consumer key """
-    def test_with_interceptor(self):
+    def localonly_test_with_interceptor(self):
         if os.path.exists('./test_key_container.p12'):
             key_file = './test_key_container.p12'
             key_password = "Password1"
