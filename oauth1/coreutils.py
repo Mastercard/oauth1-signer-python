@@ -120,11 +120,7 @@ def uri_rfc3986_encode(value):
     """
     RFC 3986 encodes the value
     """
-    encoded = quote_plus(value)
-    encoded = str.replace(encoded, ':', '%3A')
-    encoded = str.replace(encoded, '+', '%2B')
-    encoded = str.replace(encoded, '*', '%2A')
-    return encoded
+    return quote(value, safe='%')
 
 
 def sha256_encode(text):
