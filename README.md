@@ -121,26 +121,13 @@ print(r.text)
 ##### Complete snippet to use interceptors : <a name="using-interceptors"></a>
 
 ``` python
-            signing_key = authenticationutils.load_signing_key('your-keyFile.p12', 'the-keystore-password')
-            consumer_key = 'your-consumer-key-from-developer.mastercard.com'
+config = swagger_client.Configuration()
+config.host = 'https://sandbox.api.mastercard.com'
+client = swagger_client.ApiClient(config)
 
-            baseUrl = 'https://sandbox.api.mastercard.com'
+## Add OAuth1.0a interceptor
+add_signing_layer(self, client, 'your-keyFile.p12', 'the-keystore-password', 'consumer-key')
 
-            service_cli = APIClientYourService()
-            add_signing_layer(self, service_cli, key_file, key_password, consumer_key)
-
-            queryMap = {
-                "Format": "JSON", # change this to toggle between and XML or JSON response
-                "fxDate": "2016-09-30",
-                "transCurr": "ALL",
-                "crdhldBillCurr": "DZD",
-                "bankFee": "5",
-                "transAmt": "23"
-            }
-
-            uri = baseUrl + "/settlement/currencyrate/conversion-rate"
-
-            r = test_cli.request('GET', uri, query_params=queryMap)
-            print(r.text)
-
+api = swagger_client.api.service_api.PostApi(client)
+result = api.create_resource(schema=body)
 ```
