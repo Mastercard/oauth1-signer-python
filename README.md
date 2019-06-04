@@ -121,6 +121,12 @@ print(r.text)
 ##### Complete snippet to use interceptors : <a name="using-interceptors"></a>
 
 ``` python
+import swagger_client
+from swagger_client.api_client import ApiClient
+from swagger_client.api.service_api import PostApi
+from oauth1.signer_interceptor import add_signing_layer
+
+
 config = swagger_client.Configuration()
 config.host = 'https://sandbox.api.mastercard.com'
 client = swagger_client.ApiClient(config)
