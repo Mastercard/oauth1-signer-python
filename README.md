@@ -1,11 +1,11 @@
 # oauth1-signer-python
 
 [![](https://travis-ci.org/MastercardDevs/oauth1-signer-python.svg?branch=master)](https://travis-ci.org/MastercardDevs/oauth1-signer-python)
-[![](https://sonarcloud.io/api/project_badges/measure?project=MastercardDevs_oauth1-signer-python&metric=alert_status)](https://sonarcloud.io/dashboard?id=MastercardDevs_oauth1-signer-python)
-[![](https://sonarcloud.io/api/project_badges/measure?project=MastercardDevs_oauth1-signer-python&metric=coverage)](https://sonarcloud.io/dashboard?id=MastercardDevs_oauth1-signer-python)
-[![](https://sonarcloud.io/api/project_badges/measure?project=MastercardDevs_oauth1-signer-python&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=MastercardDevs_oauth1-signer-python)
+[![](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_oauth1-signer-python&metric=alert_status)](https://sonarcloud.io/dashboard?id=Mastercard_oauth1-signer-python)
+[![](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_oauth1-signer-python&metric=coverage)](https://sonarcloud.io/dashboard?id=Mastercard_oauth1-signer-python)
+[![](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_oauth1-signer-python&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=Mastercard_oauth1-signer-python)
 [![](https://img.shields.io/pypi/v/mastercard-oauth1-signer.svg?style=flat&color=blue)](https://pypi.org/project/mastercard-oauth1-signer)
-[![](https://img.shields.io/badge/license-MIT-yellow.svg)](https://github.com/MastercardDevs/oauth1-signer-python/blob/master/LICENSE)
+[![](https://img.shields.io/badge/license-MIT-yellow.svg)](https://github.com/Mastercard/oauth1-signer-python/blob/master/LICENSE)
 
 
 ## Table of Contents
