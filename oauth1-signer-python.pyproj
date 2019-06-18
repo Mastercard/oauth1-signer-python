@@ -30,7 +30,6 @@
     <Compile Include="oauth1\version.py" />
     <Compile Include="oauth1\__init__.py" />
     <Compile Include="setup.py" />
-    <Compile Include="tests\test_from_readme.py" />
     <Compile Include="tests\test_interceptor.py" />
     <Compile Include="tests\test_oauth.py" />
     <Compile Include="tests\test_signer.py" />

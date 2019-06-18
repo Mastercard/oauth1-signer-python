@@ -41,84 +41,72 @@ from oauth1.signer_interceptor import get_signing_layer
 
 class OAuthInterceptorTest(unittest.TestCase):
 
-
     """ add an interceptor, check api client has changed """
     def test_add_interceptor(self):
-        if os.path.exists('./test_key_container.p12'):
-            key_file = './test_key_container.p12'
-            key_password = "Password1"
-            consumer_key = 'uLXKmWNmIkzIGKfA2injnNQqpZaxaBSKxa3ixEVu2f283c95!33b9b2bd960147e387fa6f3f238f07170000000000000000'
+        key_file = './test_key_container.p12'
+        key_password = "Password1"
+        consumer_key = 'uLXKmWNmIkzIGKfA2injnNQqpZaxaBSKxa3ixEVu2f283c95!33b9b2bd960147e387fa6f3f238f07170000000000000000'
 
-            signing_layer1 = get_signing_layer(self, requests)
-            add_signing_layer(self, requests, key_file, key_password, consumer_key)
-            signing_layer2 = get_signing_layer(self, requests)
-            self.assertNotEqual(signing_layer1, signing_layer2)            
-        else:
-            print("Please add a ./test_key_container.p12 file to enable key tests")
-
-
+        signing_layer1 = get_signing_layer(self, requests)
+        add_signing_layer(self, requests, key_file, key_password, consumer_key)
+        signing_layer2 = get_signing_layer(self, requests)
+        self.assertNotEqual(signing_layer1, signing_layer2)            
 
     """ these will fail because the test keys can't access the service, you'll need to insert a valid key file, password, and consumer key """
     def localonly_test_without_interceptor(self):
-        if os.path.exists('./test_key_container.p12'):
-            key_file = './test_key_container.p12'
-            key_password = "Password1"
-            consumer_key = 'uLXKmWNmIkzIGKfA2injnNQqpZaxaBSKxa3ixEVu2f283c95!33b9b2bd960147e387fa6f3f238f07170000000000000000'
-            signing_key = authenticationutils.load_signing_key(key_file, key_password)
+        key_file = './test_key_container.p12'
+        key_password = "Password1"
+        consumer_key = 'uLXKmWNmIkzIGKfA2injnNQqpZaxaBSKxa3ixEVu2f283c95!33b9b2bd960147e387fa6f3f238f07170000000000000000'
+        signing_key = authenticationutils.load_signing_key(key_file, key_password)
 
-            baseUrl = 'https://sandbox.api.mastercard.com'
+        baseUrl = 'https://sandbox.api.mastercard.com'
 
-            queryMap = {
-                "Format": "JSON", # change this to toggle between and XML or JSON response
-                "fxDate": "2016-09-30",
-                "transCurr": "ALL",
-                "crdhldBillCurr": "DZD",
-                "bankFee": "5",
-                "transAmt": "23"
-            }
+        queryMap = {
+            "Format": "JSON", # change this to toggle between and XML or JSON response
+            "fxDate": "2016-09-30",
+            "transCurr": "ALL",
+            "crdhldBillCurr": "DZD",
+            "bankFee": "5",
+            "transAmt": "23"
+        }
 
-            uri = baseUrl + "/settlement/currencyrate/conversion-rate?" + urlencode(queryMap)
-            header = OAuth().get_authorization_header(uri, 'GET', None, consumer_key, signing_key)
-            headers = {'Authorization': header, 'Content-Type': 'application/json'}
+        uri = baseUrl + "/settlement/currencyrate/conversion-rate?" + urlencode(queryMap)
+        header = OAuth().get_authorization_header(uri, 'GET', None, consumer_key, signing_key)
+        headers = {'Authorization': header, 'Content-Type': 'application/json'}
 
-            r = requests.get(uri, headers=headers)
-            print(r.text)
+        r = requests.get(uri, headers=headers)
+        print(r.text)
 
     """ these will fail because the test keys can't access the service, you'll need to insert a valid key file, password, and consumer key """
     def localonly_test_with_interceptor(self):
-        if os.path.exists('./test_key_container.p12'):
-            key_file = './test_key_container.p12'
-            key_password = "Password1"
-            consumer_key = 'uLXKmWNmIkzIGKfA2injnNQqpZaxaBSKxa3ixEVu2f283c95!33b9b2bd960147e387fa6f3f238f07170000000000000000'
-            signing_key = authenticationutils.load_signing_key(key_file, key_password)
+        key_file = './test_key_container.p12'
+        key_password = "Password1"
+        consumer_key = 'uLXKmWNmIkzIGKfA2injnNQqpZaxaBSKxa3ixEVu2f283c95!33b9b2bd960147e387fa6f3f238f07170000000000000000'
+        signing_key = authenticationutils.load_signing_key(key_file, key_password)
 
-            baseUrl = 'https://sandbox.api.mastercard.com'
+        baseUrl = 'https://sandbox.api.mastercard.com'
 
-            test_cli = APIClientForTest()
-            add_signing_layer(self, test_cli, key_file, key_password, consumer_key)
+        test_cli = APIClientForTest()
+        add_signing_layer(self, test_cli, key_file, key_password, consumer_key)
 
-            queryMap = {
-                "Format": "JSON", # change this to toggle between and XML or JSON response
-                "fxDate": "2016-09-30",
-                "transCurr": "ALL",
-                "crdhldBillCurr": "DZD",
-                "bankFee": "5",
-                "transAmt": "23"
-            }
+        queryMap = {
+            "Format": "JSON", # change this to toggle between and XML or JSON response
+            "fxDate": "2016-09-30",
+            "transCurr": "ALL",
+            "crdhldBillCurr": "DZD",
+            "bankFee": "5",
+            "transAmt": "23"
+        }
 
-            uri = baseUrl + "/settlement/currencyrate/conversion-rate"
+        uri = baseUrl + "/settlement/currencyrate/conversion-rate"
 
-            r = test_cli.request('GET', uri, query_params=queryMap)
-            print(r.text)
-
+        r = test_cli.request('GET', uri, query_params=queryMap)
+        print(r.text)
 
 if __name__ == '__main__':
     unittest.main()
 
-
-
 class APIClientForTest():
-
 
     def request(self, method, uri, query_params=None, headers=None, post_params=None, body=None, _preload_content=True, _request_timeout=None):
         res = None

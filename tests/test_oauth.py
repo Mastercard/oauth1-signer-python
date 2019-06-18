@@ -41,15 +41,11 @@ from oauth1.signer import OAuthSigner
 class OAuthTest(unittest.TestCase):
 
     def test_get_authorization_header(self):
-        if os.path.exists('./test_key_container.p12'):
-            signing_key = authenticationutils.load_signing_key('./test_key_container.p12', "Password1")
-            consumer_key = OAuthSigner("YOUR CONSUMER KEY", signing_key)
-            uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
-            method = "POST"
-            header = OAuth().get_authorization_header(uri, method, "payload", consumer_key, signing_key)
-        else:
-            print("Please add a ./test_key_container.p12 file to enable key tests")
-            
+        signing_key = authenticationutils.load_signing_key('./test_key_container.p12', "Password1")
+        consumer_key = OAuthSigner("YOUR CONSUMER KEY", signing_key)
+        uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
+        method = "POST"
+        header = OAuth().get_authorization_header(uri, method, "payload", consumer_key, signing_key)     
 
     def test_get_nonce(self):
         nonce = OAuth.get_nonce()
@@ -60,33 +56,25 @@ class OAuthTest(unittest.TestCase):
         self.assertEqual(len(str(timestamp)),10)
 
     def test_sign_message(self):
-        if os.path.exists('./test_key_container.p12'):
-            signing_key = authenticationutils.load_signing_key("./test_key_container.p12", "Password1")
-            consumer_key = OAuthSigner("YOUR CONSUMER KEY", signing_key)
-            baseString = 'POST&https%3A%2F%2Fsandbox.api.mastercard.com%2Ffraud%2Fmerchant%2Fv1%2Ftermination-inquiry&Format%3DXML%26PageLength%3D10%26PageOffset%3D0%26oauth_body_hash%3DWhqqH%252BTU95VgZMItpdq78BWb4cE%253D%26oauth_consumer_key%3Dxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx%26oauth_nonce%3D1111111111111111111%26oauth_signature_method%3DRSA-SHA1%26oauth_timestamp%3D1111111111%26oauth_version%3D1.0'
+        signing_key = authenticationutils.load_signing_key("./test_key_container.p12", "Password1")
+        consumer_key = OAuthSigner("YOUR CONSUMER KEY", signing_key)
+        baseString = 'POST&https%3A%2F%2Fsandbox.api.mastercard.com%2Ffraud%2Fmerchant%2Fv1%2Ftermination-inquiry&Format%3DXML%26PageLength%3D10%26PageOffset%3D0%26oauth_body_hash%3DWhqqH%252BTU95VgZMItpdq78BWb4cE%253D%26oauth_consumer_key%3Dxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx%26oauth_nonce%3D1111111111111111111%26oauth_signature_method%3DRSA-SHA1%26oauth_timestamp%3D1111111111%26oauth_version%3D1.0'
 
-            signature = OAuth().sign_message(baseString, signing_key)
+        signature = OAuth().sign_message(baseString, signing_key)
 
-            signature = Util.uri_rfc3986_encode(signature)
+        signature = Util.uri_rfc3986_encode(signature)
 
-            self.assertEqual(signature,"DvyS3R795sUb%2FcvBfiFYZzPDU%2BRVefW6X%2BAfyu%2B9fxjudQft%2BShXhpounzJxYCwOkkjZWXOR0ICTMn6MOuG04TTtmPMrOxj5feGwD3leMBsi%2B3XxcFLPi8BhZKqgapcAqlGfjEhq0COZ%2FF9aYDcjswLu0zgrTMSTp4cqXYMr9mbQVB4HL%2FjiHni5ejQu9f6JB9wWW%2BLXYhe8F6b4niETtzIe5o77%2B%2BkKK67v9wFIZ9pgREz7ug8K5DlxX0DuwdUKFhsenA5z%2FNNCZrJE%2BtLu0tSjuF5Gsjw5GRrvW33MSoZ0AYfeleh5V3nLGgHrhVjl5%2BiS40pnG2po%2F5hIAUT5ag%3D%3D") 
-        else:
-            print("Please add a ./test_key_container.p12 file to enable key tests")
-
+        self.assertEqual(signature,"DvyS3R795sUb%2FcvBfiFYZzPDU%2BRVefW6X%2BAfyu%2B9fxjudQft%2BShXhpounzJxYCwOkkjZWXOR0ICTMn6MOuG04TTtmPMrOxj5feGwD3leMBsi%2B3XxcFLPi8BhZKqgapcAqlGfjEhq0COZ%2FF9aYDcjswLu0zgrTMSTp4cqXYMr9mbQVB4HL%2FjiHni5ejQu9f6JB9wWW%2BLXYhe8F6b4niETtzIe5o77%2B%2BkKK67v9wFIZ9pgREz7ug8K5DlxX0DuwdUKFhsenA5z%2FNNCZrJE%2BtLu0tSjuF5Gsjw5GRrvW33MSoZ0AYfeleh5V3nLGgHrhVjl5%2BiS40pnG2po%2F5hIAUT5ag%3D%3D") 
 
     def test_oauth_parameters(self):
-        if os.path.exists('./test_key_container.p12'):
-            signing_key = authenticationutils.load_signing_key("./test_key_container.p12", "Password1")
-            consumer_key = OAuthSigner("YOUR CONSUMER KEY", signing_key)
+        signing_key = authenticationutils.load_signing_key("./test_key_container.p12", "Password1")
+        consumer_key = OAuthSigner("YOUR CONSUMER KEY", signing_key)
         
-            uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
-            method = "POST"
-            parameters = OAuth().get_oauth_parameters(uri, method, "payload", consumer_key, signing_key)
-            # print(parameters)
-            consumer_key = parameters.get_oauth_consumer_key()
-        else:
-            print("Please add a ./test_key_container.p12 file to enable key tests")
-        
+        uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
+        method = "POST"
+        parameters = OAuth().get_oauth_parameters(uri, method, "payload", consumer_key, signing_key)
+        # print(parameters)
+        consumer_key = parameters.get_oauth_consumer_key()      
 
     def test_query_parser(self):
         uri = "https://sandbox.api.mastercard.com/audiences/v1/getcountries?offset=0&offset=1&length=10&empty&odd="
@@ -97,9 +85,6 @@ class OAuthTest(unittest.TestCase):
         query_params = Util.normalize_params(uri, merge_parameters)
         # print(query_params)
         self.assertEqual(query_params, "empty=&length=10&odd=&offset=0&offset=1")
-        
-
-
 
     def test_query_parser_encoding(self):
         uri = "https://sandbox.api.mastercard.com?param1=plus+value&param2=colon:value"
@@ -111,7 +96,6 @@ class OAuthTest(unittest.TestCase):
         # print(query_params)
         self.assertEqual(query_params, "param1=plus%20value&param2=colon%3Avalue")
 
-
     def not_consistent_test_query_parser_not_encoded_params(self):
         uri = "https://api.mastercard.com/audiences?param1=plus+value&param2=colon:value&param3=a space~"
 
@@ -120,7 +104,6 @@ class OAuthTest(unittest.TestCase):
         merge_parameters = oauth_parameters_base.copy()
         query_params = Util.normalize_params(uri, merge_parameters)
         self.assertEqual(query_params, "param1=plus%20value&param2=colon%3Avalue&param3=a%20space~")
-
 
     def test_nonce_length(self):
         nonce = OAuth.get_nonce()
@@ -134,7 +117,6 @@ class OAuthTest(unittest.TestCase):
             
         self.assertEqual(self.list_duplicates(l), [])
 
-
     def list_duplicates(self, seq):
         seen = set()
         seen_add = seen.add
@@ -142,7 +124,6 @@ class OAuthTest(unittest.TestCase):
         seen_twice = set( x for x in seq if x in seen or seen_add(x) )
         # turn the set into a list (as requested)
         return list( seen_twice )
-
 
     def test_params_string_rfc_example_1(self):
         uri = "https://sandbox.api.mastercard.com"
@@ -159,7 +140,6 @@ class OAuthTest(unittest.TestCase):
 
         self.assertEqual("oauth_consumer_key=9djdj82h48djs9d2&oauth_nonce=7d8f3e4a&oauth_signature_method=HMAC-SHA1&oauth_timestamp=137131201", query_params1);
 
-
     def test_params_string_rfc_example_2(self):
         uri = "https://sandbox.api.mastercard.com?b5=%3D%253D&a3=a&a3=2%20q&c%40=&a2=r%20b&c2="
 
@@ -170,8 +150,6 @@ class OAuthTest(unittest.TestCase):
 
         self.assertEqual("a2=r%20b&a3=2%20q&a3=a&b5=%3D%253D&c%40=&c2=", query_params2)
 
-
-
     def test_params_string_ascending_byte_value_ordering(self):
         url = "https://localhost?b=b&A=a&A=A&B=B&a=A&a=a&0=0"
 
@@ -181,8 +159,6 @@ class OAuthTest(unittest.TestCase):
         norm_params = Util.normalize_params(url, merge_parameters)
 
         self.assertEqual("0=0&A=A&A=a&B=B&a=A&a=a&b=b", norm_params)
-
-
 
     def test_signature_base_string(self):
         uri = "https://api.mastercard.com"
@@ -195,8 +171,6 @@ class OAuthTest(unittest.TestCase):
         base_string = OAuth.get_base_string(base_uri, "POST", oauth_parameters, oauth_parameters.get_base_parameters_dict())
 
         self.assertEqual("POST&https%3A%2F%2Fapi.mastercard.com%2F&oauth_body_hash%3Dbody%2Fhash%26oauth_nonce%3Drandomnonce", base_string);
-        
-
         
     def test_signature_base_string2(self):
         body = "<?xml version=\"1.0\" encoding=\"Windows-1252\"?><ns2:TerminationInquiryRequest xmlns:ns2=\"http://mastercard.com/termination\"><AcquirerId>1996</AcquirerId><TransactionReferenceNumber>1</TransactionReferenceNumber><Merchant><Name>TEST</Name><DoingBusinessAsName>TEST</DoingBusinessAsName><PhoneNumber>5555555555</PhoneNumber><NationalTaxId>1234567890</NationalTaxId><Address><Line1>5555 Test Lane</Line1><City>TEST</City><CountrySubdivision>XX</CountrySubdivision><PostalCode>12345</PostalCode><Country>USA</Country></Address><Principal><FirstName>John</FirstName><LastName>Smith</LastName><NationalId>1234567890</NationalId><PhoneNumber>5555555555</PhoneNumber><Address><Line1>5555 Test Lane</Line1><City>TEST</City><CountrySubdivision>XX</CountrySubdivision><PostalCode>12345</PostalCode><Country>USA</Country></Address><DriversLicense><Number>1234567890</Number><CountrySubdivision>XX</CountrySubdivision></DriversLicense></Principal></Merchant></ns2:TerminationInquiryRequest>";
@@ -215,7 +189,6 @@ class OAuthTest(unittest.TestCase):
         oauth_parameters_base = oauth_parameters.get_base_parameters_dict()
         merge_parameters = oauth_parameters_base.copy()
 
-
         norm_params = Util.normalize_params("", merge_parameters)
         # print(oauth_parameters_base)
 
@@ -230,13 +203,10 @@ class OAuthTest(unittest.TestCase):
 
         self.maxDiff = None
         self.assertEqual(expected, base_string);
-
-        
-        
+ 
     def test_sign_signature_base_string_invalid_key(self):
         self.assertRaises(AttributeError, OAuth.sign_message, self, "some string", None)        
-        
-        
+
     def test_sign_signature_base_string(self):
         if os.path.exists('./test_key_container.p12'):
             signing_key = authenticationutils.load_signing_key("./test_key_container.p12", "Password1")
@@ -249,7 +219,6 @@ class OAuthTest(unittest.TestCase):
         else:
             print("Please add a ./test_key_container.p12 file to enable key tests")
         
-
     def test_url_normalization_rfc_examples1(self):
         uri = "https://www.example.net:8080"
         base_uri = Util.normalize_url(uri)
@@ -281,18 +250,15 @@ class OAuthTest(unittest.TestCase):
         base_uri = Util.normalize_url(uri)
         self.assertEqual("https://api.mastercard.com/test", base_uri);
 
-
     def test_url_normalization_add_trailing_slash(self):
         uri = "https://api.mastercard.com"
         base_uri = Util.normalize_url(uri)
         self.assertEqual("https://api.mastercard.com/", base_uri);
 
-
     def test_url_normalization_lowercase_scheme_and_host(self):
         uri = "HTTPS://API.MASTERCARD.COM/TEST"
         base_uri = Util.normalize_url(uri)
         self.assertEqual("https://api.mastercard.com/TEST", base_uri)
-
 
     def test_body_hash1(self):
         oauth_parameters = OAuthParameters()
@@ -315,7 +281,6 @@ class OAuthTest(unittest.TestCase):
         oauth_parameters.set_oauth_body_hash(encoded_hash)
         self.assertEqual("+Z+PWW2TJDnPvRcTgol+nKO3LT7xm8smnsg+//XMIyI=", encoded_hash)
 
-
     def test_url_encode1(self):
         self.assertEqual("Format%3DXML", Util.uri_rfc3986_encode("Format=XML"))
 
@@ -323,7 +288,6 @@ class OAuthTest(unittest.TestCase):
         self.assertEqual("WhqqH%2BTU95VgZMItpdq78BWb4cE%3D", Util.uri_rfc3986_encode("WhqqH+TU95VgZMItpdq78BWb4cE="))
     def test_url_encode3(self):
         self.assertEqual("WhqqH%2BTU95VgZMItpdq78BWb4cE%3D%26o", Util.uri_rfc3986_encode("WhqqH+TU95VgZMItpdq78BWb4cE=&o"))
-
 
         
 if __name__ == '__main__':
