@@ -31,8 +31,8 @@ exec(open('oauth1/version.py').read())
 
 setup(name='mastercard-oauth1-signer',
       version=__version__,
-      description='Mastercard OAuth1 signer.',
-      long_description='Zero dependency library for generating a Mastercard API compliant OAuth signature.',
+      description='Mastercard OAuth1 Signer.',
+      long_description='Python library for generating a Mastercard API compliant OAuth signature. ',
       author='Mastercard',
       url='https://github.com/Mastercard/oauth1-signer-python',
       license='MIT',
@@ -45,6 +45,6 @@ setup(name='mastercard-oauth1-signer',
         'Programming Language :: Python :: 3.7',
         'Topic :: Software Development :: Libraries :: Python Modules'
         ],
-        tests_require=['mock','nose','coverage','urllib3[secure]'],
+        tests_require=['mock', 'nose', 'coverage', 'urllib3[secure]'],
         install_requires=['requests', 'pyOpenSSL', 'urllib3[secure]', 'cryptography', 'future']
 )
