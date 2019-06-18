@@ -37,12 +37,7 @@ from os.path import dirname, realpath, join, os
 from oauth1.signer import OAuthSigner
 from OpenSSL import crypto
 
-
-
 class UtilsTest(unittest.TestCase):
-
-
-
 
     def test_load_signing_key_should_return_key(self):
         if os.path.exists('./test_key_container.p12'):
@@ -59,12 +54,6 @@ class UtilsTest(unittest.TestCase):
             self.assertTrue(private_key_bytes)
         else:
             print("Please add a ./test_key_container.p12 file to enable key tests")
-
-        
-    def test_validate_url(self):
-        self.assertFalse(Util.validate_url("whats this rubbish"))
-        self.assertTrue(Util.validate_url("https://developer.mastercard.com"))
-
         
 if __name__ == '__main__':
     unittest.main()
