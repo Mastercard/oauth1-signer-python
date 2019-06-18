@@ -36,23 +36,6 @@ import re
 
 from urllib.parse import urlparse, quote, quote_plus, parse_qsl
 
-def validate_url(url):
-    """
-    Validates that the given string is a valid URL
-    """
-    url_regex = re.compile(
-        r'^(?:http|ftp)s?://'  # http:// or https://
-        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  # domain...
-        r'localhost|'  # localhost...
-        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # or ip
-        r'(?::\d+)?'  # optional port
-        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
-
-    if url_regex.match(url):
-        return True
-    return False
-
-
 def normalize_params(url, params):
     """
     Combines the query parameters of url and extra params into a single queryString.
