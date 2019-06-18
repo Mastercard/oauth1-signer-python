@@ -96,7 +96,7 @@ class OAuthTest(unittest.TestCase):
         # print(query_params)
         self.assertEqual(query_params, "param1=plus%20value&param2=colon%3Avalue")
 
-    def not_consistent_test_query_parser_not_encoded_params(self):
+    def test_query_parser_not_encoded_params(self):
         uri = "https://api.mastercard.com/audiences?param1=plus+value&param2=colon:value&param3=a space~"
 
         oauth_parameters = OAuthParameters()
