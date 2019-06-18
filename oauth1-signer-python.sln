@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29009.5
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "oauth1-signer-python", "oauth1-signer-python.pyproj", "{FA855547-DEE5-41B1-B0A9-D334718AC7CA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FA855547-DEE5-41B1-B0A9-D334718AC7CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA855547-DEE5-41B1-B0A9-D334718AC7CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F8D7A140-4ACA-46F7-BD48-47881C7F0F40}
+	EndGlobalSection
+EndGlobal
