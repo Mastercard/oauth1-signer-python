@@ -42,7 +42,7 @@ class OAuthTest(unittest.TestCase):
 
     def test_get_authorization_header(self):
         signing_key = authenticationutils.load_signing_key('./test_key_container.p12', "Password1")
-        consumer_key = OAuthSigner("YOUR CONSUMER KEY", signing_key)
+        consumer_key = OAuthSigner("dummy", signing_key)
         uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
         method = "POST"
         header = OAuth().get_authorization_header(uri, method, "payload", consumer_key, signing_key)     
@@ -57,7 +57,7 @@ class OAuthTest(unittest.TestCase):
 
     def test_sign_message(self):
         signing_key = authenticationutils.load_signing_key("./test_key_container.p12", "Password1")
-        consumer_key = OAuthSigner("YOUR CONSUMER KEY", signing_key)
+        consumer_key = OAuthSigner("dummy", signing_key)
         baseString = 'POST&https%3A%2F%2Fsandbox.api.mastercard.com%2Ffraud%2Fmerchant%2Fv1%2Ftermination-inquiry&Format%3DXML%26PageLength%3D10%26PageOffset%3D0%26oauth_body_hash%3DWhqqH%252BTU95VgZMItpdq78BWb4cE%253D%26oauth_consumer_key%3Dxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx%26oauth_nonce%3D1111111111111111111%26oauth_signature_method%3DRSA-SHA1%26oauth_timestamp%3D1111111111%26oauth_version%3D1.0'
 
         signature = OAuth().sign_message(baseString, signing_key)
@@ -68,7 +68,7 @@ class OAuthTest(unittest.TestCase):
 
     def test_oauth_parameters(self):
         signing_key = authenticationutils.load_signing_key("./test_key_container.p12", "Password1")
-        consumer_key = OAuthSigner("YOUR CONSUMER KEY", signing_key)
+        consumer_key = OAuthSigner("dummy", signing_key)
         
         uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
         method = "POST"
@@ -210,7 +210,7 @@ class OAuthTest(unittest.TestCase):
     def test_sign_signature_base_string(self):
         if os.path.exists('./test_key_container.p12'):
             signing_key = authenticationutils.load_signing_key("./test_key_container.p12", "Password1")
-            consumer_key = OAuthSigner("YOUR CONSUMER KEY", signing_key)
+            consumer_key = OAuthSigner("dummy", signing_key)
 
             expectedSignatureString = "IJeNKYGfUhFtj5OAPRI92uwfjJJLCej3RCMLbp7R6OIYJhtwxnTkloHQ2bgV7fks4GT/A7rkqrgUGk0ewbwIC6nS3piJHyKVc7rvQXZuCQeeeQpFzLRiH3rsb+ZS+AULK+jzDje4Fb+BQR6XmxuuJmY6YrAKkj13Ln4K6bZJlSxOizbNvt+Htnx+hNd4VgaVBeJKcLhHfZbWQxK76nMnjY7nDcM/2R6LUIR2oLG1L9m55WP3bakAvmOr392ulv1+mWCwDAZZzQ4lakDD2BTu0ZaVsvBW+mcKFxYeTq7SyTQMM4lEwFPJ6RLc8jJJ+veJXHekLVzWg4qHRtzNBLz1mA=="
             signing_string = OAuth.sign_message(self, "baseString", signing_key)
@@ -243,7 +243,6 @@ class OAuthTest(unittest.TestCase):
         uri = "https://api.mastercard.com:17443/test?query=param"
         base_uri = Util.normalize_url(uri)
         self.assertEqual("https://api.mastercard.com:17443/test", base_uri)
-
 
     def test_url_normalization_remove_fragment(self):
         uri = "https://api.mastercard.com/test?query=param#fragment"

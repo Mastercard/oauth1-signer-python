@@ -39,7 +39,7 @@ class SignerTest(unittest.TestCase):
 
     def test_sign_request(self):
         signing_key = authenticationutils.load_signing_key('./test_key_container.p12', "Password1")
-        consumer_key = OAuthSigner("YOUR CONSUMER KEY", signing_key)
+        consumer_key = OAuthSigner("dummy", signing_key)
         uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
         
         request = Request()

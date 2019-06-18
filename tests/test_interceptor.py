@@ -45,7 +45,7 @@ class OAuthInterceptorTest(unittest.TestCase):
     def test_add_interceptor(self):
         key_file = './test_key_container.p12'
         key_password = "Password1"
-        consumer_key = 'uLXKmWNmIkzIGKfA2injnNQqpZaxaBSKxa3ixEVu2f283c95!33b9b2bd960147e387fa6f3f238f07170000000000000000'
+        consumer_key = 'dummy'
 
         signing_layer1 = get_signing_layer(self, requests)
         add_signing_layer(self, requests, key_file, key_password, consumer_key)
