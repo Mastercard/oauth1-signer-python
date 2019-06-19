@@ -38,10 +38,12 @@ class OAuthTest(unittest.TestCase):
 
     def test_get_authorization_header(self):
         signing_key = authenticationutils.load_signing_key('./test_key_container.p12', "Password1")
-        consumer_key = OAuthSigner("dummy", signing_key)
+        consumer_key = 'dummy'
         uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
         method = "POST"
-        header = OAuth().get_authorization_header(uri, method, "payload", consumer_key, signing_key)     
+        header = OAuth().get_authorization_header(uri, method, "payload", consumer_key, signing_key)
+        self.assertTrue("OAuth" in header)
+        self.assertTrue("dummy" in header)
 
     def test_get_nonce(self):
         nonce = OAuth.get_nonce()
@@ -53,7 +55,7 @@ class OAuthTest(unittest.TestCase):
 
     def test_sign_message(self):
         signing_key = authenticationutils.load_signing_key("./test_key_container.p12", "Password1")
-        consumer_key = OAuthSigner("dummy", signing_key)
+        consumer_key = 'dummy'
         baseString = 'POST&https%3A%2F%2Fsandbox.api.mastercard.com%2Ffraud%2Fmerchant%2Fv1%2Ftermination-inquiry&Format%3DXML%26PageLength%3D10%26PageOffset%3D0%26oauth_body_hash%3DWhqqH%252BTU95VgZMItpdq78BWb4cE%253D%26oauth_consumer_key%3Dxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx%26oauth_nonce%3D1111111111111111111%26oauth_signature_method%3DRSA-SHA1%26oauth_timestamp%3D1111111111%26oauth_version%3D1.0'
 
         signature = OAuth().sign_message(baseString, signing_key)
@@ -64,13 +66,13 @@ class OAuthTest(unittest.TestCase):
 
     def test_oauth_parameters(self):
         signing_key = authenticationutils.load_signing_key("./test_key_container.p12", "Password1")
-        consumer_key = OAuthSigner("dummy", signing_key)
+        consumer_key = 'dummy'
         
         uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
         method = "POST"
         parameters = OAuth().get_oauth_parameters(uri, method, "payload", consumer_key, signing_key)
-        # print(parameters)
-        consumer_key = parameters.get_oauth_consumer_key()      
+        consumer_key = parameters.get_oauth_consumer_key()
+        self.assertEqual("dummy", consumer_key)
 
     def test_query_parser(self):
         uri = "https://sandbox.api.mastercard.com/audiences/v1/getcountries?offset=0&offset=1&length=10&empty&odd="
@@ -79,7 +81,6 @@ class OAuthTest(unittest.TestCase):
         oauth_parameters_base = oauth_parameters.get_base_parameters_dict()
         merge_parameters = oauth_parameters_base.copy()
         query_params = Util.normalize_params(uri, merge_parameters)
-        # print(query_params)
         self.assertEqual(query_params, "empty=&length=10&odd=&offset=0&offset=1")
 
     def test_query_parser_encoding(self):
@@ -89,7 +90,6 @@ class OAuthTest(unittest.TestCase):
         oauth_parameters_base = oauth_parameters.get_base_parameters_dict()
         merge_parameters = oauth_parameters_base.copy()
         query_params = Util.normalize_params(uri, merge_parameters)
-        # print(query_params)
         self.assertEqual(query_params, "param1=plus%20value&param2=colon%3Avalue")
 
     def test_query_parser_not_encoded_params(self):
@@ -186,11 +186,7 @@ class OAuthTest(unittest.TestCase):
         merge_parameters = oauth_parameters_base.copy()
 
         norm_params = Util.normalize_params("", merge_parameters)
-        # print(oauth_parameters_base)
-
         query_params = OAuth.get_query_params(url)
-        
-        # print(query_params)
         normalize_params = Util.normalize_params("", query_params)
 
         base_string = OAuth.get_base_string(url, method, oauth_parameters, oauth_parameters.get_base_parameters_dict())
@@ -205,7 +201,7 @@ class OAuthTest(unittest.TestCase):
 
     def test_sign_signature_base_string(self):
         signing_key = authenticationutils.load_signing_key("./test_key_container.p12", "Password1")
-        consumer_key = OAuthSigner("dummy", signing_key)
+        consumer_key = "Dummy"
 
         expectedSignatureString = "IJeNKYGfUhFtj5OAPRI92uwfjJJLCej3RCMLbp7R6OIYJhtwxnTkloHQ2bgV7fks4GT/A7rkqrgUGk0ewbwIC6nS3piJHyKVc7rvQXZuCQeeeQpFzLRiH3rsb+ZS+AULK+jzDje4Fb+BQR6XmxuuJmY6YrAKkj13Ln4K6bZJlSxOizbNvt+Htnx+hNd4VgaVBeJKcLhHfZbWQxK76nMnjY7nDcM/2R6LUIR2oLG1L9m55WP3bakAvmOr392ulv1+mWCwDAZZzQ4lakDD2BTu0ZaVsvBW+mcKFxYeTq7SyTQMM4lEwFPJ6RLc8jJJ+veJXHekLVzWg4qHRtzNBLz1mA=="
         signing_string = OAuth.sign_message(self, "baseString", signing_key)
@@ -255,21 +251,18 @@ class OAuthTest(unittest.TestCase):
     def test_body_hash1(self):
         oauth_parameters = OAuthParameters()
         encoded_hash = Util.base64_encode(Util.sha256_encode(OAuth.EMPTY_STRING))
-        # print(encoded_hash)
         oauth_parameters.set_oauth_body_hash(encoded_hash)
         self.assertEqual("47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=", encoded_hash)
 
     def test_body_hash2(self):
         oauth_parameters = OAuthParameters()
         encoded_hash = Util.base64_encode(Util.sha256_encode(None))
-        # print(encoded_hash)
         oauth_parameters.set_oauth_body_hash(encoded_hash)
         self.assertEqual("3JN7WYkmBPWoaslpNs1/8J4l8Yrmt1joAUokx/oDnpE=", encoded_hash)
 
     def test_body_hash3(self):
         oauth_parameters = OAuthParameters()
         encoded_hash = Util.base64_encode(Util.sha256_encode("{\"foõ\":\"bar\"}"))
-        # print(encoded_hash)
         oauth_parameters.set_oauth_body_hash(encoded_hash)
         self.assertEqual("+Z+PWW2TJDnPvRcTgol+nKO3LT7xm8smnsg+//XMIyI=", encoded_hash)
 

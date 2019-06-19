@@ -37,7 +37,6 @@ from urllib import parse
 class OAuth():
     EMPTY_STRING = ""
 
-
     def get_authorization_header(self, uri, method, payload, consumer_key, signing_key):
 
         oauth_parameters = OAuth.get_oauth_parameters(self, uri, method, payload, consumer_key, signing_key)

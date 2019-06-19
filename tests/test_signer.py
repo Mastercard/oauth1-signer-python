@@ -36,7 +36,7 @@ class SignerTest(unittest.TestCase):
 
     def test_sign_request(self):
         signing_key = authenticationutils.load_signing_key('./test_key_container.p12', "Password1")
-        consumer_key = OAuthSigner("dummy", signing_key)
+        consumer_key = 'dummy'
         uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
         
         request = Request()
@@ -45,6 +45,9 @@ class SignerTest(unittest.TestCase):
             
         signer = OAuthSigner(consumer_key, signing_key)
         request = signer.sign_request(uri, request)
+        authHeader = request.headers['Authorization'];
+        self.assertTrue("OAuth" in authHeader)
+        self.assertTrue("dummy" in authHeader)
        
 if __name__ == '__main__':
     unittest.main()
