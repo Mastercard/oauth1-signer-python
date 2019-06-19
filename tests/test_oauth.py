@@ -92,15 +92,6 @@ class OAuthTest(unittest.TestCase):
         query_params = Util.normalize_params(uri, merge_parameters)
         self.assertEqual(query_params, "param1=plus%20value&param2=colon%3Avalue")
 
-    def test_query_parser_not_encoded_params(self):
-        uri = "https://api.mastercard.com/audiences?param1=plus+value&param2=colon:value&param3=a space~"
-
-        oauth_parameters = OAuthParameters()
-        oauth_parameters_base = oauth_parameters.get_base_parameters_dict()
-        merge_parameters = oauth_parameters_base.copy()
-        query_params = Util.normalize_params(uri, merge_parameters)
-        self.assertEqual(query_params, "param1=plus%20value&param2=colon%3Avalue&param3=a%20space~")
-
     def test_nonce_length(self):
         nonce = OAuth.get_nonce()
         self.assertEqual(16, len(nonce))
