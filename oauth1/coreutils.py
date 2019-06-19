@@ -32,9 +32,8 @@ Utility file having common functions
 
 import hashlib
 import base64
-import re
 
-from urllib.parse import urlparse, quote, quote_plus, parse_qsl
+from urllib.parse import urlparse, quote, parse_qsl
 
 def normalize_params(url, params):
     """

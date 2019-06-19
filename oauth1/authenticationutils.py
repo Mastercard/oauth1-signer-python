@@ -28,8 +28,6 @@
 #
 from OpenSSL import crypto
 
-
-
 def load_signing_key(pkcs12_filename, password):
     private_key_file = open(pkcs12_filename, 'rb')
     p12 = crypto.load_pkcs12(private_key_file.read(), password.encode("utf-8"))
