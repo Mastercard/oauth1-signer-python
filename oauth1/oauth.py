@@ -51,7 +51,6 @@ class OAuth():
                               util.uri_rfc3986_encode(str(value)) + "\"" for (key, value) in oauth_base_parameters_dict.items()])
         return oauth_key
 
-
     def get_oauth_parameters(self, uri, method, payload, consumer_key, signing_key):
         # Get all the base parameters such as nonce and timestamp
         oauth_parameters = OAuthParameters()
@@ -78,8 +77,6 @@ class OAuth():
 
         return oauth_parameters
 
-
-
     def get_base_string(url, method, query_params, oauth_parameters):
         # Merge the query string parameters
         merge_params = oauth_parameters.copy()
@@ -92,8 +89,6 @@ class OAuth():
         #    Signs the message using the private key with sha1 as digest
         sign = crypto.sign(signing_key, message.encode("utf-8"),'SHA256')
         return util.base64_encode(sign)
-
-
 
     def get_timestamp():
         """
@@ -112,7 +107,6 @@ class OAuth():
 
     def get_query_params(uri):
         return dict(parse.parse_qsl(parse.urlsplit(uri).query))
-
 
 
 class OAuthParameters(object):

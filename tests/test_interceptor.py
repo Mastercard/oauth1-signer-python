@@ -29,15 +29,8 @@
 #
 import unittest
 import requests
-from urllib.parse import urlencode
-from oauth1.oauth import OAuth
-from oauth1.signer_interceptor import SignerInterceptor
-import oauth1.authenticationutils as authenticationutils
-from os.path import dirname, realpath, join, os
-from oauth1.signer import OAuthSigner
 from oauth1.signer_interceptor import add_signing_layer
 from oauth1.signer_interceptor import get_signing_layer
-
 
 class OAuthInterceptorTest(unittest.TestCase):
 

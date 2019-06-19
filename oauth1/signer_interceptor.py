@@ -1,18 +1,14 @@
-import json
 from functools import wraps
 from oauth1.oauth import OAuth
 from oauth1 import authenticationutils
 from urllib.parse import urlencode
 
-
 class SignerInterceptor(object):
-
 
     def __init__(self, key_file, key_password, consumer_key):
         """Load signing key."""
         self.signing_key = authenticationutils.load_signing_key(key_file, key_password)
         self.consumer_key = consumer_key
-
 
     def oauth_signing(self, func):
         """Decorator for API request. func is APIClient.request"""
@@ -40,8 +36,6 @@ class SignerInterceptor(object):
 
         request_function.__oauth__ = True
         return request_function
-      
-
 
 def add_signing_layer(self, api_client, key_file, key_password, consumer_key):
     """Create and load configuration. Decorate APIClient.request with header signing"""

@@ -32,11 +32,7 @@ from oauth1.oauth import OAuth
 from oauth1.oauth import OAuthParameters
 import oauth1.authenticationutils as authenticationutils
 import oauth1.coreutils as Util
-from os.path import dirname, realpath, join, os
-
 from oauth1.signer import OAuthSigner
-
-
 
 class OAuthTest(unittest.TestCase):
 
@@ -208,16 +204,13 @@ class OAuthTest(unittest.TestCase):
         self.assertRaises(AttributeError, OAuth.sign_message, self, "some string", None)        
 
     def test_sign_signature_base_string(self):
-        if os.path.exists('./test_key_container.p12'):
-            signing_key = authenticationutils.load_signing_key("./test_key_container.p12", "Password1")
-            consumer_key = OAuthSigner("dummy", signing_key)
+        signing_key = authenticationutils.load_signing_key("./test_key_container.p12", "Password1")
+        consumer_key = OAuthSigner("dummy", signing_key)
 
-            expectedSignatureString = "IJeNKYGfUhFtj5OAPRI92uwfjJJLCej3RCMLbp7R6OIYJhtwxnTkloHQ2bgV7fks4GT/A7rkqrgUGk0ewbwIC6nS3piJHyKVc7rvQXZuCQeeeQpFzLRiH3rsb+ZS+AULK+jzDje4Fb+BQR6XmxuuJmY6YrAKkj13Ln4K6bZJlSxOizbNvt+Htnx+hNd4VgaVBeJKcLhHfZbWQxK76nMnjY7nDcM/2R6LUIR2oLG1L9m55WP3bakAvmOr392ulv1+mWCwDAZZzQ4lakDD2BTu0ZaVsvBW+mcKFxYeTq7SyTQMM4lEwFPJ6RLc8jJJ+veJXHekLVzWg4qHRtzNBLz1mA=="
-            signing_string = OAuth.sign_message(self, "baseString", signing_key)
-            self.maxDiff = None
-            self.assertEqual(expectedSignatureString, signing_string)
-        else:
-            print("Please add a ./test_key_container.p12 file to enable key tests")
+        expectedSignatureString = "IJeNKYGfUhFtj5OAPRI92uwfjJJLCej3RCMLbp7R6OIYJhtwxnTkloHQ2bgV7fks4GT/A7rkqrgUGk0ewbwIC6nS3piJHyKVc7rvQXZuCQeeeQpFzLRiH3rsb+ZS+AULK+jzDje4Fb+BQR6XmxuuJmY6YrAKkj13Ln4K6bZJlSxOizbNvt+Htnx+hNd4VgaVBeJKcLhHfZbWQxK76nMnjY7nDcM/2R6LUIR2oLG1L9m55WP3bakAvmOr392ulv1+mWCwDAZZzQ4lakDD2BTu0ZaVsvBW+mcKFxYeTq7SyTQMM4lEwFPJ6RLc8jJJ+veJXHekLVzWg4qHRtzNBLz1mA=="
+        signing_string = OAuth.sign_message(self, "baseString", signing_key)
+        self.maxDiff = None
+        self.assertEqual(expectedSignatureString, signing_string)
         
     def test_url_normalization_rfc_examples1(self):
         uri = "https://www.example.net:8080"

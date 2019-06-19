@@ -28,7 +28,6 @@
 #
 from oauth1.oauth import OAuth
 
-
 class OAuthSigner():
 
     def __init__(self, consumer_key, signing_key):

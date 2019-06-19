@@ -29,7 +29,6 @@
 """
 Utility file having common functions
 """
-
 import hashlib
 import base64
 

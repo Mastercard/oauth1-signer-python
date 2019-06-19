@@ -28,13 +28,7 @@
 # SUCH DAMAGE.
 #
 import unittest
-from oauth1.oauth import OAuth
-from oauth1.oauth import OAuthParameters
 import oauth1.authenticationutils as authenticationutils
-import oauth1.coreutils as Util
-from os.path import dirname, realpath, join, os
-
-from oauth1.signer import OAuthSigner
 from OpenSSL import crypto
 
 class UtilsTest(unittest.TestCase):

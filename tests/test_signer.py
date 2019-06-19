@@ -28,12 +28,9 @@
 # SUCH DAMAGE.
 #
 import unittest
-import oauth1.signer as Signer
-from os.path import dirname, realpath, join, os
 from requests import Request
 from oauth1.signer import OAuthSigner
 import oauth1.authenticationutils as authenticationutils
-
 
 class SignerTest(unittest.TestCase):
 
