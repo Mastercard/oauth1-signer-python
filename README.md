@@ -15,16 +15,13 @@
 - [Usage](#usage)
   * [Prerequisites](#prerequisites)
   * [Adding the Library to Your Project](#adding-the-library-to-your-project)
-  * [Sample Code](#sample-code)
-    * [Loading the Signing Key](#loading-the-signing-key)
-    * [Creating the OAuth Authorization for a GET](#creating-the-oauth-get)
-    * [Creating the OAuth Authorization for a POST](#creating-the-oauth-post)
-    * [Complete code to use interceptors](#using-interceptors)
-
-
+  * [Loading the Signing Key](#loading-the-signing-key) 
+  * [Creating the OAuth Authorization Header](#creating-the-oauth-authorization-header)
+  * [Signing HTTP Client Request Objects](#signing-http-client-request-objects)
+  * [Integrating with OpenAPI Generator API Client Libraries](#integrating-with-openapi-generator-api-client-libraries)
 
 ## Overview <a name="overview"></a>
-This is the Python version of the Mastercard compliant OAuth signature libraries.
+Python library for generating a Mastercard API compliant OAuth signature.
 
 ### Compatibility <a name="compatibility"></a>
 Python 3.6, 3.7
@@ -43,97 +40,95 @@ As part of this set up, you'll receive credentials for your app:
 
 ### Adding the Library to Your Project <a name="adding-the-library-to-your-project"></a>
 
-#### PIP
-`pip install mastercard-oauth1-signer`
-
-#### or Clone 
-`git clone https://github.com/Mastercard/oauth1-signer-python.git`
-
-Change to the repo folder, and enter :
-
-`python3 setup.py install`
-
-
-### Sample Code <a name="sample-code"></a>
-
-The following code snippets show how to use this signing library to send messages to a Mastercard service.
-
-
-##### Imports needed for the code snippets.
-``` python
-import sys
-import requests
-from oauth1.oauth import OAuth
-import oauth1.authenticationutils as authenticationutils
-import json
-from urllib.parse import urlencode
+```
+pip install mastercard-oauth1-signer
 ```
 
-##### Get a signing key from the .p12 file (replace place-holder strings with values from your project in developer zone). <a name="loading-the-signing-key"></a>
-``` python
-signing_key = authenticationutils.load_signing_key('your-keyFile.p12', 'the-keystore-password')
-consumer_key = 'your-consumer-key-from-developer.mastercard.com'
+### Loading the Signing Key <a name="loading-the-signing-key"></a>
 
-baseUrl = 'https://sandbox.api.mastercard.com' # remove 'sandbox.' if calling production
+A private key object can be created by calling the `authenticationutils.load_signing_key` method:
+``` python
+signing_key = authenticationutils.load_signing_key('<insert PKCS#12 key file path>', '<insert key password>')
 ```
 
+### Creating the OAuth Authorization Header <a name="creating-the-oauth-authorization-header"></a>
+The method that does all the heavy lifting is `OAuth().get_authorization_header`. You can call into it directly and as long as you provide the correct parameters, it will return a string that you can add into your request's `Authorization` header.
 
-##### To send a GET with query parameters:  <a name="creating-the-oauth-get"></a>
+#### POST example
 
-``` python
-queryMap = {
-        "Format": "XML",    # change this to toggle between and XML or JSON response
-        "Details": "offers.easysavings",
-        "PageOffset": "0",
-        "PageLength": "5",
-        "Latitude": "38.53463",
-        "Longitude": "-90.286781"
-        }
-uri = baseUrl + "/merchants/v1/merchant?" + urlencode(queryMap)
-header = OAuth().get_authorization_header(uri, 'GET', None, consumer_key, signing_key)
-headers = {'Authorization': header, 'Content-Type': 'application/json'}
-
-r = requests.get(uri, headers=headers)
-print(r.text)
-
+```python
+uri = 'https://sandbox.api.mastercard.com/service'
+payload = 'Hello world!'
+authHeader = OAuth().get_authorization_header(uri, 'POST', payload, '<insert consumer key>', signing_key)
 ```
 
-
-##### To send a POST to : <a name="creating-the-oauth-post"></a>
-
-``` python
-uri = baseUrl + "/eop/offer/v1/search?Format=XML" # change this to toggle between and XML or JSON response
-reqBodyMap = {
-        'OfferSearchCriteria': {
-                'ItemsPerPage': 300,
-                'Program': 'easysavings'
-        }
-}
-reqJson = json.dumps(reqBodyMap)
-header = OAuth().get_authorization_header(uri, 'POST', reqJson, consumer_key, signing_key)
-headers = {'Authorization': header, 'Content-Type': 'application/json'}
-r = requests.post(uri, headers=headers, data=reqJson)
-print(r.text)
+#### GET example
+```python
+uri = 'https://sandbox.api.mastercard.com/service'
+authHeader = OAuth().get_authorization_header(uri, 'GET', None, '<insert consumer key>', signing_key)
 ```
 
+### Signing HTTP Client Request Objects <a name="signing-http-client-request-objects"></a>
 
+Alternatively, you can use helper classes for some of the commonly used HTTP clients.
 
-##### Complete snippet to use interceptors : <a name="using-interceptors"></a>
+These classes will modify the provided request object in-place and will add the correct `Authorization` header. Once instantiated with a consumer key and private key, these objects can be reused. 
 
-``` python
+Usage briefly described below, but you can also refer to the test project for examples. 
+
++ [Requests: HTTP for Humans™](#requests)
+
+#### Requests: HTTP for Humans™ <a name="requests"></a>
+
+You can sign request objects using the `OAuthSigner` class. 
+
+Usage:
+```python
+uri = "https://sandbox.api.mastercard.com/service"
+request = Request()
+request.method = "POST"
+request.data = "..."
+
+signer = OAuthSigner(consumer_key, signing_key)
+request = signer.sign_request(uri, request)
+```
+
+### Integrating with OpenAPI Generator API Client Libraries <a name="integrating-with-openapi-generator-api-client-libraries"></a>
+
+[OpenAPI Generator](https://github.com/OpenAPITools/openapi-generator) generates API client libraries from [OpenAPI Specs](https://github.com/OAI/OpenAPI-Specification). 
+It provides generators and library templates for supporting multiple languages and frameworks.
+
+This project provides you with classes you can use when configuring your API client. These classes will take care of adding the correct `Authorization` header before sending the request.
+
+Generators currently supported:
++ [python](#python)
+
+#### python <a name="python"></a>
+
+##### OpenAPI Generator
+
+Client libraries can be generated using the following command:
+```shell
+java -jar openapi-generator-cli.jar generate -i openapi-spec.yaml -g python -o out
+```
+See also: 
+* [OpenAPI Generator (executable)](https://mvnrepository.com/artifact/org.openapitools/openapi-generator-cli)
+* [CONFIG OPTIONS for python](https://github.com/OpenAPITools/openapi-generator/blob/master/docs/generators/python.md)
+
+##### Usage of the `oauth1.signer_interceptor`
+
+```python
 import swagger_client
 from swagger_client.api_client import ApiClient
 from swagger_client.api.service_api import PostApi
 from oauth1.signer_interceptor import add_signing_layer
 
-
+// ...
 config = swagger_client.Configuration()
 config.host = 'https://sandbox.api.mastercard.com'
 client = swagger_client.ApiClient(config)
-
-## Add OAuth1.0a interceptor
-add_signing_layer(self, client, 'your-keyFile.p12', 'the-keystore-password', 'consumer-key')
-
+add_signing_layer(self, client, '<insert PKCS#12 key file path>', '<insert key password>', '<insert consumer key>')
 api = swagger_client.api.service_api.PostApi(client)
 result = api.create_resource(schema=body)
+// ...
 ```
