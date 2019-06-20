@@ -118,17 +118,17 @@ See also:
 ##### Usage of the `oauth1.signer_interceptor`
 
 ```python
-import swagger_client
-from swagger_client.api_client import ApiClient
-from swagger_client.api.service_api import PostApi
+import openapi_client
+from openapi_client.api_client import ApiClient
+from openapi_client.api.service_api import PostApi
 from oauth1.signer_interceptor import add_signing_layer
 
 // ...
-config = swagger_client.Configuration()
+config = openapi_client.Configuration()
 config.host = 'https://sandbox.api.mastercard.com'
-client = swagger_client.ApiClient(config)
+client = openapi_client.ApiClient(config)
 add_signing_layer(self, client, '<insert PKCS#12 key file path>', '<insert key password>', '<insert consumer key>')
-api = swagger_client.api.service_api.PostApi(client)
+api = openapi_client.api.service_api.PostApi(client)
 result = api.create_resource(schema=body)
 // ...
 ```
