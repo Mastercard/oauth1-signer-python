@@ -119,8 +119,6 @@ See also:
 
 ```python
 import openapi_client
-from openapi_client.api_client import ApiClient
-from openapi_client.api.service_api import PostApi
 from oauth1.signer_interceptor import add_signing_layer
 
 // ...
@@ -128,7 +126,7 @@ config = openapi_client.Configuration()
 config.host = 'https://sandbox.api.mastercard.com'
 client = openapi_client.ApiClient(config)
 add_signing_layer(self, client, '<insert PKCS#12 key file path>', '<insert key password>', '<insert consumer key>')
-api = openapi_client.api.service_api.PostApi(client)
-result = api.create_resource(schema=body)
+some_api = openapi_client.SomeApi(client)
+result = some_api.do_something()
 // ...
 ```
