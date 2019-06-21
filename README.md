@@ -80,14 +80,14 @@ Usage briefly described below, but you can also refer to the test project for ex
 
 #### Requests: HTTP for Humans™ <a name="requests"></a>
 
-You can sign request objects using the `OAuthSigner` class. 
+You can sign [request](https://2.python-requests.org/en/v1.0.0/user/quickstart/#make-a-request) objects using the `OAuthSigner` class. 
 
 Usage:
 ```python
 uri = "https://sandbox.api.mastercard.com/service"
 request = Request()
 request.method = "POST"
-request.data = "..."
+# ...
 
 signer = OAuthSigner(consumer_key, signing_key)
 request = signer.sign_request(uri, request)
