@@ -37,16 +37,11 @@ class SignerInterceptor(object):
         request_function.__oauth__ = True
         return request_function
 
-def add_signing_layer(self, api_client, key_file, key_password, consumer_key):
+def add_signing_layer(api_client, key_file, key_password, consumer_key):
     """Create and load configuration. Decorate APIClient.request with header signing"""
 
     api_signer = SignerInterceptor(key_file, key_password, consumer_key)
     api_client.request = api_signer.oauth_signing(api_client.request)
 
-def get_signing_layer(self, api_client):
+def get_signing_layer(api_client):
     return api_client.request
-
-
-
- 
- 
