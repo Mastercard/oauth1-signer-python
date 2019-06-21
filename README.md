@@ -125,7 +125,7 @@ from oauth1.signer_interceptor import add_signing_layer
 config = openapi_client.Configuration()
 config.host = 'https://sandbox.api.mastercard.com'
 client = openapi_client.ApiClient(config)
-add_signing_layer(self, client, '<insert PKCS#12 key file path>', '<insert key password>', '<insert consumer key>')
+add_signing_layer(client, '<insert PKCS#12 key file path>', '<insert key password>', '<insert consumer key>')
 some_api = openapi_client.SomeApi(client)
 result = some_api.do_something()
 # ...
