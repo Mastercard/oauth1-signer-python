@@ -46,5 +46,5 @@ setup(name='mastercard-oauth1-signer',
         'Topic :: Software Development :: Libraries :: Python Modules'
         ],
         tests_require=['coverage'],
-        install_requires=['requests', 'pyOpenSSL', 'urllib3[secure]', 'cryptography']
+        install_requires=['requests', 'pyOpenSSL', 'urllib3[secure]', 'cryptography', 'Deprecated']
 )
