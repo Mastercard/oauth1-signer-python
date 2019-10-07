@@ -15,6 +15,7 @@
 - [Usage](#usage)
   * [Prerequisites](#prerequisites)
   * [Adding the Library to Your Project](#adding-the-library-to-your-project)
+  * [Import](#import-library)
   * [Loading the Signing Key](#loading-the-signing-key) 
   * [Creating the OAuth Authorization Header](#creating-the-oauth-authorization-header)
   * [Signing HTTP Client Request Objects](#signing-http-client-request-objects)
@@ -43,7 +44,12 @@ As part of this set up, you'll receive credentials for your app:
 ```
 pip install mastercard-oauth1-signer
 ```
+### Import <a name="import-library"></a>
 
+``` python
+import oauth1.authenticationutils as authenticationutils
+from oauth1.oauth import OAuth
+```
 ### Loading the Signing Key <a name="loading-the-signing-key"></a>
 
 A private key object can be created by calling the `authenticationutils.load_signing_key` method:
