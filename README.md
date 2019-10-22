@@ -15,7 +15,7 @@
 - [Usage](#usage)
   * [Prerequisites](#prerequisites)
   * [Adding the Library to Your Project](#adding-the-library-to-your-project)
-  * [Import](#import-library)
+  * [Importing the Code](#importing-the-code)
   * [Loading the Signing Key](#loading-the-signing-key) 
   * [Creating the OAuth Authorization Header](#creating-the-oauth-authorization-header)
   * [Signing HTTP Client Request Objects](#signing-http-client-request-objects)
@@ -44,7 +44,7 @@ As part of this set up, you'll receive credentials for your app:
 ```
 pip install mastercard-oauth1-signer
 ```
-### Import <a name="import-library"></a>
+### Importing the Code <a name="importing-the-code"></a>
 
 ``` python
 import oauth1.authenticationutils as authenticationutils
