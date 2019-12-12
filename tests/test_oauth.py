@@ -184,7 +184,44 @@ class OAuthTest(unittest.TestCase):
         expectedSignatureString = "IJeNKYGfUhFtj5OAPRI92uwfjJJLCej3RCMLbp7R6OIYJhtwxnTkloHQ2bgV7fks4GT/A7rkqrgUGk0ewbwIC6nS3piJHyKVc7rvQXZuCQeeeQpFzLRiH3rsb+ZS+AULK+jzDje4Fb+BQR6XmxuuJmY6YrAKkj13Ln4K6bZJlSxOizbNvt+Htnx+hNd4VgaVBeJKcLhHfZbWQxK76nMnjY7nDcM/2R6LUIR2oLG1L9m55WP3bakAvmOr392ulv1+mWCwDAZZzQ4lakDD2BTu0ZaVsvBW+mcKFxYeTq7SyTQMM4lEwFPJ6RLc8jJJ+veJXHekLVzWg4qHRtzNBLz1mA=="
         signing_string = OAuth.sign_message(self, "baseString", OAuthTest.signing_key)
         self.assertEqual(expectedSignatureString, signing_string)
+
+    def test_sign_json_body(self):
+        uri = "https://sandbox.api.mastercard.com/restservices/clients"
+        consumer_key = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        method = "POST"
+        body = {
+            "clientBaseAddressData": {
+                "addressLine1": "Testowa 5",
+                "city": "Warszawa",
+                "postalCode": "23-456"
+            },
+            "clientContactData": {
+                "phoneNumberMobile": "test"
+            },
+            "clientNumber": "2019102301",
+            "clientPersonalData": {
+                "countryCode": "BEL",
+                "shortName": "test"
+            },
+            "embossedData": {
+                "embossedFirstName": "Pavel",
+                "embossedLastName": "TEST"
+            },
+            "clientType": "PR"
+        }
+        oauth_parameters = OAuthParameters()
+        oauth_parameters.set_oauth_consumer_key(consumer_key)
+        oauth_parameters.set_oauth_nonce("1111111111111111111")
+        oauth_parameters.set_oauth_timestamp('1111111111')
+        oauth_parameters.set_oauth_signature_method("RSA-SHA256")
+        oauth_parameters.set_oauth_version("1.0")
+        oauth_parameters.set_oauth_body_hash(OAuth().get_encoded_body_hash(body))
+
+        base_string = OAuth.get_base_string(uri, method, oauth_parameters.get_base_parameters_dict())
+        signed_body = OAuth.sign_message(self, base_string, self.signing_key)
         
+        self.assertEqual("F3zw3Cqjqx3bsHM9BItsqwGkZx1esgsmyUIr8G1/ydbMSvnPzTJ6OeTBhlgln4R7MybyxErUbTaiuRRMD8z6P4WQ/QIRzZefqvcDBJ1e/jgmPIvGUZmM9FsQDRZ1EaTVNIGVfxZDbJS1b7114JtxeCWeAuM/O3Si3EzFNbzQSZr17Cma6qxojv63fKWqd8NqGmq3X5ngeA1/4bo8xveBZO3iSamFjJW9H6Gf8P++paP0+ORJ4YLQ1KQR5hmP53b53fPrXk5/06CmoMGltfHJvrUE8XUCBS/Y8bJehoCw4930VVCtCQ5FBmnX0W5kY/XEoWaHWiYmOIK7QmBztSd2zQ==", signed_body)
+
     def test_url_normalization_rfc_examples1(self):
         uri = "https://www.example.net:8080"
         base_uri = Util.normalize_url(uri)

@@ -50,6 +50,16 @@ class OAuth():
                               util.uri_rfc3986_encode(str(value)) + "\"" for (key, value) in oauth_base_parameters_dict.items()])
         return oauth_key
 
+    def get_encoded_body_hash(self, payload):
+        payload_str = json.dumps(payload) if type(payload) is dict else payload
+        if not payload_str:
+            # If the request does not have an entity body, the hash should be taken over the empty string
+            payload_str = OAuth.EMPTY_STRING
+
+        encoded_hash = util.base64_encode(util.sha256_encode(payload_str))
+        return util.uri_rfc3986_encode(encoded_hash)
+
+
     def get_oauth_parameters(self, uri, method, payload, consumer_key, signing_key):
         # Get all the base parameters such as nonce and timestamp
         oauth_parameters = OAuthParameters()
@@ -59,14 +69,7 @@ class OAuth():
         oauth_parameters.set_oauth_signature_method("RSA-SHA256")
         oauth_parameters.set_oauth_version("1.0")
 
-        payload_str = json.dumps(payload) if type(payload) is dict else payload
-        if not payload_str:
-            # If the request does not have an entity body, the hash should be taken over the empty string
-            payload_str = OAuth.EMPTY_STRING
-
-        encoded_hash = util.base64_encode(util.sha256_encode(payload_str))
-        encoded_hash = util.uri_rfc3986_encode(encoded_hash)
-        oauth_parameters.set_oauth_body_hash(encoded_hash)
+        oauth_parameters.set_oauth_body_hash(self.get_encoded_body_hash(payload))
 
         # Get the base string
         base_string = OAuth.get_base_string(uri, method, oauth_parameters.get_base_parameters_dict())
