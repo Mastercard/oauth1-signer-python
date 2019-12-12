@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 #
 # Copyright (c) 2019 MasterCard International Incorporated
 # All rights reserved.
@@ -65,6 +65,7 @@ class OAuth():
             payload_str = OAuth.EMPTY_STRING
 
         encoded_hash = util.base64_encode(util.sha256_encode(payload_str))
+        encoded_hash = util.uri_rfc3986_encode(encoded_hash)
         oauth_parameters.set_oauth_body_hash(encoded_hash)
 
         # Get the base string
