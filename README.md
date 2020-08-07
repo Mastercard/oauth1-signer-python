@@ -66,20 +66,18 @@ The method that does all the heavy lifting is `OAuth().get_authorization_header`
 uri = 'https://sandbox.api.mastercard.com/service'
 payload = 'Hello world!'
 authHeader = OAuth().get_authorization_header(uri, 'POST', payload, '<insert consumer key>', signing_key)
-
-to use authHeader with requests module:
-headerdict = {"Authorization" : authHeader}
-requests.post(uri,headers=headerdict)
 ```
 
 #### GET example
 ```python
 uri = 'https://sandbox.api.mastercard.com/service'
 authHeader = OAuth().get_authorization_header(uri, 'GET', None, '<insert consumer key>', signing_key)
+```
 
-
-to use authHeader with requests module:
-headerdict = {"Authorization" : authHeader}
+#### Use of authHeader with requests module (POST and GET example)
+```python
+headerdict = {'Authorization' : authHeader}
+requests.post(uri,headers=headerdict)
 requests.get(uri,headers=headerdict)
 ```
 
