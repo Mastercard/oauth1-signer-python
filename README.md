@@ -74,6 +74,13 @@ uri = 'https://sandbox.api.mastercard.com/service'
 authHeader = OAuth().get_authorization_header(uri, 'GET', None, '<insert consumer key>', signing_key)
 ```
 
+#### Use of authHeader with requests module (POST and GET example)
+```python
+headerdict = {'Authorization' : authHeader}
+requests.post(uri,headers=headerdict)
+requests.get(uri,headers=headerdict)
+```
+
 ### Signing HTTP Client Request Objects <a name="signing-http-client-request-objects"></a>
 
 Alternatively, you can use helper classes for some of the commonly used HTTP clients.
