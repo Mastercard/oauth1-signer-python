@@ -40,4 +40,4 @@ Has a similar issue/PR been reported/opened before?
 **Suggest a fix/enhancement**
 If you can't fix the bug yourself, perhaps you can point to what might be causing the problem (line of code or commit), or simply make a suggestion.
 
-If this is for a Feature request, please check out [this](feature_request.md). 
+If this is a a Feature request, please check out [this](feature_request.md). 
