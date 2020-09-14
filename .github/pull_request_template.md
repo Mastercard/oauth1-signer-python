@@ -7,3 +7,6 @@
 - [ ] The code in this PR is covered by unit tests
 
 #### Link to issue/feature request: <!-- link here -->
+
+#### Description
+A clear and concise description of what is this PR for and any additional info might be useful for reviewing it.
