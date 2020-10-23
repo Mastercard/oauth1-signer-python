@@ -4,6 +4,7 @@
 [![](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_oauth1-signer-python&metric=alert_status)](https://sonarcloud.io/dashboard?id=Mastercard_oauth1-signer-python)
 [![](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_oauth1-signer-python&metric=coverage)](https://sonarcloud.io/dashboard?id=Mastercard_oauth1-signer-python)
 [![](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_oauth1-signer-python&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=Mastercard_oauth1-signer-python)
+[![](https://github.com/Mastercard/oauth1-signer-python/workflows/broken%20links%3F/badge.svg)](https://github.com/Mastercard/oauth1-signer-python/actions?query=workflow%3A%22broken+links%3F%22)
 [![](https://img.shields.io/pypi/v/mastercard-oauth1-signer.svg?style=flat&color=blue)](https://pypi.org/project/mastercard-oauth1-signer)
 [![](https://img.shields.io/badge/license-MIT-yellow.svg)](https://github.com/Mastercard/oauth1-signer-python/blob/master/LICENSE)
 
