@@ -58,22 +58,9 @@ def normalize_params(url, params):
 
 
 def encode_pair(key, value):
-    encoded_key = oauth_query_string_element_encode(key)
-    encoded_value = oauth_query_string_element_encode(value if isinstance(value, bytes) else str(value))
+    encoded_key = uri_rfc5849_encode(key)
+    encoded_value = uri_rfc5849_encode(value if isinstance(value, bytes) else str(value))
     return "%s=%s" % (encoded_key, encoded_value)
-
-def oauth_query_string_element_encode(value):
-    """
-    RFC 3986 encodes the value
-
-    Note. This is based on RFC3986 but according to https://tools.ietf.org/html/rfc5849#section-3.6
-    it replaces space with %20 not "+".
-    """
-    encoded = quote(value)
-    encoded = str.replace(encoded, ':', '%3A')
-    encoded = str.replace(encoded, '+', '%2B')
-    encoded = str.replace(encoded, '*', '%2A')
-    return encoded
 
 def normalize_url(url):
     """
@@ -97,11 +84,20 @@ def normalize_url(url):
     return "{}://{}{}".format(parse.scheme, netloc, parse.path)
 
 
-def uri_rfc3986_encode(value):
+def uri_rfc5849_encode(value):
     """
-    RFC 3986 encodes the value
+    RFC 3986 encodes the value in the way compliant with RFC 5849
+
+    https://tools.ietf.org/html/rfc5849#section-3.6
+    According to RFC 5849, the only safe characters are
+    (ALPHA, DIGIT, "-", ".", "_", "~") and hereby MUST NOT be encoded.
+    The rest characters are unsafe and MUST be encoded.
     """
-    return quote(value, safe='%')
+
+    # Symbol ~ put to unreserved ("always safe") set since Python 3.7, but
+    # older versions consider ~ as reserved symbol. Therefore we pass '~' as
+    # safe symbol for backward compatibility with Python 3.6-
+    return quote(value, safe='~')
 
 
 def sha256_encode(text):

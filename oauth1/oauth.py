@@ -46,8 +46,8 @@ class OAuth():
 
         # Generate the header value for OAuth Header
         oauth_key = OAuthParameters.OAUTH_KEY+" "+ \
-                    ",".join([util.uri_rfc3986_encode(str(key)) + "=\"" +
-                              util.uri_rfc3986_encode(str(value)) + "\"" for (key, value) in oauth_base_parameters_dict.items()])
+                    ",".join([util.uri_rfc5849_encode(str(key)) + "=\"" +
+                              util.uri_rfc5849_encode(str(value)) + "\"" for (key, value) in oauth_base_parameters_dict.items()])
         return oauth_key
 
     def get_oauth_parameters(self, uri, method, payload, consumer_key, signing_key):
@@ -80,9 +80,9 @@ class OAuth():
 
     def get_base_string(url, method, oauth_parameters):
         merge_params = oauth_parameters.copy()
-        return "{}&{}&{}".format(util.uri_rfc3986_encode(method.upper()),
-                                 util.uri_rfc3986_encode(util.normalize_url(url)),
-                                 util.uri_rfc3986_encode(util.normalize_params(url, merge_params)))
+        return "{}&{}&{}".format(util.uri_rfc5849_encode(method.upper()),
+                                 util.uri_rfc5849_encode(util.normalize_url(url)),
+                                 util.uri_rfc5849_encode(util.normalize_params(url, merge_params)))
 
     def sign_message(self, message, signing_key):
         #    Signs the message using the private signing key
