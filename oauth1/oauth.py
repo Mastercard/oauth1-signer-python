@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 #
 # Copyright (c) 2019 MasterCard International Incorporated
 # All rights reserved.
@@ -78,7 +78,7 @@ class OAuth():
 
         return oauth_parameters
 
-    def get_base_string(url, method, oauth_parameters):
+    def get_base_string(self, url, method, oauth_parameters):
         merge_params = oauth_parameters.copy()
         return "{}&{}&{}".format(util.uri_rfc3986_encode(method.upper()),
                                  util.uri_rfc3986_encode(util.normalize_url(url)),
@@ -89,13 +89,13 @@ class OAuth():
         sign = crypto.sign(signing_key, message.encode("utf-8"),'SHA256')
         return util.base64_encode(sign)
 
-    def get_timestamp():
+    def get_timestamp(self):
         """
         Returns the UTC timestamp (seconds passed since epoch)
         """
         return int(time.time())
 
-    def get_nonce(length = 16):
+    def get_nonce(self, length=16):
         """
         Returns a random string of length=@length
         """
