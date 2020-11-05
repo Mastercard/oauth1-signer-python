@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 #
 # Copyright (c) 2019 MasterCard International Incorporated
 # All rights reserved.
@@ -54,8 +54,8 @@ class OAuth():
         # Get all the base parameters such as nonce and timestamp
         oauth_parameters = OAuthParameters()
         oauth_parameters.set_oauth_consumer_key(consumer_key)
-        oauth_parameters.set_oauth_nonce(OAuth.get_nonce())
-        oauth_parameters.set_oauth_timestamp(OAuth.get_timestamp())
+        oauth_parameters.set_oauth_nonce(OAuth.get_nonce(self))
+        oauth_parameters.set_oauth_timestamp(OAuth.get_timestamp(self))
         oauth_parameters.set_oauth_signature_method("RSA-SHA256")
         oauth_parameters.set_oauth_version("1.0")
 
@@ -68,7 +68,7 @@ class OAuth():
         oauth_parameters.set_oauth_body_hash(encoded_hash)
 
         # Get the base string
-        base_string = OAuth.get_base_string(uri, method, oauth_parameters.get_base_parameters_dict())
+        base_string = OAuth.get_base_string(self, uri, method, oauth_parameters.get_base_parameters_dict())
 
         # Sign the base string using the private key
         signature = OAuth.sign_message(self, base_string, signing_key)
@@ -78,7 +78,7 @@ class OAuth():
 
         return oauth_parameters
 
-    def get_base_string(url, method, oauth_parameters):
+    def get_base_string(self, url, method, oauth_parameters):
         merge_params = oauth_parameters.copy()
         return "{}&{}&{}".format(util.uri_rfc3986_encode(method.upper()),
                                  util.uri_rfc3986_encode(util.normalize_url(url)),
@@ -89,13 +89,13 @@ class OAuth():
         sign = crypto.sign(signing_key, message.encode("utf-8"),'SHA256')
         return util.base64_encode(sign)
 
-    def get_timestamp():
+    def get_timestamp(self):
         """
         Returns the UTC timestamp (seconds passed since epoch)
         """
         return int(time.time())
 
-    def get_nonce(length = 16):
+    def get_nonce(self, length = 16):
         """
         Returns a random string of length=@length
         """
