@@ -1,4 +1,3 @@
-cryptography==2.6.1
 pyOpenSSL==19.0.0
 requests==2.22.0
 Deprecated==1.2.5
