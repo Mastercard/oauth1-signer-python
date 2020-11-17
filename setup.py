@@ -1,5 +1,5 @@
 #
-# Copyright 2019 MasterCard International.
+# Copyright 2019-2020 Mastercard
 #
 # Redistribution and use in source and binary forms, with or without modification, are
 # permitted provided that the following conditions are met:
@@ -25,7 +25,6 @@
 #
 
 from setuptools import setup, find_packages
-import os
 
 exec(open('oauth1/version.py').read())
 
@@ -43,8 +42,9 @@ setup(name='mastercard-oauth1-signer',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Topic :: Software Development :: Libraries :: Python Modules'
         ],
-        tests_require=['coverage'],
-        install_requires=['requests', 'pyOpenSSL', 'urllib3[secure]', 'cryptography', 'Deprecated']
-)
+      tests_require=['coverage'],
+      install_requires=['requests', 'pyOpenSSL', 'urllib3[secure]', 'Deprecated']
+      )

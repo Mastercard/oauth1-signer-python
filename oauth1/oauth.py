@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2019 MasterCard International Incorporated
+# Copyright 2019-2020 Mastercard
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification, are
