@@ -1,0 +1,45 @@
+name: Sonar
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    env:
+      SONAR_SCANNER_VERSION: 3.3.0.1492
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        pip3 install -r requirements.txt
+        pip3 install .
+        pip3 install coverage
+        wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip
+        unzip sonar-scanner-cli-$SONAR_SCANNER_VERSION.zip
+    - name: Run Tests
+      run: |
+        coverage run setup.py test
+        coverage xml
+    - name: Sonar
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: |
+        sonar-scanner-$SONAR_SCANNER_VERSION/bin/sonar-scanner \
+          -Dsonar.projectName=oauth1-signer-python \
+          -Dsonar.projectKey=Mastercard_oauth1-signer-python \
+          -Dsonar.organization=mastercard  \
+          -Dsonar.sources=./oauth1 \
+          -Dsonar.tests=./tests \
+          -Dsonar.python.coverage.reportPaths=coverage.xml \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.login=$SONAR_TOKEN
