@@ -1,0 +1,32 @@
+name: Build & Test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    env:
+      SONAR_SCANNER_VERSION: 3.3.0.1492
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        pip3 install -r requirements.txt
+        pip3 install .
+        pip3 install coverage
+    - name: Run Tests
+      run: |
+        coverage run setup.py test
+        coverage xml
