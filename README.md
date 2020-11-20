@@ -1,6 +1,6 @@
 # oauth1-signer-python
 
-[![](https://travis-ci.org/MastercardDevs/oauth1-signer-python.svg?branch=master)](https://travis-ci.org/MastercardDevs/oauth1-signer-python)
+[![](https://github.com/Mastercard/oauth1-signer-python/workflows/Build%20&%20Test/badge.svg)](https://github.com/Mastercard/oauth1-signer-python/actions?query=workflow%3A%22Build+%26+Test%22)
 [![](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_oauth1-signer-python&metric=alert_status)](https://sonarcloud.io/dashboard?id=Mastercard_oauth1-signer-python)
 [![](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_oauth1-signer-python&metric=coverage)](https://sonarcloud.io/dashboard?id=Mastercard_oauth1-signer-python)
 [![](https://sonarcloud.io/api/project_badges/measure?project=Mastercard_oauth1-signer-python&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=Mastercard_oauth1-signer-python)
