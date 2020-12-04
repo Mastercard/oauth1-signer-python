@@ -7,7 +7,6 @@ from OpenSSL import crypto
 from requests import PreparedRequest
 import hashlib
 from . import coreutils as util
-import pprint as pp
 
 HASH_SHA256 = 'SHA256'
 
@@ -52,14 +51,9 @@ class OAuth1RSA(AuthBase):
         signature = self.signature(signable_message)
         payload['oauth_signature'] = signature
 
-        print("payload value::::::", payload)
-
         h = self._generate_header(payload)
 
-        print("value of h:::::::", h)
-
         r.headers['Authorization'] = h
-        print("value of r::::::::::::", r.headers)
         return r
 
     @staticmethod
