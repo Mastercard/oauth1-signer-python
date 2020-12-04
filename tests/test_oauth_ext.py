@@ -35,7 +35,6 @@ import oauth1.coreutils as Util
 from oauth1.signer import OAuthSigner
 from oauth1.oauth_ext import OAuth1RSA
 from oauth1.oauth_ext import HASH_SHA256
-import pprint
 import requests
 from requests import PreparedRequest
 import json
@@ -49,7 +48,6 @@ class OAuthExtTest(unittest.TestCase):
 
     signing_key = authenticationutils.load_signing_key('./test_key_container.p12', "Password1")
     consumer_key = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-    payload = {'oauth_version': '1.0', 'oauth_nonce': 'xxxx213-1111-xx00-11xx-xxxx12xxxx12', 'oauth_timestamp': '1111111111', 'oauth_signature_method': 'RSA-SHA256', 'oauth_consumer_key': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'oauth_body_hash': 'SamplEOaUthBoDYhASh', 'oauth_signature': 'OauTHSinaTUrESaMPle=='}
     
     payload = {
             'oauth_version': '1.0',
@@ -59,6 +57,7 @@ class OAuthExtTest(unittest.TestCase):
             'oauth_consumer_key': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
         }
 
+    payload_ext = {'oauth_version': '1.0', 'oauth_nonce': 'xxxx213-1111-xx00-11xx-xxxx12xxxx12', 'oauth_timestamp': '1111111111', 'oauth_signature_method': 'RSA-SHA256', 'oauth_consumer_key': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'oauth_body_hash': 'SamplEOaUthBoDYhASh', 'oauth_signature': 'OauTHSinaTUrESaMPle=='}
 
     def test_oauth_body_hash_with_body_string(self):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key, hash_alg=HASH_SHA256)
@@ -151,12 +150,12 @@ class OAuthExtTest(unittest.TestCase):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key, hash_alg=HASH_SHA256)
         mock_prepared_request = MockPreparedRequest()
 
-        signable_message = oauth_object.signable_message(mock_prepared_request, OAuthExtTest.payload)
+        signable_message = oauth_object.signable_message(mock_prepared_request, OAuthExtTest.payload_ext)
         self.assertTrue(mock_prepared_request.method in signable_message)
 
 
     def test_helper_generate_header(self):
-        generate_header = OAuth1RSA._generate_header(OAuthExtTest.payload)
+        generate_header = OAuth1RSA._generate_header(OAuthExtTest.payload_ext)
         self.assertTrue("OAuth" in generate_header)
 
 
