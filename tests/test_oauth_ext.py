@@ -28,16 +28,12 @@
 # SUCH DAMAGE.
 #
 import unittest
-from oauth1.oauth import OAuth
 from oauth1.oauth import OAuthParameters
 import oauth1.authenticationutils as authenticationutils
-import oauth1.coreutils as Util
-from oauth1.signer import OAuthSigner
 from oauth1.oauth_ext import OAuth1RSA
 from oauth1.oauth_ext import HASH_SHA256
 import requests
 from requests import PreparedRequest
-import json
 from uuid import uuid4
 import time
 from oauth1 import coreutils as util
