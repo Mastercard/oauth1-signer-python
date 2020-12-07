@@ -96,7 +96,7 @@ class OAuthExtTest(unittest.TestCase):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key, hash_alg=HASH_SHA256)
         mock_prepared_request = MockPreparedRequest()
         mock_prepared_request.body = ''
-        
+
         # Passing mock data to the actual func to get the value
         oauth_body_hash_object = oauth_object.oauth_body_hash(mock_prepared_request , OAuthExtTest.payload)
 
