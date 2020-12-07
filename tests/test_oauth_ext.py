@@ -42,12 +42,14 @@ from uuid import uuid4
 import time
 from oauth1 import coreutils as util
 import hashlib
+from OpenSSL import crypto
 
 
 class OAuthExtTest(unittest.TestCase):
 
     signing_key = authenticationutils.load_signing_key('./test_key_container.p12', "Password1")
     consumer_key = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    data = 'sensistive data'
     
     payload = {
             'oauth_version': '1.0',
@@ -77,7 +79,7 @@ class OAuthExtTest(unittest.TestCase):
     def test_oauth_body_hash_with_body_bytes(self):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key, hash_alg=HASH_SHA256)
         mock_prepared_request = MockPreparedRequest()
-        mock_prepared_request.body = b'{"A" : "sensistive data"}'
+        mock_prepared_request.body = b'{"A" : OAuthExtTest.data}'
 
         # Passing mock data to the actual func to get the value
         oauth_body_hash_object = oauth_object.oauth_body_hash(mock_prepared_request , OAuthExtTest.payload)
@@ -93,8 +95,8 @@ class OAuthExtTest(unittest.TestCase):
     def test_oauth_body_hash_with_body_none(self):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key, hash_alg=HASH_SHA256)
         mock_prepared_request = MockPreparedRequest()
-        mock_prepared_request.body = None
-
+        mock_prepared_request.body = ''
+        
         # Passing mock data to the actual func to get the value
         oauth_body_hash_object = oauth_object.oauth_body_hash(mock_prepared_request , OAuthExtTest.payload)
 
@@ -108,8 +110,9 @@ class OAuthExtTest(unittest.TestCase):
 
     def test_signature(self):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key, hash_alg=HASH_SHA256)
-        oauth_signature_object = oauth_object.signature('sensistive data')
-        self.assertEqual("dFb859e5IOFj1vcQDa61y6Hz6bFQcgvS3OUxTyibbzm3LVP+NB0Qau7fFNrT5fkKal4Y6DyWpfIFMotK5sFNF6UCTpQqL71ItRFX9vB6ztEfohlkwMS4Jxem9foJ6uA3QrZzAx37Bz+Y6C/Qjoie9XmLbZfPgbPSupvVmTpu830elVYuGQq5dPOgvaIXX65syw2+PuVFVRpd62gSCS519VBsJz/Fkrp7XJdWm2sPvp8XbJyD7Yvvmlehem/3GlkDRCzOPLpxpgkKudPHc62WDvT9CTvop6uVCEOGwBlp30hGAJSPUR5rxmcCjTT5ypa8ldCNJkbPDdkKaPG2eGR85g==", oauth_signature_object)
+        oauth_signature_object = oauth_object.signature(OAuthExtTest.data)
+        signature = util.base64_encode(crypto.sign(OAuthExtTest.signing_key, OAuthExtTest.data, HASH_SHA256))
+        self.assertEqual(signature, oauth_signature_object)
 
 
     def test_get_nonce(self):
@@ -124,25 +127,25 @@ class OAuthExtTest(unittest.TestCase):
 
     def test_helper_hash_string(self):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key, hash_alg=HASH_SHA256)
-        hash_object = oauth_object._hash('sensistive data')
+        hash_object = oauth_object._hash(OAuthExtTest.data)
         self.assertEqual(hash_object, b'\xe8@\x97\xa0\x07H\x0b\xb2\x81"1\xcb\xf8\xa6@|&\xb9\xd7\xdf.\x80\xa9\x0b\xed,\x8f2\x88\xd7\xf7\xe5')
 
 
     def test_helper_hash_bytes(self):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key, hash_alg=HASH_SHA256)
-        hash_object = oauth_object._hash(b'sensistive data')
-        self.assertEqual(hash_object, b'\xe8@\x97\xa0\x07H\x0b\xb2\x81"1\xcb\xf8\xa6@|&\xb9\xd7\xdf.\x80\xa9\x0b\xed,\x8f2\x88\xd7\xf7\xe5')
+        hash_object = oauth_object._hash(b"value in bytes")
+        self.assertEqual(hash_object, b'\\\n\x0e\xa3\xfe\x01\xd6T\x9fE\x97\x06\x937\x9d\\\xeaSz^\xe8\xab\xb1\xff:n\x9bY\xf5iV|')
 
 
-    def test_helper_hash_none(self):
+    def test_helper_hash_nonetype(self):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key, hash_alg=HASH_SHA256)
-        hash_object = oauth_object._hash(None)
-        self.assertEqual(hash_object, b'\xdc\x93{Y\x89&\x04\xf5\xa8j\xc9i6\xcd\x7f\xf0\x9e%\xf1\x8a\xe6\xb7X\xe8\x01J$\xc7\xfa\x03\x9e\x91')
+        hash_object = oauth_object._hash('')
+        self.assertEqual(hash_object, b"\xe3\xb0\xc4B\x98\xfc\x1c\x14\x9a\xfb\xf4\xc8\x99o\xb9$'\xaeA\xe4d\x9b\x93L\xa4\x95\x99\x1bxR\xb8U")
 
 
     def test_helper_hash_dict(self):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key, hash_alg=HASH_SHA256)
-        hash_object = oauth_object._hash({'A':'sensistive data'})
+        hash_object = oauth_object._hash({'A':OAuthExtTest.data})
         self.assertEqual(hash_object, b'\x87\xa0JR\x86\xae\xe9\xa4-\xb7\xba\xef6Z\x11\x1c\x00G\x9e\x1f(\xf8\xd5\xf8\xa8<\xda\x14\xa19*I')
 
     
