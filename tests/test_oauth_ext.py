@@ -77,7 +77,6 @@ class OAuthExtTest(unittest.TestCase):
 
     def test_oauth_body_hash_with_body_bytes(self):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key, hash_alg=HASH_SHA256)
-        # mock_prepared_request = MockPreparedRequest()
         OAuthExtTest.mock_prepared_request.body = b'{"A" : OAuthExtTest.data}'
 
         # Passing mock data to the actual func to get the value
@@ -137,12 +136,6 @@ class OAuthExtTest(unittest.TestCase):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key, hash_alg=HASH_SHA256)
         hash_object = oauth_object._hash('')
         self.assertEqual(hash_object, b"\xe3\xb0\xc4B\x98\xfc\x1c\x14\x9a\xfb\xf4\xc8\x99o\xb9$'\xaeA\xe4d\x9b\x93L\xa4\x95\x99\x1bxR\xb8U")
-
-
-    def test_helper_hash_dict(self):
-        oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key, hash_alg=HASH_SHA256)
-        hash_object = oauth_object._hash({'A':OAuthExtTest.data})
-        self.assertEqual(hash_object, b'\x87\xa0JR\x86\xae\xe9\xa4-\xb7\xba\xef6Z\x11\x1c\x00G\x9e\x1f(\xf8\xd5\xf8\xa8<\xda\x14\xa19*I')
 
     
     def test_signable_message(self):
