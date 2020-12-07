@@ -170,7 +170,6 @@ class OAuthTest(unittest.TestCase):
         oauth_parameters.set_oauth_body_hash(encoded_hash)
 
         oauth_parameters_base = oauth_parameters.get_base_parameters_dict()
-        merge_parameters = oauth_parameters_base.copy()
 
         base_string = OAuth.get_base_string(self, url, method, oauth_parameters.get_base_parameters_dict())
         expected = "POST&https%3A%2F%2Fsandbox.api.mastercard.com%2Ffraud%2Fmerchant%2Fv1%2Ftermination-inquiry&Format%3DXML%26PageLength%3D10%26PageOffset%3D0%26oauth_body_hash%3Dh2Pd7zlzEZjZVIKB4j94UZn%2FxxoR3RoCjYQ9%2FJdadGQ%3D%26oauth_consumer_key%3Dxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx%26oauth_nonce%3D1111111111111111111%26oauth_timestamp%3D1111111111%26oauth_version%3D1.0"
