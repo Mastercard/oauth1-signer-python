@@ -45,11 +45,11 @@ class OAuthTest(unittest.TestCase):
 
     def test_get_authorization_header_should_compute_body_hash(self):
         header = OAuth().get_authorization_header('https://www.example.com', 'POST', '{}', 'dummy', OAuthTest.signing_key)
-        self.assertTrue('RBNvo1WzZ4oRRq0W9%2BhknpT7T8If536DEMBg9hyq%2F4o%3D' in header)
+        self.assertTrue('RBNvo1WzZ4oRRq0W9+hknpT7T8If536DEMBg9hyq/4o=' in header)
 
     def test_get_authorization_header_should_return_empty_string_body_hash(self):
         header = OAuth().get_authorization_header('https://www.example.com', 'GET', None, 'dummy', OAuthTest.signing_key)
-        self.assertTrue('47DEQpj8HBSa%2B%2FTImW%2B5JCeuQeRkm5NMpJWZG3hSuFU%3D' in header)
+        self.assertTrue('47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=' in header)
 
     def test_get_nonce(self):
         nonce = OAuth.get_nonce(self)
