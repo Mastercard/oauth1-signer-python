@@ -46,8 +46,8 @@ class OAuth():
 
         # Generate the header value for OAuth Header
         oauth_key = OAuthParameters.OAUTH_KEY+" "+ \
-                    ",".join([util.uri_rfc3986_encode(str(key)) + "=\"" +
-                              util.uri_rfc3986_encode(str(value)) + "\"" for (key, value) in oauth_base_parameters_dict.items()])
+                    ",".join([str(key) + "=\"" +
+                              str(value) + "\"" for (key, value) in oauth_base_parameters_dict.items()])
         return oauth_key
 
     def get_oauth_parameters(self, uri, method, payload, consumer_key, signing_key):
