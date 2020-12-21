@@ -149,7 +149,7 @@ result = some_api.do_something()
 
 ###### POST example
 
-``` python
+```python
 from oauth1.oauth_ext import OAuth1RSA
 from oauth1.oauth_ext import HASH_SHA256
 import requests
@@ -173,7 +173,7 @@ request = requests.post(uri, json=data, auth=oauth, headers=header)
 
 ###### GET example
 
-``` python
+```python
 from oauth1.oauth_ext import OAuth1RSA
 import requests
 
