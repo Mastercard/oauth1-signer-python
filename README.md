@@ -144,3 +144,42 @@ some_api = openapi_client.SomeApi(client)
 result = some_api.do_something()
 # ...
 ```
+
+##### Usage of the `oauth_ext` library
+
+###### POST example
+
+``` python
+from oauth1.oauth_ext import OAuth1RSA
+from oauth1.oauth_ext import HASH_SHA256
+import requests
+
+uri = 'https://sandbox.api.mastercard.com/service'
+oauth = OAuth1RSA(consumer_key, signing_key, hash_alg=HASH_SHA256)
+header = {'Content-type' : 'application/json', 'Accept' : 'application/json'}
+
+# Passing payload for data parameter as string
+payload = '{'key' : 'value'}'
+request = requests.post(uri, data=payload, auth=oauth, headers=header)
+
+# Passing payload for data parameter as Json object
+payload = {'key' : 'value'}
+request = requests.post(uri, data=json.dumps(payload), auth=oauth, headers=header)
+
+# Passing payload for json parameter Json object
+payload = {'key' : 'value'}
+request = requests.post(uri, json=data, auth=oauth, headers=header)
+```
+
+###### GET example
+
+``` python
+from oauth1.oauth_ext import OAuth1RSA
+import requests
+
+uri = 'https://sandbox.api.mastercard.com/service'
+oauth = OAuth1RSA(consumer_key, signing_key, hash_alg=HASH_SHA256)
+
+# Operation for get call
+request = requests.get(uri, auth=oauth)
+```
