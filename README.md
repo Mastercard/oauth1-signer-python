@@ -123,7 +123,7 @@ oauth = OAuth1RSA(consumer_key, signing_key)
 header = {'Content-type' : 'application/json', 'Accept' : 'application/json'}
 
 # Passing payload for data parameter as string
-payload = '{'key' : 'value'}'
+payload = '{"key" : "value"}'
 request = requests.post(uri, data=payload, auth=oauth, headers=header)
 
 # Passing payload for data parameter as Json object
@@ -132,7 +132,7 @@ request = requests.post(uri, data=json.dumps(payload), auth=oauth, headers=heade
 
 # Passing payload for json parameter Json object
 payload = {'key' : 'value'}
-request = requests.post(uri, json=data, auth=oauth, headers=header)
+request = requests.post(uri, json=payload, auth=oauth, headers=header)
 ```
 
 ###### GET example
