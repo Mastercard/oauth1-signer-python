@@ -57,11 +57,11 @@ class OAuth1RSA(AuthBase):
         >>> requests.post('https://endpoint.com/the/route', data={'foo': 'bar'}, auth=oauth)
     """
 
-    def __init__(self, consumer_key: str, signing_key: PKey, hash_alg=HASH_SHA256):
+    def __init__(self, consumer_key: str, signing_key: PKey):
         self.consumer_key = consumer_key
         self.signing_key = signing_key
-        self.hash_alg = hash_alg
-        self.hash_f = hash_func(hash_alg)
+        self.hash_alg = HASH_SHA256
+        self.hash_f = hash_func(HASH_SHA256)
 
     def __call__(self, r: PreparedRequest):
         payload = {

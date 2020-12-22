@@ -119,7 +119,7 @@ from oauth1.oauth_ext import HASH_SHA256
 import requests
 
 uri = 'https://sandbox.api.mastercard.com/service'
-oauth = OAuth1RSA(consumer_key, signing_key, hash_alg=HASH_SHA256)
+oauth = OAuth1RSA(consumer_key, signing_key)
 header = {'Content-type' : 'application/json', 'Accept' : 'application/json'}
 
 # Passing payload for data parameter as string
@@ -142,7 +142,7 @@ from oauth1.oauth_ext import OAuth1RSA
 import requests
 
 uri = 'https://sandbox.api.mastercard.com/service'
-oauth = OAuth1RSA(consumer_key, signing_key, hash_alg=HASH_SHA256)
+oauth = OAuth1RSA(consumer_key, signing_key)
 
 # Operation for get call
 request = requests.get(uri, auth=oauth)
