@@ -109,7 +109,7 @@ request = signer.sign_request(uri, request)
 
 
 #### Usage of the `oauth_ext`
-This library is an extension to the oauth lib which provides an alternate way to make requests. Providing the usage below:
+The requests library supports custom authentication extensions, with which the procedure of creating and calling such requests can simplify the process of request signing. Please, see the examples below:
 
 ###### POST example
 
