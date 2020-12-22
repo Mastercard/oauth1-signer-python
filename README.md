@@ -107,6 +107,47 @@ signer = OAuthSigner(consumer_key, signing_key)
 request = signer.sign_request(uri, request)
 ```
 
+
+#### Usage of the `oauth_ext`
+The requests library supports custom authentication extensions, with which the procedure of creating and calling such requests can simplify the process of request signing. Please, see the examples below:
+
+###### POST example
+
+```python
+from oauth1.oauth_ext import OAuth1RSA
+from oauth1.oauth_ext import HASH_SHA256
+import requests
+
+uri = 'https://sandbox.api.mastercard.com/service'
+oauth = OAuth1RSA(consumer_key, signing_key)
+header = {'Content-type' : 'application/json', 'Accept' : 'application/json'}
+
+# Passing payload for data parameter as string
+payload = '{"key" : "value"}'
+request = requests.post(uri, data=payload, auth=oauth, headers=header)
+
+# Passing payload for data parameter as Json object
+payload = {'key' : 'value'}
+request = requests.post(uri, data=json.dumps(payload), auth=oauth, headers=header)
+
+# Passing payload for json parameter Json object
+payload = {'key' : 'value'}
+request = requests.post(uri, json=payload, auth=oauth, headers=header)
+```
+
+###### GET example
+
+```python
+from oauth1.oauth_ext import OAuth1RSA
+import requests
+
+uri = 'https://sandbox.api.mastercard.com/service'
+oauth = OAuth1RSA(consumer_key, signing_key)
+
+# Operation for get call
+request = requests.get(uri, auth=oauth)
+```
+
 ### Integrating with OpenAPI Generator API Client Libraries <a name="integrating-with-openapi-generator-api-client-libraries"></a>
 
 [OpenAPI Generator](https://github.com/OpenAPITools/openapi-generator) generates API client libraries from [OpenAPI Specs](https://github.com/OAI/OpenAPI-Specification). 
@@ -125,7 +166,7 @@ Client libraries can be generated using the following command:
 ```shell
 java -jar openapi-generator-cli.jar generate -i openapi-spec.yaml -g python -o out
 ```
-See also: 
+See also:
 * [OpenAPI Generator (executable)](https://mvnrepository.com/artifact/org.openapitools/openapi-generator-cli)
 * [CONFIG OPTIONS for python](https://github.com/OpenAPITools/openapi-generator/blob/master/docs/generators/python.md)
 

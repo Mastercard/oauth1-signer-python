@@ -45,9 +45,9 @@ class SignerTest(unittest.TestCase):
             
         signer = OAuthSigner(consumer_key, signing_key)
         request = signer.sign_request(uri, request)
-        authHeader = request.headers['Authorization'];
-        self.assertTrue("OAuth" in authHeader)
-        self.assertTrue("dummy" in authHeader)
+        auth_header = request.headers['Authorization'];
+        self.assertTrue("OAuth" in auth_header)
+        self.assertTrue("dummy" in auth_header)
        
 if __name__ == '__main__':
     unittest.main()
