@@ -107,45 +107,9 @@ signer = OAuthSigner(consumer_key, signing_key)
 request = signer.sign_request(uri, request)
 ```
 
-### Integrating with OpenAPI Generator API Client Libraries <a name="integrating-with-openapi-generator-api-client-libraries"></a>
 
-[OpenAPI Generator](https://github.com/OpenAPITools/openapi-generator) generates API client libraries from [OpenAPI Specs](https://github.com/OAI/OpenAPI-Specification). 
-It provides generators and library templates for supporting multiple languages and frameworks.
-
-This project provides you with classes you can use when configuring your API client. These classes will take care of adding the correct `Authorization` header before sending the request.
-
-Generators currently supported:
-+ [python](#python)
-
-#### python <a name="python"></a>
-
-##### OpenAPI Generator
-
-Client libraries can be generated using the following command:
-```shell
-java -jar openapi-generator-cli.jar generate -i openapi-spec.yaml -g python -o out
-```
-See also: 
-* [OpenAPI Generator (executable)](https://mvnrepository.com/artifact/org.openapitools/openapi-generator-cli)
-* [CONFIG OPTIONS for python](https://github.com/OpenAPITools/openapi-generator/blob/master/docs/generators/python.md)
-
-##### Usage of the `oauth1.signer_interceptor`
-
-```python
-import openapi_client
-from oauth1.signer_interceptor import add_signer_layer
-
-# ...
-config = openapi_client.Configuration()
-config.host = 'https://sandbox.api.mastercard.com'
-client = openapi_client.ApiClient(config)
-add_signer_layer(client, '<insert PKCS#12 key file path>', '<insert key password>', '<insert consumer key>')
-some_api = openapi_client.SomeApi(client)
-result = some_api.do_something()
-# ...
-```
-
-##### Usage of the `oauth_ext` library
+#### Usage of the `oauth_ext`
+This library is an extension to the oauth lib which provides an alternate way to make requests. Providing the usage below:
 
 ###### POST example
 
@@ -182,4 +146,42 @@ oauth = OAuth1RSA(consumer_key, signing_key, hash_alg=HASH_SHA256)
 
 # Operation for get call
 request = requests.get(uri, auth=oauth)
+```
+
+### Integrating with OpenAPI Generator API Client Libraries <a name="integrating-with-openapi-generator-api-client-libraries"></a>
+
+[OpenAPI Generator](https://github.com/OpenAPITools/openapi-generator) generates API client libraries from [OpenAPI Specs](https://github.com/OAI/OpenAPI-Specification). 
+It provides generators and library templates for supporting multiple languages and frameworks.
+
+This project provides you with classes you can use when configuring your API client. These classes will take care of adding the correct `Authorization` header before sending the request.
+
+Generators currently supported:
++ [python](#python)
+
+#### python <a name="python"></a>
+
+##### OpenAPI Generator
+
+Client libraries can be generated using the following command:
+```shell
+java -jar openapi-generator-cli.jar generate -i openapi-spec.yaml -g python -o out
+```
+See also:
+* [OpenAPI Generator (executable)](https://mvnrepository.com/artifact/org.openapitools/openapi-generator-cli)
+* [CONFIG OPTIONS for python](https://github.com/OpenAPITools/openapi-generator/blob/master/docs/generators/python.md)
+
+##### Usage of the `oauth1.signer_interceptor`
+
+```python
+import openapi_client
+from oauth1.signer_interceptor import add_signer_layer
+
+# ...
+config = openapi_client.Configuration()
+config.host = 'https://sandbox.api.mastercard.com'
+client = openapi_client.ApiClient(config)
+add_signer_layer(client, '<insert PKCS#12 key file path>', '<insert key password>', '<insert consumer key>')
+some_api = openapi_client.SomeApi(client)
+result = some_api.do_something()
+# ...
 ```

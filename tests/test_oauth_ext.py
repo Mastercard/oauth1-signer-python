@@ -50,8 +50,6 @@ class OAuthExtTest(unittest.TestCase):
     mock_prepared_request.prepare(headers = {'Content-type':'application/json', 'Accept':'application/json'},
                                   method = "POST",
                                   url = "http://www.example.com")
-    mock_prepared_request.body = "{'A' : 'sensistive data'}"
-
     payload = {
             'oauth_version': '1.0',
             'oauth_nonce': str(uuid4()),
@@ -64,6 +62,7 @@ class OAuthExtTest(unittest.TestCase):
 
     def test_oauth_body_hash_with_body_string(self):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key, hash_alg=HASH_SHA256)
+        OAuthExtTest.mock_prepared_request.body = "{'A' : 'sensistive data'}"
 
         # Passing mock data to the actual func to get the value
         oauth_body_hash_object = oauth_object.oauth_body_hash(OAuthExtTest.mock_prepared_request , OAuthExtTest.payload)
@@ -89,12 +88,43 @@ class OAuthExtTest(unittest.TestCase):
         self.assertEqual(oauth_body_hash_object['oauth_body_hash'], payload_hash_value)
 
 
-    def test_oauth_body_hash_with_body_none(self):
+    def test_oauth_body_hash_with_body_empty(self):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key, hash_alg=HASH_SHA256)
         OAuthExtTest.mock_prepared_request.body = ''
 
         # Passing mock data to the actual func to get the value
         oauth_body_hash_object = oauth_object.oauth_body_hash(OAuthExtTest.mock_prepared_request , OAuthExtTest.payload)
+
+        # Using mock data to find the hash value
+        hashlib_val = hashlib.sha256(str(OAuthExtTest.mock_prepared_request.body).encode('utf8')).digest()
+        payload_hash_value = util.uri_rfc3986_encode(util.base64_encode(hashlib_val))
+
+        self.assertEqual(oauth_body_hash_object['oauth_body_hash'], payload_hash_value)
+
+
+    def test_oauth_body_hash_with_body_none(self):
+        oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key, hash_alg=HASH_SHA256)
+        OAuthExtTest.mock_prepared_request.body = None
+
+        # Passing mock data to the actual func to get the value
+        oauth_body_hash_object = oauth_object.oauth_body_hash(OAuthExtTest.mock_prepared_request , OAuthExtTest.payload)
+
+        # Using mock data to find the hash value
+        hashlib_val = hashlib.sha256(str(OAuthExtTest.mock_prepared_request.body).encode('utf8')).digest()
+        payload_hash_value = util.uri_rfc3986_encode(util.base64_encode(hashlib_val))
+
+        self.assertEqual(oauth_body_hash_object['oauth_body_hash'], payload_hash_value)
+
+
+    def test_oauth_body_hash_with_body_multipart(self):
+        oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key, hash_alg=HASH_SHA256)
+        mock_request = PreparedRequest()
+        mock_request.prepare(headers = {'Content-type':'multipart/form-data'},
+                             method = "GET",
+                             url = "http://www.mastercard.com")
+
+        # Passing mock data to the actual func to get the value
+        oauth_body_hash_object = oauth_object.oauth_body_hash(mock_request , OAuthExtTest.payload)
 
         # Using mock data to find the hash value
         hashlib_val = hashlib.sha256(str(OAuthExtTest.mock_prepared_request.body).encode('utf8')).digest()
@@ -147,6 +177,12 @@ class OAuthExtTest(unittest.TestCase):
     def test_helper_generate_header(self):
         generate_header = OAuth1RSA._generate_header(OAuthExtTest.payload_ext)
         self.assertTrue("OAuth" in generate_header)
+
+
+    def test_call(self):
+        oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key, hash_alg=HASH_SHA256)
+        call_object = oauth_object.__call__(OAuthExtTest.mock_prepared_request)
+        self.assertTrue("Authorization" in call_object.headers)
 
 
 if __name__ == '__main__':
