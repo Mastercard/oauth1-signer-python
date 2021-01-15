@@ -59,7 +59,7 @@ class OAuth():
         oauth_parameters.set_oauth_signature_method("RSA-SHA256")
         oauth_parameters.set_oauth_version("1.0")
 
-        payload_str = json.dumps(payload) if type(payload) is dict else payload
+        payload_str = json.dumps(payload) if type(payload) is dict or type(payload) is list else payload
         if not payload_str:
             # If the request does not have an entity body, the hash should be taken over the empty string
             payload_str = OAuth.EMPTY_STRING
