@@ -97,10 +97,10 @@ class OAuth1RSA(AuthBase):
             return self.hash_f(message.encode('utf8')).digest()
         elif type(message) is bytes:
             return self.hash_f(message).digest()
-        else:
+        elif not message:
             # Generally for calls where the payload is empty. Eg: get calls
             # Fix for AttributeError: 'NoneType' object has no attribute 'encode'
-            return self.hash_f(str(message).encode('utf8')).digest()
+            return self.hash_f("".encode('utf8')).digest()
 
     @staticmethod
     def signable_message(r: PreparedRequest, payload: dict):
