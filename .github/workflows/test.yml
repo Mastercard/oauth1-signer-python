@@ -1,33 +1,39 @@
 name: Build & Test
-
-on:
+'on':
   push:
-    branches: [ master ]
+    branches:
+      - main
   pull_request:
-    types: [opened, synchronize, reopened]
+    types:
+      - opened
+      - synchronize
+      - reopened
   schedule:
-    - cron: "0 16 * * *"
-
+    - cron: 0 16 * * *
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version:
+          - 3.6
+          - 3.7
+          - 3.8
+          - 3.9
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        pip3 install -r requirements.txt
-        pip3 install .
-        pip3 install coverage
-    - name: Run Tests
-      run: |
-        coverage run setup.py test
-        coverage xml
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: 'Set up Python ${{ matrix.python-version }}'
+        uses: actions/setup-python@v2
+        with:
+          python-version: '${{ matrix.python-version }}'
+      - name: Install dependencies
+        run: |
+          pip3 install -r requirements.txt
+          pip3 install .
+          pip3 install coverage
+      - name: Run Tests
+        run: |
+          coverage run setup.py test
+          coverage xml
