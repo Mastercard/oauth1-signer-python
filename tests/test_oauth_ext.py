@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-#
 #
 #
@@ -70,8 +69,8 @@ class OAuthExtTest(unittest.TestCase):
         oauth_body_hash_object = oauth_object.oauth_body_hash(OAuthExtTest.mock_prepared_request, OAuthExtTest.payload)
 
         # Using mock data to find the hash value
-        hashlib_val = hashlib.sha256((OAuthExtTest.mock_prepared_request.body).encode('utf8')).digest()
-        payload_hash_value = util.uri_rfc3986_encode(util.base64_encode(hashlib_val))
+        hashlib_val = hashlib.sha256(OAuthExtTest.mock_prepared_request.body.encode('utf8')).digest()
+        payload_hash_value = util.base64_encode(hashlib_val)
 
         self.assertEqual(oauth_body_hash_object['oauth_body_hash'], payload_hash_value)
 
@@ -84,7 +83,7 @@ class OAuthExtTest(unittest.TestCase):
 
         # Using mock data to find the hash value
         hashlib_val = hashlib.sha256(OAuthExtTest.mock_prepared_request.body).digest()
-        payload_hash_value = util.uri_rfc3986_encode(util.base64_encode(hashlib_val))
+        payload_hash_value = util.base64_encode(hashlib_val)
 
         self.assertEqual(oauth_body_hash_object['oauth_body_hash'], payload_hash_value)
 
@@ -97,7 +96,7 @@ class OAuthExtTest(unittest.TestCase):
 
         # Using mock data to find the hash value
         hashlib_val = hashlib.sha256(str(OAuthExtTest.mock_prepared_request.body).encode('utf8')).digest()
-        payload_hash_value = util.uri_rfc3986_encode(util.base64_encode(hashlib_val))
+        payload_hash_value = util.base64_encode(hashlib_val)
 
         self.assertEqual(oauth_body_hash_object['oauth_body_hash'], payload_hash_value)
 
@@ -110,7 +109,7 @@ class OAuthExtTest(unittest.TestCase):
 
         # Using mock data to find the hash value
         hashlib_val = hashlib.sha256(str("").encode('utf8')).digest()
-        payload_hash_value = util.uri_rfc3986_encode(util.base64_encode(hashlib_val))
+        payload_hash_value = util.base64_encode(hashlib_val)
 
         self.assertEqual(oauth_body_hash_object['oauth_body_hash'], payload_hash_value)
 
@@ -135,7 +134,7 @@ class OAuthExtTest(unittest.TestCase):
 
         # Using mock data to find the hash value
         empty_string_hash = hashlib.sha256(str("").encode('utf8')).digest()
-        empty_string_encoded = util.uri_rfc3986_encode(util.base64_encode(empty_string_hash))
+        empty_string_encoded = util.base64_encode(empty_string_hash)
 
         self.assertEqual(empty_body_hash['oauth_body_hash'], empty_string_encoded)
         self.assertEqual(none_body_hash['oauth_body_hash'], empty_string_encoded)
@@ -152,7 +151,7 @@ class OAuthExtTest(unittest.TestCase):
 
         # Using mock data to find the hash value
         hashlib_val = hashlib.sha256(str(OAuthExtTest.mock_prepared_request.body).encode('utf8')).digest()
-        payload_hash_value = util.uri_rfc3986_encode(util.base64_encode(hashlib_val))
+        payload_hash_value = util.base64_encode(hashlib_val)
 
         self.assertEqual(oauth_body_hash_object['oauth_body_hash'], payload_hash_value)
 
@@ -162,19 +161,12 @@ class OAuthExtTest(unittest.TestCase):
         signature = util.base64_encode(crypto.sign(OAuthExtTest.signing_key, OAuthExtTest.data, HASH_SHA256))
         self.assertEqual(signature, oauth_signature_object)
 
-    def test_get_nonce(self):
-        nonce = OAuth1RSA.nonce()
-        self.assertEqual(len(nonce), 36)
-
-    def test_get_timestamp(self):
-        timestamp = OAuth1RSA.timestamp()
-        self.assertEqual(len(str(timestamp)), 10)
-
     def test_helper_hash_string(self):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key)
         hash_object = oauth_object._hash(OAuthExtTest.data)
         self.assertEqual(hash_object,
-                         b'\xe8@\x97\xa0\x07H\x0b\xb2\x81"1\xcb\xf8\xa6@|&\xb9\xd7\xdf.\x80\xa9\x0b\xed,\x8f2\x88\xd7\xf7\xe5')
+                         b'\xe8@\x97\xa0\x07H\x0b\xb2\x81"1\xcb\xf8\xa6@|&\xb9\xd7\xdf.\x80\xa9\x0b\xed,'
+                         b'\x8f2\x88\xd7\xf7\xe5')
 
     def test_helper_hash_bytes(self):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key)
@@ -186,7 +178,8 @@ class OAuthExtTest(unittest.TestCase):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key)
         hash_object = oauth_object._hash('')
         self.assertEqual(hash_object,
-                         b"\xe3\xb0\xc4B\x98\xfc\x1c\x14\x9a\xfb\xf4\xc8\x99o\xb9$'\xaeA\xe4d\x9b\x93L\xa4\x95\x99\x1bxR\xb8U")
+                         b"\xe3\xb0\xc4B\x98\xfc\x1c\x14\x9a\xfb\xf4\xc8\x99o\xb9$'\xaeA\xe4d\x9b\x93L\xa4\x95\x99"
+                         b"\x1bxR\xb8U")
 
     def test_signable_message(self):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key)

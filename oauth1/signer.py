@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 #
 # Copyright 2019-2020 Mastercard
 # All rights reserved.
@@ -28,7 +27,8 @@
 #
 from oauth1.oauth import OAuth
 
-class OAuthSigner():
+
+class OAuthSigner:
 
     def __init__(self, consumer_key, signing_key):
         self.consumer_key = consumer_key
@@ -36,7 +36,7 @@ class OAuthSigner():
 
     def sign_request(self, uri, request):
         #  Generates the OAuth header for the request, adds the header to the request and returns the request object
-        oauth_key = OAuth().get_authorization_header(uri, request.method, request.data, self.consumer_key, self.signing_key)
+        oauth_key = OAuth.get_authorization_header(uri, request.method, request.data, self.consumer_key,
+                                                   self.signing_key)
         request.headers["Authorization"] = oauth_key
         return request
-

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # Copyright 2019-2020 Mastercard
@@ -26,36 +25,32 @@
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-from random import randint
-import time
 import json
-
 import oauth1.coreutils as util
 from OpenSSL import crypto
-from urllib import parse
 
-class OAuth():
+
+class OAuth:
     EMPTY_STRING = ""
 
-    def get_authorization_header(self, uri, method, payload, consumer_key, signing_key):
+    @staticmethod
+    def get_authorization_header(uri, method, payload, consumer_key, signing_key):
+        oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key)
 
-        oauth_parameters = OAuth.get_oauth_parameters(self, uri, method, payload, consumer_key, signing_key)
-
-        # Get the updated base parameteres dict
+        # Get the updated base parameters dict
         oauth_base_parameters_dict = oauth_parameters.get_base_parameters_dict()
 
         # Generate the header value for OAuth Header
-        oauth_key = OAuthParameters.OAUTH_KEY+" "+ \
-                    ",".join([str(key) + "=\"" +
-                              str(value) + "\"" for (key, value) in oauth_base_parameters_dict.items()])
+        oauth_key = OAuthParameters.OAUTH_KEY + " " + ",".join([str(key) + "=\"" + str(value) + "\"" for (key, value) in oauth_base_parameters_dict.items()])
         return oauth_key
 
-    def get_oauth_parameters(self, uri, method, payload, consumer_key, signing_key):
+    @staticmethod
+    def get_oauth_parameters(uri, method, payload, consumer_key, signing_key):
         # Get all the base parameters such as nonce and timestamp
         oauth_parameters = OAuthParameters()
         oauth_parameters.set_oauth_consumer_key(consumer_key)
-        oauth_parameters.set_oauth_nonce(OAuth.get_nonce(self))
-        oauth_parameters.set_oauth_timestamp(OAuth.get_timestamp(self))
+        oauth_parameters.set_oauth_nonce(util.get_nonce())
+        oauth_parameters.set_oauth_timestamp(util.get_timestamp())
         oauth_parameters.set_oauth_signature_method("RSA-SHA256")
         oauth_parameters.set_oauth_version("1.0")
 
@@ -68,40 +63,29 @@ class OAuth():
         oauth_parameters.set_oauth_body_hash(encoded_hash)
 
         # Get the base string
-        base_string = OAuth.get_base_string(self, uri, method, oauth_parameters.get_base_parameters_dict())
+        base_string = OAuth.get_base_string(uri, method, oauth_parameters.get_base_parameters_dict())
 
         # Sign the base string using the private key
-        signature = OAuth.sign_message(self, base_string, signing_key)
+        signature = OAuth.sign_message(base_string, signing_key)
 
         # Set the signature in the Base parameters
-        oauth_parameters.set_oauth_signature(signature)
+        oauth_parameters.set_oauth_signature(util.uri_rfc3986_encode(signature))
 
         return oauth_parameters
 
-    def get_base_string(self, url, method, oauth_parameters):
+    @staticmethod
+    def get_base_string(url, method, oauth_parameters):
         merge_params = oauth_parameters.copy()
         return "{}&{}&{}".format(util.uri_rfc3986_encode(method.upper()),
                                  util.uri_rfc3986_encode(util.normalize_url(url)),
                                  util.uri_rfc3986_encode(util.normalize_params(url, merge_params)))
 
-    def sign_message(self, message, signing_key):
+    @staticmethod
+    def sign_message(message, signing_key):
         #    Signs the message using the private signing key
-        sign = crypto.sign(signing_key, message.encode("utf-8"),'SHA256')
+        sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
         return util.base64_encode(sign)
 
-    def get_timestamp(self):
-        """
-        Returns the UTC timestamp (seconds passed since epoch)
-        """
-        return int(time.time())
-
-    def get_nonce(self, length = 16):
-        """
-        Returns a random string of length=@length
-        """
-        characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-        charlen    = len(characters)
-        return "".join([characters[randint(0,charlen-1)] for _ in range(0,length)])
 
 class OAuthParameters(object):
     """
@@ -123,44 +107,51 @@ class OAuthParameters(object):
 
     def put(self, key, value):
         self.base_parameters[key] = value
+
     def get(self, key):
         return self.base_parameters[key]
 
     def set_oauth_consumer_key(self, consumer_key):
         self.put(OAuthParameters.OAUTH_CONSUMER_KEY, consumer_key)
+
     def get_oauth_consumer_key(self):
         return self.get(OAuthParameters.OAUTH_CONSUMER_KEY)
 
     def set_oauth_nonce(self, oauth_nonce):
         self.put(OAuthParameters.OAUTH_NONCE_KEY, oauth_nonce)
+
     def get_oauth_nonce(self):
         return self.get(OAuthParameters.OAUTH_NONCE_KEY)
 
     def set_oauth_timestamp(self, timestamp):
         self.put(OAuthParameters.OAUTH_TIMESTAMP_KEY, timestamp)
+
     def get_oauth_timestamp(self):
         return self.get(OAuthParameters.OAUTH_TIMESTAMP_KEY)
 
     def set_oauth_signature_method(self, signature_method):
         self.put(OAuthParameters.OAUTH_SIGNATURE_METHOD_KEY, signature_method)
+
     def get_oauth_signature_method(self):
         return self.get(OAuthParameters.OAUTH_SIGNATURE_METHOD_KEY)
 
     def set_oauth_signature(self, signature):
         self.put(OAuthParameters.OAUTH_SIGNATURE_KEY, signature)
+
     def get_oauth_signature(self):
         return self.get(OAuthParameters.OAUTH_SIGNATURE_KEY)
 
     def set_oauth_body_hash(self, body_hash):
         self.put(OAuthParameters.OAUTH_BODY_HASH_KEY, body_hash)
+
     def get_oauth_body_hash(self):
         return self.get(OAuthParameters.OAUTH_BODY_HASH_KEY)
 
     def set_oauth_version(self, version):
         self.put(OAuthParameters.OAUTH_VERSION, version)
+
     def get_oauth_version(self):
-        self.get(OAuthParameters.OAUTH_VERSION)
+        return self.get(OAuthParameters.OAUTH_VERSION)
 
     def get_base_parameters_dict(self):
         return self.base_parameters
-

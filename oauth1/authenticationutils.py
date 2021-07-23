@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 #
 # Copyright 2019-2020 Mastercard
 # All rights reserved.
@@ -28,10 +27,10 @@
 #
 from OpenSSL import crypto
 
+
 def load_signing_key(pkcs12_filename, password):
     private_key_file = open(pkcs12_filename, 'rb')
     p12 = crypto.load_pkcs12(private_key_file.read(), password.encode("utf-8"))
     private_key = p12.get_privatekey()
     private_key_file.close()
     return private_key
-

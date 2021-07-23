@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-#
 #
 #
@@ -32,44 +31,53 @@ from oauth1.oauth import OAuth
 from oauth1.oauth import OAuthParameters
 import oauth1.authenticationutils as authenticationutils
 import oauth1.coreutils as Util
-from oauth1.signer import OAuthSigner
+
 
 class OAuthTest(unittest.TestCase):
-
     signing_key = authenticationutils.load_signing_key('./test_key_container.p12', "Password1")
     uri = 'https://www.example.com'
 
     def test_get_authorization_header_nominal(self):
-        header = OAuth().get_authorization_header(OAuthTest.uri, 'POST', 'payload', 'dummy', OAuthTest.signing_key)
+        header = OAuth.get_authorization_header(OAuthTest.uri, 'POST', 'payload', 'dummy', OAuthTest.signing_key)
         self.assertTrue("OAuth" in header)
         self.assertTrue("dummy" in header)
 
     def test_get_authorization_header_should_compute_body_hash(self):
-        header = OAuth().get_authorization_header(OAuthTest.uri, 'POST', '{}', 'dummy', OAuthTest.signing_key)
+        header = OAuth.get_authorization_header(OAuthTest.uri, 'POST', '{}', 'dummy', OAuthTest.signing_key)
         self.assertTrue('RBNvo1WzZ4oRRq0W9+hknpT7T8If536DEMBg9hyq/4o=' in header)
 
     def test_get_authorization_header_should_return_empty_string_body_hash(self):
-        header = OAuth().get_authorization_header(OAuthTest.uri, 'GET', None, 'dummy', OAuthTest.signing_key)
+        header = OAuth.get_authorization_header(OAuthTest.uri, 'GET', None, 'dummy', OAuthTest.signing_key)
         self.assertTrue('47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=' in header)
 
     def test_get_nonce(self):
-        nonce = OAuth.get_nonce(self)
-        self.assertEqual(len(nonce),16)
+        nonce = Util.get_nonce()
+        self.assertEqual(len(nonce), 16)
 
     def test_get_timestamp(self):
-        timestamp = OAuth.get_timestamp(self)
-        self.assertEqual(len(str(timestamp)),10)
+        timestamp = Util.get_timestamp()
+        self.assertEqual(len(str(timestamp)), 10)
 
     def test_sign_message(self):
-        base_string = 'POST&https%3A%2F%2Fsandbox.api.mastercard.com%2Ffraud%2Fmerchant%2Fv1%2Ftermination-inquiry&Format%3DXML%26PageLength%3D10%26PageOffset%3D0%26oauth_body_hash%3DWhqqH%252BTU95VgZMItpdq78BWb4cE%253D%26oauth_consumer_key%3Dxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx%26oauth_nonce%3D1111111111111111111%26oauth_signature_method%3DRSA-SHA1%26oauth_timestamp%3D1111111111%26oauth_version%3D1.0'
-        signature = OAuth().sign_message(base_string, OAuthTest.signing_key)
+        base_string = 'POST&https%3A%2F%2Fsandbox.api.mastercard.com%2Ffraud%2Fmerchant%2Fv1%2Ftermination-inquiry' \
+                      '&Format%3DXML%26PageLength%3D10%26PageOffset%3D0%26oauth_body_hash%3DWhqqH' \
+                      '%252BTU95VgZMItpdq78BWb4cE%253D%26oauth_consumer_key' \
+                      '%3Dxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx%26oauth_nonce%3D1111111111111111111' \
+                      '%26oauth_signature_method%3DRSA-SHA1%26oauth_timestamp%3D1111111111%26oauth_version%3D1.0'
+        signature = OAuth.sign_message(base_string, OAuthTest.signing_key)
         signature = Util.uri_rfc3986_encode(signature)
-        self.assertEqual(signature,"DvyS3R795sUb%2FcvBfiFYZzPDU%2BRVefW6X%2BAfyu%2B9fxjudQft%2BShXhpounzJxYCwOkkjZWXOR0ICTMn6MOuG04TTtmPMrOxj5feGwD3leMBsi%2B3XxcFLPi8BhZKqgapcAqlGfjEhq0COZ%2FF9aYDcjswLu0zgrTMSTp4cqXYMr9mbQVB4HL%2FjiHni5ejQu9f6JB9wWW%2BLXYhe8F6b4niETtzIe5o77%2B%2BkKK67v9wFIZ9pgREz7ug8K5DlxX0DuwdUKFhsenA5z%2FNNCZrJE%2BtLu0tSjuF5Gsjw5GRrvW33MSoZ0AYfeleh5V3nLGgHrhVjl5%2BiS40pnG2po%2F5hIAUT5ag%3D%3D")
+        self.assertEqual(signature,
+                         "DvyS3R795sUb%2FcvBfiFYZzPDU%2BRVefW6X%2BAfyu%2B9fxjudQft"
+                         "%2BShXhpounzJxYCwOkkjZWXOR0ICTMn6MOuG04TTtmPMrOxj5feGwD3leMBsi"
+                         "%2B3XxcFLPi8BhZKqgapcAqlGfjEhq0COZ%2FF9aYDcjswLu0zgrTMSTp4cqXYMr9mbQVB4HL"
+                         "%2FjiHni5ejQu9f6JB9wWW%2BLXYhe8F6b4niETtzIe5o77%2B"
+                         "%2BkKK67v9wFIZ9pgREz7ug8K5DlxX0DuwdUKFhsenA5z%2FNNCZrJE"
+                         "%2BtLu0tSjuF5Gsjw5GRrvW33MSoZ0AYfeleh5V3nLGgHrhVjl5%2BiS40pnG2po%2F5hIAUT5ag%3D%3D")
 
     def test_oauth_parameters(self):
         uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
         method = "POST"
-        parameters = OAuth().get_oauth_parameters(uri, method, 'payload', 'dummy', OAuthTest.signing_key)
+        parameters = OAuth.get_oauth_parameters(uri, method, 'payload', 'dummy', OAuthTest.signing_key)
         consumer_key = parameters.get_oauth_consumer_key()
         self.assertEqual("dummy", consumer_key)
 
@@ -81,6 +89,11 @@ class OAuthTest(unittest.TestCase):
         query_params = Util.normalize_params(uri, merge_parameters)
         self.assertEqual(query_params, "empty=&length=10&odd=&offset=0&offset=1")
 
+    def test_query_parser_when_params_is_None(self):
+        uri = "https://sandbox.api.mastercard.com/audiences/v1/getcountries"
+        query_params = Util.normalize_params(uri, None)
+        self.assertEqual(query_params, '')
+
     def test_query_parser_encoding(self):
         uri = "https://sandbox.api.mastercard.com?param1=plus+value&param2=colon:value"
         oauth_parameters = OAuthParameters()
@@ -90,14 +103,14 @@ class OAuthTest(unittest.TestCase):
         self.assertEqual(query_params, "param1=plus%20value&param2=colon%3Avalue")
 
     def test_nonce_length(self):
-        nonce = OAuth.get_nonce(self)
+        nonce = Util.get_nonce()
         self.assertEqual(16, len(nonce))
 
     def test_nonce_uniqueness(self):
-        init = OAuth.get_nonce(self)
+        init = Util.get_nonce()
         l = []
-        for _ in range(0,100000):
-            l.append(init +  OAuth.get_nonce(self))
+        for _ in range(0, 100000):
+            l.append(init + Util.get_nonce())
 
         self.assertEqual(self.list_duplicates(l), [])
 
@@ -105,9 +118,9 @@ class OAuthTest(unittest.TestCase):
         seen = set()
         seen_add = seen.add
         # adds all elements it doesn't know yet to seen and all other to seen_twice
-        seen_twice = set( x for x in seq if x in seen or seen_add(x) )
+        seen_twice = set(x for x in seq if x in seen or seen_add(x))
         # turn the set into a list (as requested)
-        return list( seen_twice )
+        return list(seen_twice)
 
     def test_params_string_rfc_example_1(self):
         uri = "https://sandbox.api.mastercard.com"
@@ -122,7 +135,10 @@ class OAuthTest(unittest.TestCase):
         merge_parameters1 = oauth_parameters_base1.copy()
         query_params1 = Util.normalize_params(uri, merge_parameters1)
 
-        self.assertEqual("oauth_consumer_key=9djdj82h48djs9d2&oauth_nonce=7d8f3e4a&oauth_signature_method=HMAC-SHA1&oauth_timestamp=137131201", query_params1);
+        self.assertEqual(
+            "oauth_consumer_key=9djdj82h48djs9d2&oauth_nonce=7d8f3e4a&oauth_signature_method=HMAC-SHA1"
+            "&oauth_timestamp=137131201",
+            query_params1)
 
     def test_params_string_rfc_example_2(self):
         uri = "https://sandbox.api.mastercard.com?b5=%3D%253D&a3=a&a3=2%20q&c%40=&a2=r%20b&c2="
@@ -152,12 +168,25 @@ class OAuthTest(unittest.TestCase):
         oauth_parameters.set_oauth_body_hash("body/hash")
         oauth_parameters.set_oauth_nonce("randomnonce")
 
-        base_string = OAuth.get_base_string(self, base_uri, "POST", oauth_parameters.get_base_parameters_dict())
-        self.assertEqual("POST&https%3A%2F%2Fapi.mastercard.com%2F&oauth_body_hash%3Dbody%2Fhash%26oauth_nonce%3Drandomnonce", base_string);
+        base_string = OAuth.get_base_string(base_uri, "POST", oauth_parameters.get_base_parameters_dict())
+        self.assertEqual(
+            "POST&https%3A%2F%2Fapi.mastercard.com%2F&oauth_body_hash%3Dbody%2Fhash%26oauth_nonce%3Drandomnonce",
+            base_string)
 
     def test_signature_base_string2(self):
-        body = "<?xml version=\"1.0\" encoding=\"Windows-1252\"?><ns2:TerminationInquiryRequest xmlns:ns2=\"http://mastercard.com/termination\"><AcquirerId>1996</AcquirerId><TransactionReferenceNumber>1</TransactionReferenceNumber><Merchant><Name>TEST</Name><DoingBusinessAsName>TEST</DoingBusinessAsName><PhoneNumber>5555555555</PhoneNumber><NationalTaxId>1234567890</NationalTaxId><Address><Line1>5555 Test Lane</Line1><City>TEST</City><CountrySubdivision>XX</CountrySubdivision><PostalCode>12345</PostalCode><Country>USA</Country></Address><Principal><FirstName>John</FirstName><LastName>Smith</LastName><NationalId>1234567890</NationalId><PhoneNumber>5555555555</PhoneNumber><Address><Line1>5555 Test Lane</Line1><City>TEST</City><CountrySubdivision>XX</CountrySubdivision><PostalCode>12345</PostalCode><Country>USA</Country></Address><DriversLicense><Number>1234567890</Number><CountrySubdivision>XX</CountrySubdivision></DriversLicense></Principal></Merchant></ns2:TerminationInquiryRequest>";
-        url = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0&PageLength=10"
+        body = "<?xml version=\"1.0\" encoding=\"Windows-1252\"?><ns2:TerminationInquiryRequest " \
+               "xmlns:ns2=\"http://mastercard.com/termination\"><AcquirerId>1996</AcquirerId" \
+               "><TransactionReferenceNumber>1</TransactionReferenceNumber><Merchant><Name>TEST</Name" \
+               "><DoingBusinessAsName>TEST</DoingBusinessAsName><PhoneNumber>5555555555</PhoneNumber><NationalTaxId" \
+               ">1234567890</NationalTaxId><Address><Line1>5555 Test " \
+               "Lane</Line1><City>TEST</City><CountrySubdivision>XX</CountrySubdivision><PostalCode>12345</PostalCode" \
+               "><Country>USA</Country></Address><Principal><FirstName>John</FirstName><LastName>Smith</LastName" \
+               "><NationalId>1234567890</NationalId><PhoneNumber>5555555555</PhoneNumber><Address><Line1>5555 Test " \
+               "Lane</Line1><City>TEST</City><CountrySubdivision>XX</CountrySubdivision><PostalCode>12345</PostalCode" \
+               "><Country>USA</Country></Address><DriversLicense><Number>1234567890</Number><CountrySubdivision>XX" \
+               "</CountrySubdivision></DriversLicense></Principal></Merchant></ns2:TerminationInquiryRequest>"
+        url = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0" \
+              "&PageLength=10"
         method = "POST"
 
         oauth_parameters = OAuthParameters()
@@ -169,17 +198,26 @@ class OAuthTest(unittest.TestCase):
         encoded_hash = Util.base64_encode(Util.sha256_encode(body))
         oauth_parameters.set_oauth_body_hash(encoded_hash)
 
-        base_string = OAuth.get_base_string(self, url, method, oauth_parameters.get_base_parameters_dict())
-        expected = "POST&https%3A%2F%2Fsandbox.api.mastercard.com%2Ffraud%2Fmerchant%2Fv1%2Ftermination-inquiry&Format%3DXML%26PageLength%3D10%26PageOffset%3D0%26oauth_body_hash%3Dh2Pd7zlzEZjZVIKB4j94UZn%2FxxoR3RoCjYQ9%2FJdadGQ%3D%26oauth_consumer_key%3Dxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx%26oauth_nonce%3D1111111111111111111%26oauth_timestamp%3D1111111111%26oauth_version%3D1.0"
+        base_string = OAuth.get_base_string(url, method, oauth_parameters.get_base_parameters_dict())
+        expected = "POST&https%3A%2F%2Fsandbox.api.mastercard.com%2Ffraud%2Fmerchant%2Fv1%2Ftermination-inquiry" \
+                   "&Format%3DXML%26PageLength%3D10%26PageOffset%3D0%26oauth_body_hash%3Dh2Pd7zlzEZjZVIKB4j94UZn" \
+                   "%2FxxoR3RoCjYQ9%2FJdadGQ%3D%26oauth_consumer_key" \
+                   "%3Dxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx%26oauth_nonce%3D1111111111111111111" \
+                   "%26oauth_timestamp%3D1111111111%26oauth_version%3D1.0"
 
-        self.assertEqual(expected, base_string);
+        self.assertEqual(expected, base_string)
 
     def test_sign_signature_base_string_invalid_key(self):
-        self.assertRaises(AttributeError, OAuth.sign_message, self, "some string", None)
+        self.assertRaises(AttributeError, OAuth.sign_message, "some string", None)
 
     def test_sign_signature_base_string(self):
-        expected_signature_string = "IJeNKYGfUhFtj5OAPRI92uwfjJJLCej3RCMLbp7R6OIYJhtwxnTkloHQ2bgV7fks4GT/A7rkqrgUGk0ewbwIC6nS3piJHyKVc7rvQXZuCQeeeQpFzLRiH3rsb+ZS+AULK+jzDje4Fb+BQR6XmxuuJmY6YrAKkj13Ln4K6bZJlSxOizbNvt+Htnx+hNd4VgaVBeJKcLhHfZbWQxK76nMnjY7nDcM/2R6LUIR2oLG1L9m55WP3bakAvmOr392ulv1+mWCwDAZZzQ4lakDD2BTu0ZaVsvBW+mcKFxYeTq7SyTQMM4lEwFPJ6RLc8jJJ+veJXHekLVzWg4qHRtzNBLz1mA=="
-        signing_string = OAuth.sign_message(self, "baseString", OAuthTest.signing_key)
+        expected_signature_string = "IJeNKYGfUhFtj5OAPRI92uwfjJJLCej3RCMLbp7R6OIYJhtwxnTkloHQ2bgV7fks4GT" \
+                                    "/A7rkqrgUGk0ewbwIC6nS3piJHyKVc7rvQXZuCQeeeQpFzLRiH3rsb+ZS+AULK+jzDje4Fb" \
+                                    "+BQR6XmxuuJmY6YrAKkj13Ln4K6bZJlSxOizbNvt+Htnx" \
+                                    "+hNd4VgaVBeJKcLhHfZbWQxK76nMnjY7nDcM/2R6LUIR2oLG1L9m55WP3bakAvmOr392ulv1" \
+                                    "+mWCwDAZZzQ4lakDD2BTu0ZaVsvBW+mcKFxYeTq7SyTQMM4lEwFPJ6RLc8jJJ" \
+                                    "+veJXHekLVzWg4qHRtzNBLz1mA=="
+        signing_string = OAuth.sign_message("baseString", OAuthTest.signing_key)
         self.assertEqual(expected_signature_string, signing_string)
 
     def test_url_normalization_rfc_examples1(self):
@@ -190,7 +228,7 @@ class OAuthTest(unittest.TestCase):
     def test_url_normalization_rfc_examples2(self):
         uri = "http://EXAMPLE.COM:80/r%20v/X?id=123"
         base_uri = Util.normalize_url(uri)
-        self.assertEqual("http://example.com/r%20v/X", base_uri);
+        self.assertEqual("http://example.com/r%20v/X", base_uri)
 
     def test_url_normalization_redundant_ports1(self):
         uri = "https://api.mastercard.com:443/test?query=param"
@@ -210,12 +248,12 @@ class OAuthTest(unittest.TestCase):
     def test_url_normalization_remove_fragment(self):
         uri = "https://api.mastercard.com/test?query=param#fragment"
         base_uri = Util.normalize_url(uri)
-        self.assertEqual("https://api.mastercard.com/test", base_uri);
+        self.assertEqual("https://api.mastercard.com/test", base_uri)
 
     def test_url_normalization_add_trailing_slash(self):
         uri = "https://api.mastercard.com"
         base_uri = Util.normalize_url(uri)
-        self.assertEqual("https://api.mastercard.com/", base_uri);
+        self.assertEqual("https://api.mastercard.com/", base_uri)
 
     def test_url_normalization_lowercase_scheme_and_host(self):
         uri = "HTTPS://API.MASTERCARD.COM/TEST"
@@ -245,8 +283,55 @@ class OAuthTest(unittest.TestCase):
 
     def test_url_encode2(self):
         self.assertEqual("WhqqH%2BTU95VgZMItpdq78BWb4cE%3D", Util.uri_rfc3986_encode("WhqqH+TU95VgZMItpdq78BWb4cE="))
+
     def test_url_encode3(self):
-        self.assertEqual("WhqqH%2BTU95VgZMItpdq78BWb4cE%3D%26o", Util.uri_rfc3986_encode("WhqqH+TU95VgZMItpdq78BWb4cE=&o"))
+        self.assertEqual("WhqqH%2BTU95VgZMItpdq78BWb4cE%3D%26o",
+                         Util.uri_rfc3986_encode("WhqqH+TU95VgZMItpdq78BWb4cE=&o"))
+
+    def test_get_oauth_nonce_param(self):
+        oauth_parameters = OAuthParameters()
+        oauth_parameters.put(OAuthParameters.OAUTH_NONCE_KEY, "abcde")
+        val = oauth_parameters.get_oauth_nonce()
+        self.assertEqual("abcde", val)
+
+    def test_get_oauth_nonce_timestamp_param(self):
+        oauth_parameters = OAuthParameters()
+        oauth_parameters.put(OAuthParameters.OAUTH_TIMESTAMP_KEY, "abcde")
+        val = oauth_parameters.get_oauth_timestamp()
+        self.assertEqual("abcde", val)
+
+    def test_get_oauth_signature_method_param(self):
+        oauth_parameters = OAuthParameters()
+        oauth_parameters.put(OAuthParameters.OAUTH_SIGNATURE_METHOD_KEY, "abcde")
+        val = oauth_parameters.get_oauth_signature_method()
+        self.assertEqual("abcde", val)
+
+    def test_get_oauth_signature_param(self):
+        oauth_parameters = OAuthParameters()
+        oauth_parameters.put(OAuthParameters.OAUTH_SIGNATURE_KEY, "abcde")
+        val = oauth_parameters.get_oauth_signature()
+        self.assertEqual("abcde", val)
+
+    def test_get_oauth_body_hash_param(self):
+        oauth_parameters = OAuthParameters()
+        oauth_parameters.put(OAuthParameters.OAUTH_BODY_HASH_KEY, "abcde")
+        val = oauth_parameters.get_oauth_body_hash()
+        self.assertEqual("abcde", val)
+
+    def test_get_oauth_version_param(self):
+        oauth_parameters = OAuthParameters()
+        oauth_parameters.put(OAuthParameters.OAUTH_VERSION, "abcde")
+        val = oauth_parameters.get_oauth_version()
+        self.assertEqual("abcde", val)
+
+    def test_backward_compatibility_with_static_method(self):
+        header = OAuth().get_authorization_header(OAuthTest.uri, 'POST', 'payload', 'dummy', OAuthTest.signing_key)
+        self.assertTrue("OAuth" in header)
+        self.assertTrue("dummy" in header)
+
+        header = OAuth.get_authorization_header(OAuthTest.uri, 'POST', 'payload', 'dummy', OAuthTest.signing_key)
+        self.assertTrue("OAuth" in header)
+        self.assertTrue("dummy" in header)
 
 
 if __name__ == '__main__':

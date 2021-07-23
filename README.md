@@ -67,13 +67,13 @@ The method that does all the heavy lifting is `OAuth().get_authorization_header`
 ```python
 uri = 'https://sandbox.api.mastercard.com/service'
 payload = 'Hello world!'
-authHeader = OAuth().get_authorization_header(uri, 'POST', payload, '<insert consumer key>', signing_key)
+authHeader = OAuth.get_authorization_header(uri, 'POST', payload, '<insert consumer key>', signing_key)
 ```
 
 #### GET example
 ```python
 uri = 'https://sandbox.api.mastercard.com/service'
-authHeader = OAuth().get_authorization_header(uri, 'GET', None, '<insert consumer key>', signing_key)
+authHeader = OAuth.get_authorization_header(uri, 'GET', None, '<insert consumer key>', signing_key)
 ```
 
 #### Use of authHeader with requests module (POST and GET example)

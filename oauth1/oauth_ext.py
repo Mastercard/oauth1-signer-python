@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # Copyright 2020-2021 Mastercard
@@ -26,9 +25,6 @@
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-import time
-from uuid import uuid4
-
 from requests.auth import AuthBase
 from OpenSSL.crypto import PKey
 from OpenSSL import crypto
@@ -66,8 +62,8 @@ class OAuth1RSA(AuthBase):
     def __call__(self, r: PreparedRequest):
         payload = {
             'oauth_version': '1.0',
-            'oauth_nonce': self.nonce(),
-            'oauth_timestamp': str(self.timestamp()),
+            'oauth_nonce': util.get_nonce(),
+            'oauth_timestamp': util.get_timestamp(),
             'oauth_signature_method': f'RSA-{self.hash_alg}',
             'oauth_consumer_key': self.consumer_key
         }
@@ -77,22 +73,14 @@ class OAuth1RSA(AuthBase):
 
         signable_message = self.signable_message(r, payload)
         signature = self.signature(signable_message)
-        payload['oauth_signature'] = signature
+        payload['oauth_signature'] = util.uri_rfc3986_encode(signature)
 
         h = self._generate_header(payload)
 
         r.headers['Authorization'] = h
         return r
 
-    @staticmethod
-    def nonce():
-        return str(uuid4())
-
-    @staticmethod
-    def timestamp():
-        return int(time.time())
-
-    def _hash(self, message: str) -> str:
+    def _hash(self, message: str) -> bytes:
         if type(message) is str:
             return self.hash_f(message.encode('utf8')).digest()
         elif type(message) is bytes:
@@ -118,8 +106,7 @@ class OAuth1RSA(AuthBase):
 
     @staticmethod
     def _generate_header(payload: dict):
-        _ = util.uri_rfc3986_encode
-        pts = [f'{_(k)}="{_(v)}"' for k, v in sorted(payload.items())]
+        pts = [f'{k}="{v}"' for k, v in sorted(payload.items())]
         msg = ','.join(pts)
         return f'OAuth {msg}'
 
@@ -128,5 +115,5 @@ class OAuth1RSA(AuthBase):
             return payload
 
         body = r.body
-        payload['oauth_body_hash'] = util.uri_rfc3986_encode(util.base64_encode(self._hash(body)))
+        payload['oauth_body_hash'] = util.base64_encode(self._hash(body))
         return payload

@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 #
 # Copyright 2019-2020 Mastercard
 # All rights reserved.
@@ -31,8 +30,11 @@ Utility file having common functions
 """
 import hashlib
 import base64
+import time
+from random import SystemRandom
 
 from urllib.parse import urlparse, quote, parse_qsl
+
 
 def normalize_params(url, params):
     """
@@ -52,7 +54,7 @@ def normalize_params(url, params):
 
     # Needs to be encoded before sorting
     encoded_list = [encode_pair(key, value) for (key, value) in combined_list]
-    sorted_list = sorted(encoded_list, key=lambda x:x)
+    sorted_list = sorted(encoded_list, key=lambda x: x)
 
     return "&".join(sorted_list)
 
@@ -61,6 +63,7 @@ def encode_pair(key, value):
     encoded_key = oauth_query_string_element_encode(key)
     encoded_value = oauth_query_string_element_encode(value if isinstance(value, bytes) else str(value))
     return "%s=%s" % (encoded_key, encoded_value)
+
 
 def oauth_query_string_element_encode(value):
     """
@@ -75,6 +78,7 @@ def oauth_query_string_element_encode(value):
     encoded = str.replace(encoded, '*', '%2A')
     return encoded
 
+
 def normalize_url(url):
     """
     Removes the query parameters from the URL
@@ -83,16 +87,16 @@ def normalize_url(url):
 
     # netloc should be lowercase
     netloc = parse.netloc.lower()
-    if parse.scheme=="http":
+    if parse.scheme == "http":
         if netloc.endswith(":80"):
             netloc = netloc[:-3]
 
-    elif parse.scheme=="https" and netloc.endswith(":443"):
+    elif parse.scheme == "https" and netloc.endswith(":443"):
         netloc = netloc[:-4]
 
     # add a '/' at the end of the netloc if there in no path
     if not parse.path:
-        netloc = netloc+"/"
+        netloc = netloc + "/"
 
     return "{}://{}{}".format(parse.scheme, netloc, parse.path)
 
@@ -120,3 +124,19 @@ def base64_encode(text):
         return encode.decode('ascii')
     else:
         return encode
+
+
+def get_nonce(length=16):
+    """
+    Returns a random string of length=@length
+    """
+    characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    charlen = len(characters)
+    return "".join([characters[SystemRandom().randint(0, charlen - 1)] for _ in range(0, length)])
+
+
+def get_timestamp():
+    """
+    Returns the UTC timestamp (seconds passed since epoch)
+    """
+    return int(time.time())
