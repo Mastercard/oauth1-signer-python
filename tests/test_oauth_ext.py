@@ -35,7 +35,7 @@ from unittest.mock import MagicMock
 from requests import PreparedRequest
 
 import oauth1.authenticationutils as authentication_utils
-from oauth1.coreutils import CoreUtils
+from oauth1 import coreutils as util
 from oauth1.oauth import OAuth
 from oauth1.oauth_ext import OAuth1RSA
 
@@ -66,7 +66,7 @@ class OAuthExtTest(unittest.TestCase):
         h = OAuthExtTest.extract_oauth_params(OAuthExtTest.mock_prepared_request)
 
         hashlib_val = hashlib.sha256(OAuthExtTest.mock_prepared_request.body).digest()
-        payload_hash_value = CoreUtils.base64_encode(hashlib_val)
+        payload_hash_value = util.base64_encode(hashlib_val)
 
         self.assertEqual(h['oauth_body_hash'], '9MoCOjWt0ke+o8ZAGij+kZ1goHpfzLIG9ZGty05eIOo=')
         self.assertEqual(h['oauth_body_hash'], payload_hash_value)
@@ -79,7 +79,7 @@ class OAuthExtTest(unittest.TestCase):
         h = OAuthExtTest.extract_oauth_params(OAuthExtTest.mock_prepared_request)
 
         hashlib_val = hashlib.sha256(str(OAuthExtTest.mock_prepared_request.body).encode('utf8')).digest()
-        payload_hash_value = CoreUtils.base64_encode(hashlib_val)
+        payload_hash_value = util.base64_encode(hashlib_val)
 
         self.assertEqual(h['oauth_body_hash'], payload_hash_value)
         self.assertEqual(h['oauth_body_hash'], '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=')
@@ -92,7 +92,7 @@ class OAuthExtTest(unittest.TestCase):
         h = OAuthExtTest.extract_oauth_params(OAuthExtTest.mock_prepared_request)
 
         hashlib_val = hashlib.sha256(str("").encode('utf8')).digest()
-        payload_hash_value = CoreUtils.base64_encode(hashlib_val)
+        payload_hash_value = util.base64_encode(hashlib_val)
 
         self.assertEqual(h['oauth_body_hash'], payload_hash_value)
 
@@ -118,7 +118,7 @@ class OAuthExtTest(unittest.TestCase):
         request_none_header = OAuthExtTest.extract_oauth_params(request_none)
 
         empty_string_hash = hashlib.sha256(str("").encode('utf8')).digest()
-        empty_string_encoded = CoreUtils.base64_encode(empty_string_hash)
+        empty_string_encoded = util.base64_encode(empty_string_hash)
 
         self.assertEqual(request_empty_header['oauth_body_hash'], empty_string_encoded)
         self.assertEqual(request_empty_header['oauth_body_hash'], '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=')
@@ -136,7 +136,7 @@ class OAuthExtTest(unittest.TestCase):
         h = OAuthExtTest.extract_oauth_params(mock_request)
 
         hashlib_val = hashlib.sha256(str(OAuthExtTest.mock_prepared_request.body).encode('utf8')).digest()
-        payload_hash_value = CoreUtils.base64_encode(hashlib_val)
+        payload_hash_value = util.base64_encode(hashlib_val)
 
         self.assertEqual(h['oauth_body_hash'], payload_hash_value)
         self.assertEqual(h['oauth_body_hash'], '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=')
@@ -147,8 +147,8 @@ class OAuthExtTest(unittest.TestCase):
         self.assertTrue("Authorization" in call_object.headers)
 
     def test_ext_oauth_header_equals_to_non_ext_generated(self):
-        CoreUtils.get_nonce = MagicMock(return_value=CoreUtils.get_nonce())
-        CoreUtils.get_timestamp = MagicMock(return_value=CoreUtils.get_timestamp())
+        util.get_nonce = MagicMock(return_value=util.get_nonce())
+        util.get_timestamp = MagicMock(return_value=util.get_timestamp())
 
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key)
         call_object = oauth_object(OAuthExtTest.mock_prepared_request)
