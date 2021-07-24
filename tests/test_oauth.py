@@ -336,11 +336,11 @@ class OAuthTest(unittest.TestCase):
         self.assertTrue("dummy" in header)
 
     def test_percent_encoding(self):
-        self.assertEquals("Format%3DXML", util.percent_encode("Format=XML"))
-        self.assertEquals("WhqqH%2BTU95VgZMItpdq78BWb4cE%3D", util.percent_encode("WhqqH+TU95VgZMItpdq78BWb4cE="))
-        self.assertEquals("WhqqH%2BTU95VgZMItpdq78BWb4cE%3D%26o", util.percent_encode("WhqqH+TU95VgZMItpdq78BWb4cE=&o"))
-        self.assertEquals("WhqqH%2BTU95VgZ~Itpdq78BWb4cE%3D%26o", util.percent_encode("WhqqH+TU95VgZ~Itpdq78BWb4cE=&o"))
-        self.assertEquals("%2525%C2%A3%C2%A5a%2FEl%20Ni%C3%B1o%2F%25", util.percent_encode("%25£¥a/El Niño/%"))
+        self.assertEqual("Format%3DXML", util.percent_encode("Format=XML"))
+        self.assertEqual("WhqqH%2BTU95VgZMItpdq78BWb4cE%3D", util.percent_encode("WhqqH+TU95VgZMItpdq78BWb4cE="))
+        self.assertEqual("WhqqH%2BTU95VgZMItpdq78BWb4cE%3D%26o", util.percent_encode("WhqqH+TU95VgZMItpdq78BWb4cE=&o"))
+        self.assertEqual("WhqqH%2BTU95VgZ~Itpdq78BWb4cE%3D%26o", util.percent_encode("WhqqH+TU95VgZ~Itpdq78BWb4cE=&o"))
+        self.assertEqual("%2525%C2%A3%C2%A5a%2FEl%20Ni%C3%B1o%2F%25", util.percent_encode("%25£¥a/El Niño/%"))
 
     def test_valid_oauth_signature_with_percent(self):
         util.get_nonce = MagicMock(return_value='Wpe3LF09z1e3xQRI')

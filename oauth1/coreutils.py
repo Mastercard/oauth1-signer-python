@@ -32,7 +32,7 @@ import hashlib
 import base64
 import urllib
 import time
-from random import SystemRandom
+from random import randint
 
 from urllib.parse import urlparse, quote, parse_qsl
 
@@ -152,7 +152,7 @@ def get_nonce(length=16):
     """
     characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
     charlen = len(characters)
-    return "".join([characters[SystemRandom().randint(0, charlen - 1)] for _ in range(0, length)])
+    return "".join([characters[randint(0, charlen - 1)] for _ in range(0, length)])
 
 
 def get_timestamp():
