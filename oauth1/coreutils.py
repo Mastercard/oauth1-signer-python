@@ -37,126 +37,129 @@ from random import SystemRandom
 from urllib.parse import urlparse, quote, parse_qsl
 
 
-def normalize_params(url, params):
-    """
-    Combines the query parameters of url and extra params into a single queryString.
-    All the query string parameters are lexicographically sorted
-    """
-    # parse the url
-    parse = urlparse(url)
+class CoreUtils:
 
-    # Get the query list
-    qs_list = parse_qsl(parse.query, keep_blank_values=True)
-    if params is None:
-        combined_list = qs_list
-    else:
-        # Needs to be encoded before sorting
-        combined_list = [encode_pair(key, value) for (key, value) in list(qs_list)]
-        combined_list += params.items()
+    @staticmethod
+    def normalize_params(url, params):
+        """
+        Combines the query parameters of url and extra params into a single queryString.
+        All the query string parameters are lexicographically sorted
+        """
+        # parse the url
+        parse = urlparse(url)
 
-    encoded_list = ["%s=%s" % (key, value) for (key, value) in combined_list]
-    sorted_list = sorted(encoded_list, key=lambda x: x)
+        # Get the query list
+        qs_list = parse_qsl(parse.query, keep_blank_values=True)
+        if params is None:
+            combined_list = qs_list
+        else:
+            # Needs to be encoded before sorting
+            combined_list = [CoreUtils.encode_pair(key, value) for (key, value) in list(qs_list)]
+            combined_list += params.items()
 
-    return "&".join(sorted_list)
+        encoded_list = ["%s=%s" % (key, value) for (key, value) in combined_list]
+        sorted_list = sorted(encoded_list, key=lambda x: x)
 
+        return "&".join(sorted_list)
 
-def encode_pair(key, value):
-    encoded_key = oauth_query_string_element_encode(key)
-    encoded_value = oauth_query_string_element_encode(value if isinstance(value, bytes) else str(value))
-    return encoded_key, encoded_value
+    @staticmethod
+    def encode_pair(key, value):
+        encoded_key = CoreUtils.oauth_query_string_element_encode(key)
+        encoded_value = CoreUtils.oauth_query_string_element_encode(value if isinstance(value, bytes) else str(value))
+        return encoded_key, encoded_value
 
+    @staticmethod
+    def oauth_query_string_element_encode(value):
+        """
+        RFC 3986 encodes the value
 
-def oauth_query_string_element_encode(value):
-    """
-    RFC 3986 encodes the value
+        Note. This is based on RFC3986 but according to https://tools.ietf.org/html/rfc5849#section-3.6
+        it replaces space with %20 not "+".
+        """
+        encoded = quote(value)
+        encoded = str.replace(encoded, ':', '%3A')
+        encoded = str.replace(encoded, '+', '%2B')
+        encoded = str.replace(encoded, '*', '%2A')
+        return encoded
 
-    Note. This is based on RFC3986 but according to https://tools.ietf.org/html/rfc5849#section-3.6
-    it replaces space with %20 not "+".
-    """
-    encoded = quote(value)
-    encoded = str.replace(encoded, ':', '%3A')
-    encoded = str.replace(encoded, '+', '%2B')
-    encoded = str.replace(encoded, '*', '%2A')
-    return encoded
+    @staticmethod
+    def normalize_url(url):
+        """
+        Removes the query parameters from the URL
+        """
+        parse = urlparse(url)
 
+        # netloc should be lowercase
+        netloc = parse.netloc.lower()
+        if parse.scheme == "http":
+            if netloc.endswith(":80"):
+                netloc = netloc[:-3]
 
-def normalize_url(url):
-    """
-    Removes the query parameters from the URL
-    """
-    parse = urlparse(url)
+        elif parse.scheme == "https" and netloc.endswith(":443"):
+            netloc = netloc[:-4]
 
-    # netloc should be lowercase
-    netloc = parse.netloc.lower()
-    if parse.scheme == "http":
-        if netloc.endswith(":80"):
-            netloc = netloc[:-3]
+        # add a '/' at the end of the netloc if there in no path
+        if not parse.path:
+            netloc = netloc + "/"
 
-    elif parse.scheme == "https" and netloc.endswith(":443"):
-        netloc = netloc[:-4]
+        return "{}://{}{}".format(parse.scheme, netloc, parse.path)
 
-    # add a '/' at the end of the netloc if there in no path
-    if not parse.path:
-        netloc = netloc + "/"
+    @staticmethod
+    def uri_rfc3986_encode(value):
+        """
+        RFC 3986 encodes the value
+        """
+        return quote(value, safe='%')
 
-    return "{}://{}{}".format(parse.scheme, netloc, parse.path)
+    @staticmethod
+    def sha256_encode(text):
+        """
+        Returns the digest of SHA-256 of the text
+        """
+        _hash = hashlib.sha256
+        if type(text) is str:
+            return _hash(text.encode('utf8')).digest()
+        elif type(text) is bytes:
+            return _hash(text).digest()
+        elif not text:
+            # Generally for calls where the payload is empty. Eg: get calls
+            # Fix for AttributeError: 'NoneType' object has no attribute 'encode'
+            return _hash("".encode('utf8')).digest()
+        else:
+            return _hash(str(text).encode('utf-8')).digest()
 
+    @staticmethod
+    def base64_encode(text):
+        """
+        Base64 encodes the given input
+        """
+        encode = base64.b64encode(text)
+        if isinstance(encode, (bytearray, bytes)):
+            return encode.decode('ascii')
+        else:
+            return encode
 
-def uri_rfc3986_encode(value):
-    """
-    RFC 3986 encodes the value
-    """
-    return quote(value, safe='%')
+    @staticmethod
+    def percent_encode(text):
+        """
+        Percent encodes a string as per https://tools.ietf.org/html/rfc3986
+        """
+        if text is None:
+            return ''
+        return urllib.parse.quote_plus(text).replace('+', '%20').replace('*', '%2A').replace('%7E', '~')
 
+    @staticmethod
+    def get_nonce(length=16):
+        """
+        Returns a random string of length=@length
+        """
+        characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        charlen = len(characters)
+        return "".join([characters[SystemRandom().randint(0, charlen - 1)] for _ in range(0, length)])
 
-def sha256_encode(text):
-    """
-    Returns the digest of SHA-256 of the text
-    """
-    _hash = hashlib.sha256
-    if type(text) is str:
-        return _hash(text.encode('utf8')).digest()
-    elif type(text) is bytes:
-        return _hash(text).digest()
-    elif not text:
-        # Generally for calls where the payload is empty. Eg: get calls
-        # Fix for AttributeError: 'NoneType' object has no attribute 'encode'
-        return _hash("".encode('utf8')).digest()
-    else:
-        return _hash(str(text).encode('utf-8')).digest()
-
-
-def base64_encode(text):
-    """
-    Base64 encodes the given input
-    """
-    encode = base64.b64encode(text)
-    if isinstance(encode, (bytearray, bytes)):
-        return encode.decode('ascii')
-    else:
-        return encode
-
-
-def percent_encode(text):
-    """
-    Percent encodes a string as per https://tools.ietf.org/html/rfc3986
-    """
-    if text is None:
-        return ''
-    return urllib.parse.quote_plus(text).replace('+', '%20').replace('*', '%2A').replace('%7E', '~')
-
-
-def get_nonce(length=16):
-    """
-    Returns a random string of length=@length
-    """
-    characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-    charlen = len(characters)
-    return "".join([characters[SystemRandom().randint(0, charlen - 1)] for _ in range(0, length)])
-
-
-def get_timestamp():
-    """
-    Returns the UTC timestamp (seconds passed since epoch)
-    """
-    return int(time.time())
+    @staticmethod
+    def get_timestamp():
+        """
+        Returns the UTC timestamp (seconds passed since epoch)
+        """
+        return int(time.time())

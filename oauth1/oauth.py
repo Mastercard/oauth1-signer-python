@@ -26,8 +26,9 @@
 # SUCH DAMAGE.
 #
 import json
-import oauth1.coreutils as util
 from OpenSSL import crypto
+
+from oauth1.coreutils import CoreUtils
 
 
 class OAuth:
@@ -49,8 +50,8 @@ class OAuth:
         # Get all the base parameters such as nonce and timestamp
         oauth_parameters = OAuthParameters()
         oauth_parameters.set_oauth_consumer_key(consumer_key)
-        oauth_parameters.set_oauth_nonce(util.get_nonce())
-        oauth_parameters.set_oauth_timestamp(util.get_timestamp())
+        oauth_parameters.set_oauth_nonce(CoreUtils.get_nonce())
+        oauth_parameters.set_oauth_timestamp(CoreUtils.get_timestamp())
         oauth_parameters.set_oauth_signature_method("RSA-SHA256")
         oauth_parameters.set_oauth_version("1.0")
 
@@ -59,7 +60,7 @@ class OAuth:
             # If the request does not have an entity body, the hash should be taken over the empty string
             payload_str = OAuth.EMPTY_STRING
 
-        encoded_hash = util.base64_encode(util.sha256_encode(payload_str))
+        encoded_hash = CoreUtils.base64_encode(CoreUtils.sha256_encode(payload_str))
         oauth_parameters.set_oauth_body_hash(encoded_hash)
 
         # Get the base string
@@ -69,7 +70,7 @@ class OAuth:
         signature = OAuth.sign_message(base_string, signing_key)
 
         # Set the signature in the Base parameters
-        oauth_parameters.set_oauth_signature(util.uri_rfc3986_encode(signature))
+        oauth_parameters.set_oauth_signature(CoreUtils.uri_rfc3986_encode(signature))
 
         return oauth_parameters
 
@@ -77,14 +78,14 @@ class OAuth:
     def get_base_string(url, method, oauth_parameters):
         merge_params = oauth_parameters.copy()
         return "{}&{}&{}".format(method.upper(),
-                                 util.percent_encode(util.normalize_url(url)),
-                                 util.percent_encode(util.normalize_params(url, merge_params)))
+                                 CoreUtils.percent_encode(CoreUtils.normalize_url(url)),
+                                 CoreUtils.percent_encode(CoreUtils.normalize_params(url, merge_params)))
 
     @staticmethod
     def sign_message(message, signing_key):
         #    Signs the message using the private signing key
         sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-        return util.base64_encode(sign)
+        return CoreUtils.base64_encode(sign)
 
 
 class OAuthParameters(object):
