@@ -39,7 +39,7 @@ from oauth1.oauth import OAuthParameters
 
 
 class OAuthTest(unittest.TestCase):
-    signing_key = authenticationutils.load_signing_key('../test_key_container.p12', "Password1")
+    signing_key = authenticationutils.load_signing_key('./test_key_container.p12', "Password1")
     uri = 'https://www.example.com'
 
     def test_get_authorization_header_nominal(self):
