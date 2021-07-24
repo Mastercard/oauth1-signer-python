@@ -34,6 +34,9 @@ import oauth1.coreutils as util
 from oauth1.oauth import OAuth
 from oauth1.oauth import OAuthParameters
 
+from concurrent.futures import ThreadPoolExecutor
+import multiprocessing
+
 
 class OAuthTest(unittest.TestCase):
     signing_key = authenticationutils.load_signing_key('./test_key_container.p12', "Password1")
@@ -109,14 +112,20 @@ class OAuthTest(unittest.TestCase):
         self.assertEqual(16, len(nonce))
 
     def test_nonce_uniqueness(self):
-        init = util.get_nonce()
-        l = []
-        for _ in range(0, 100000):
-            l.append(init + util.get_nonce())
+        list_of_nonce = []
 
-        self.assertEqual(self.list_duplicates(l), [])
+        def task():
+            for _ in range(0, 100000):
+                list_of_nonce.append(util.get_nonce())
 
-    def list_duplicates(self, seq):
+        executor = ThreadPoolExecutor(multiprocessing.cpu_count())
+        future = executor.submit(task)
+        future.result()
+
+        self.assertEqual(OAuthTest.list_duplicates(list_of_nonce), [])
+
+    @staticmethod
+    def list_duplicates(seq):
         seen = set()
         seen_add = seen.add
         # adds all elements it doesn't know yet to seen and all other to seen_twice
