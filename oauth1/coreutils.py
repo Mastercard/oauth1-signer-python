@@ -30,6 +30,7 @@ Utility file having common functions
 """
 import hashlib
 import base64
+import urllib
 import time
 from random import SystemRandom
 
@@ -49,11 +50,11 @@ def normalize_params(url, params):
     if params is None:
         combined_list = qs_list
     else:
-        combined_list = list(qs_list)
+        # Needs to be encoded before sorting
+        combined_list = [encode_pair(key, value) for (key, value) in list(qs_list)]
         combined_list += params.items()
 
-    # Needs to be encoded before sorting
-    encoded_list = [encode_pair(key, value) for (key, value) in combined_list]
+    encoded_list = ["%s=%s" % (key, value) for (key, value) in combined_list]
     sorted_list = sorted(encoded_list, key=lambda x: x)
 
     return "&".join(sorted_list)
@@ -62,7 +63,7 @@ def normalize_params(url, params):
 def encode_pair(key, value):
     encoded_key = oauth_query_string_element_encode(key)
     encoded_value = oauth_query_string_element_encode(value if isinstance(value, bytes) else str(value))
-    return "%s=%s" % (encoded_key, encoded_value)
+    return encoded_key, encoded_value
 
 
 def oauth_query_string_element_encode(value):
@@ -112,7 +113,17 @@ def sha256_encode(text):
     """
     Returns the digest of SHA-256 of the text
     """
-    return hashlib.sha256(str(text).encode('utf-8')).digest()
+    _hash = hashlib.sha256
+    if type(text) is str:
+        return _hash(text.encode('utf8')).digest()
+    elif type(text) is bytes:
+        return _hash(text).digest()
+    elif not text:
+        # Generally for calls where the payload is empty. Eg: get calls
+        # Fix for AttributeError: 'NoneType' object has no attribute 'encode'
+        return _hash("".encode('utf8')).digest()
+    else:
+        return _hash(str(text).encode('utf-8')).digest()
 
 
 def base64_encode(text):
@@ -124,6 +135,15 @@ def base64_encode(text):
         return encode.decode('ascii')
     else:
         return encode
+
+
+def percent_encode(text):
+    """
+    Percent encodes a string as per https://tools.ietf.org/html/rfc3986
+    """
+    if text is None:
+        return ''
+    return urllib.parse.quote_plus(text).replace('+', '%20').replace('*', '%2A').replace('%7E', '~')
 
 
 def get_nonce(length=16):

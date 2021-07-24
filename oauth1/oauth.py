@@ -76,9 +76,9 @@ class OAuth:
     @staticmethod
     def get_base_string(url, method, oauth_parameters):
         merge_params = oauth_parameters.copy()
-        return "{}&{}&{}".format(util.uri_rfc3986_encode(method.upper()),
-                                 util.uri_rfc3986_encode(util.normalize_url(url)),
-                                 util.uri_rfc3986_encode(util.normalize_params(url, merge_params)))
+        return "{}&{}&{}".format(method.upper(),
+                                 util.percent_encode(util.normalize_url(url)),
+                                 util.percent_encode(util.normalize_params(url, merge_params)))
 
     @staticmethod
     def sign_message(message, signing_key):

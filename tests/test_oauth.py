@@ -27,10 +27,12 @@
 # SUCH DAMAGE.
 #
 import unittest
+from unittest.mock import MagicMock
+
+import oauth1.authenticationutils as authenticationutils
+import oauth1.coreutils as util
 from oauth1.oauth import OAuth
 from oauth1.oauth import OAuthParameters
-import oauth1.authenticationutils as authenticationutils
-import oauth1.coreutils as Util
 
 
 class OAuthTest(unittest.TestCase):
@@ -51,11 +53,11 @@ class OAuthTest(unittest.TestCase):
         self.assertTrue('47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=' in header)
 
     def test_get_nonce(self):
-        nonce = Util.get_nonce()
+        nonce = util.get_nonce()
         self.assertEqual(len(nonce), 16)
 
     def test_get_timestamp(self):
-        timestamp = Util.get_timestamp()
+        timestamp = util.get_timestamp()
         self.assertEqual(len(str(timestamp)), 10)
 
     def test_sign_message(self):
@@ -65,7 +67,7 @@ class OAuthTest(unittest.TestCase):
                       '%3Dxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx%26oauth_nonce%3D1111111111111111111' \
                       '%26oauth_signature_method%3DRSA-SHA1%26oauth_timestamp%3D1111111111%26oauth_version%3D1.0'
         signature = OAuth.sign_message(base_string, OAuthTest.signing_key)
-        signature = Util.uri_rfc3986_encode(signature)
+        signature = util.uri_rfc3986_encode(signature)
         self.assertEqual(signature,
                          "DvyS3R795sUb%2FcvBfiFYZzPDU%2BRVefW6X%2BAfyu%2B9fxjudQft"
                          "%2BShXhpounzJxYCwOkkjZWXOR0ICTMn6MOuG04TTtmPMrOxj5feGwD3leMBsi"
@@ -86,12 +88,12 @@ class OAuthTest(unittest.TestCase):
         oauth_parameters = OAuthParameters()
         oauth_parameters_base = oauth_parameters.get_base_parameters_dict()
         merge_parameters = oauth_parameters_base.copy()
-        query_params = Util.normalize_params(uri, merge_parameters)
+        query_params = util.normalize_params(uri, merge_parameters)
         self.assertEqual(query_params, "empty=&length=10&odd=&offset=0&offset=1")
 
     def test_query_parser_when_params_is_None(self):
         uri = "https://sandbox.api.mastercard.com/audiences/v1/getcountries"
-        query_params = Util.normalize_params(uri, None)
+        query_params = util.normalize_params(uri, None)
         self.assertEqual(query_params, '')
 
     def test_query_parser_encoding(self):
@@ -99,18 +101,18 @@ class OAuthTest(unittest.TestCase):
         oauth_parameters = OAuthParameters()
         oauth_parameters_base = oauth_parameters.get_base_parameters_dict()
         merge_parameters = oauth_parameters_base.copy()
-        query_params = Util.normalize_params(uri, merge_parameters)
+        query_params = util.normalize_params(uri, merge_parameters)
         self.assertEqual(query_params, "param1=plus%20value&param2=colon%3Avalue")
 
     def test_nonce_length(self):
-        nonce = Util.get_nonce()
+        nonce = util.get_nonce()
         self.assertEqual(16, len(nonce))
 
     def test_nonce_uniqueness(self):
-        init = Util.get_nonce()
+        init = util.get_nonce()
         l = []
         for _ in range(0, 100000):
-            l.append(init + Util.get_nonce())
+            l.append(init + util.get_nonce())
 
         self.assertEqual(self.list_duplicates(l), [])
 
@@ -133,7 +135,7 @@ class OAuthTest(unittest.TestCase):
 
         oauth_parameters_base1 = oauth_parameters1.get_base_parameters_dict()
         merge_parameters1 = oauth_parameters_base1.copy()
-        query_params1 = Util.normalize_params(uri, merge_parameters1)
+        query_params1 = util.normalize_params(uri, merge_parameters1)
 
         self.assertEqual(
             "oauth_consumer_key=9djdj82h48djs9d2&oauth_nonce=7d8f3e4a&oauth_signature_method=HMAC-SHA1"
@@ -146,7 +148,7 @@ class OAuthTest(unittest.TestCase):
         oauth_parameters2 = OAuthParameters()
         oauth_parameters_base2 = oauth_parameters2.get_base_parameters_dict()
         merge_parameters2 = oauth_parameters_base2.copy()
-        query_params2 = Util.normalize_params(uri, merge_parameters2)
+        query_params2 = util.normalize_params(uri, merge_parameters2)
 
         self.assertEqual("a2=r%20b&a3=2%20q&a3=a&b5=%3D%253D&c%40=&c2=", query_params2)
 
@@ -156,13 +158,13 @@ class OAuthTest(unittest.TestCase):
         oauth_parameters = OAuthParameters()
         oauth_parameters_base = oauth_parameters.get_base_parameters_dict()
         merge_parameters = oauth_parameters_base.copy()
-        norm_params = Util.normalize_params(url, merge_parameters)
+        norm_params = util.normalize_params(url, merge_parameters)
 
         self.assertEqual("0=0&A=A&A=a&B=B&a=A&a=a&b=b", norm_params)
 
     def test_signature_base_string(self):
         uri = "https://api.mastercard.com"
-        base_uri = Util.normalize_url(uri)
+        base_uri = util.normalize_url(uri)
 
         oauth_parameters = OAuthParameters()
         oauth_parameters.set_oauth_body_hash("body/hash")
@@ -195,7 +197,7 @@ class OAuthTest(unittest.TestCase):
         oauth_parameters.set_oauth_timestamp("1111111111")
         oauth_parameters.set_oauth_version("1.0")
         oauth_parameters.set_oauth_body_hash("body/hash")
-        encoded_hash = Util.base64_encode(Util.sha256_encode(body))
+        encoded_hash = util.base64_encode(util.sha256_encode(body))
         oauth_parameters.set_oauth_body_hash(encoded_hash)
 
         base_string = OAuth.get_base_string(url, method, oauth_parameters.get_base_parameters_dict())
@@ -222,71 +224,71 @@ class OAuthTest(unittest.TestCase):
 
     def test_url_normalization_rfc_examples1(self):
         uri = "https://www.example.net:8080"
-        base_uri = Util.normalize_url(uri)
+        base_uri = util.normalize_url(uri)
         self.assertEqual("https://www.example.net:8080/", base_uri)
 
     def test_url_normalization_rfc_examples2(self):
         uri = "http://EXAMPLE.COM:80/r%20v/X?id=123"
-        base_uri = Util.normalize_url(uri)
+        base_uri = util.normalize_url(uri)
         self.assertEqual("http://example.com/r%20v/X", base_uri)
 
     def test_url_normalization_redundant_ports1(self):
         uri = "https://api.mastercard.com:443/test?query=param"
-        base_uri = Util.normalize_url(uri)
+        base_uri = util.normalize_url(uri)
         self.assertEqual("https://api.mastercard.com/test", base_uri)
 
     def test_url_normalization_redundant_ports2(self):
         uri = "http://api.mastercard.com:80/test"
-        base_uri = Util.normalize_url(uri)
+        base_uri = util.normalize_url(uri)
         self.assertEqual("http://api.mastercard.com/test", base_uri)
 
     def test_url_normalization_redundant_ports3(self):
         uri = "https://api.mastercard.com:17443/test?query=param"
-        base_uri = Util.normalize_url(uri)
+        base_uri = util.normalize_url(uri)
         self.assertEqual("https://api.mastercard.com:17443/test", base_uri)
 
     def test_url_normalization_remove_fragment(self):
         uri = "https://api.mastercard.com/test?query=param#fragment"
-        base_uri = Util.normalize_url(uri)
+        base_uri = util.normalize_url(uri)
         self.assertEqual("https://api.mastercard.com/test", base_uri)
 
     def test_url_normalization_add_trailing_slash(self):
         uri = "https://api.mastercard.com"
-        base_uri = Util.normalize_url(uri)
+        base_uri = util.normalize_url(uri)
         self.assertEqual("https://api.mastercard.com/", base_uri)
 
     def test_url_normalization_lowercase_scheme_and_host(self):
         uri = "HTTPS://API.MASTERCARD.COM/TEST"
-        base_uri = Util.normalize_url(uri)
+        base_uri = util.normalize_url(uri)
         self.assertEqual("https://api.mastercard.com/TEST", base_uri)
 
     def test_body_hash1(self):
         oauth_parameters = OAuthParameters()
-        encoded_hash = Util.base64_encode(Util.sha256_encode(OAuth.EMPTY_STRING))
+        encoded_hash = util.base64_encode(util.sha256_encode(OAuth.EMPTY_STRING))
         oauth_parameters.set_oauth_body_hash(encoded_hash)
         self.assertEqual("47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=", encoded_hash)
 
     def test_body_hash2(self):
         oauth_parameters = OAuthParameters()
-        encoded_hash = Util.base64_encode(Util.sha256_encode(None))
+        encoded_hash = util.base64_encode(util.sha256_encode(None))
         oauth_parameters.set_oauth_body_hash(encoded_hash)
         self.assertEqual("3JN7WYkmBPWoaslpNs1/8J4l8Yrmt1joAUokx/oDnpE=", encoded_hash)
 
     def test_body_hash3(self):
         oauth_parameters = OAuthParameters()
-        encoded_hash = Util.base64_encode(Util.sha256_encode("{\"foõ\":\"bar\"}"))
+        encoded_hash = util.base64_encode(util.sha256_encode("{\"foõ\":\"bar\"}"))
         oauth_parameters.set_oauth_body_hash(encoded_hash)
         self.assertEqual("+Z+PWW2TJDnPvRcTgol+nKO3LT7xm8smnsg+//XMIyI=", encoded_hash)
 
     def test_url_encode1(self):
-        self.assertEqual("Format%3DXML", Util.uri_rfc3986_encode("Format=XML"))
+        self.assertEqual("Format%3DXML", util.uri_rfc3986_encode("Format=XML"))
 
     def test_url_encode2(self):
-        self.assertEqual("WhqqH%2BTU95VgZMItpdq78BWb4cE%3D", Util.uri_rfc3986_encode("WhqqH+TU95VgZMItpdq78BWb4cE="))
+        self.assertEqual("WhqqH%2BTU95VgZMItpdq78BWb4cE%3D", util.uri_rfc3986_encode("WhqqH+TU95VgZMItpdq78BWb4cE="))
 
     def test_url_encode3(self):
         self.assertEqual("WhqqH%2BTU95VgZMItpdq78BWb4cE%3D%26o",
-                         Util.uri_rfc3986_encode("WhqqH+TU95VgZMItpdq78BWb4cE=&o"))
+                         util.uri_rfc3986_encode("WhqqH+TU95VgZMItpdq78BWb4cE=&o"))
 
     def test_get_oauth_nonce_param(self):
         oauth_parameters = OAuthParameters()
@@ -332,6 +334,29 @@ class OAuthTest(unittest.TestCase):
         header = OAuth.get_authorization_header(OAuthTest.uri, 'POST', 'payload', 'dummy', OAuthTest.signing_key)
         self.assertTrue("OAuth" in header)
         self.assertTrue("dummy" in header)
+
+    def test_percent_encoding(self):
+        self.assertEquals("Format%3DXML", util.percent_encode("Format=XML"))
+        self.assertEquals("WhqqH%2BTU95VgZMItpdq78BWb4cE%3D", util.percent_encode("WhqqH+TU95VgZMItpdq78BWb4cE="))
+        self.assertEquals("WhqqH%2BTU95VgZMItpdq78BWb4cE%3D%26o", util.percent_encode("WhqqH+TU95VgZMItpdq78BWb4cE=&o"))
+        self.assertEquals("WhqqH%2BTU95VgZ~Itpdq78BWb4cE%3D%26o", util.percent_encode("WhqqH+TU95VgZ~Itpdq78BWb4cE=&o"))
+        self.assertEquals("%2525%C2%A3%C2%A5a%2FEl%20Ni%C3%B1o%2F%25", util.percent_encode("%25£¥a/El Niño/%"))
+
+    def test_valid_oauth_signature_with_percent(self):
+        util.get_nonce = MagicMock(return_value='Wpe3LF09z1e3xQRI')
+        util.get_timestamp = MagicMock(return_value=1626728330)
+        auth_header = OAuth.get_authorization_header('https://api.mastercard.com/abc/%123/service?a=123&b=%2a2b3',
+                                                     'GET', None,
+                                                     'abc-abc-abc!123', OAuthTest.signing_key)
+
+        self.assertEqual('OAuth oauth_consumer_key="abc-abc-abc!123",oauth_nonce="Wpe3LF09z1e3xQRI",'
+                         'oauth_timestamp="1626728330",oauth_signature_method="RSA-SHA256",oauth_version="1.0",'
+                         'oauth_body_hash="47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",'
+                         'oauth_signature="GFdvCNe14%2FQdPi6KLgdFtYnqz9QVsqlzRwT1P5wvZCgyBzfTol69SRz4cIkeDx'
+                         '%2BIEeUfkbrPdVA9JPy0S9lgpMzs0KfIAX064Bz5mBbTni8NWD74ulN5eEDQRWB47BqEsvNPSJlJLGapVe'
+                         'YFyRlcIU7xMU1e1lA%2FtPTTHDSmIBfq4CtpCPvYMcd7ywoiHsi4hfI0d%2BTGS9pe0ez00mkne8C3%2FAHt'
+                         'uRIp564D02Hhl6s%2BTUGdUvlXTaFaIH9GVdZ15n%2FUcTCqSKFjorwA9guiJQlFpZtQy04BBD19VbN6%2F%2BS'
+                         'JvMAnVFQM5FJhgZ%2F5T9OP9%2BmjXz47EhG9MAx3raBjIw%3D%3D"', auth_header)
 
 
 if __name__ == '__main__':
