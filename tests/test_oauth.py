@@ -272,7 +272,7 @@ class OAuthTest(unittest.TestCase):
         oauth_parameters = OAuthParameters()
         encoded_hash = util.base64_encode(util.sha256_encode(None))
         oauth_parameters.set_oauth_body_hash(encoded_hash)
-        self.assertEqual("3JN7WYkmBPWoaslpNs1/8J4l8Yrmt1joAUokx/oDnpE=", encoded_hash)
+        self.assertEqual("47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=", encoded_hash)
 
     def test_body_hash3(self):
         oauth_parameters = OAuthParameters()
