@@ -26,7 +26,10 @@
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
+import multiprocessing
 import unittest
+from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
 from unittest.mock import MagicMock
 
 import oauth1.authenticationutils as authenticationutils
@@ -34,12 +37,9 @@ import oauth1.coreutils as util
 from oauth1.oauth import OAuth
 from oauth1.oauth import OAuthParameters
 
-from concurrent.futures import ThreadPoolExecutor
-import multiprocessing
-
 
 class OAuthTest(unittest.TestCase):
-    signing_key = authenticationutils.load_signing_key('./test_key_container.p12', "Password1")
+    signing_key = authenticationutils.load_signing_key('../test_key_container.p12', "Password1")
     uri = 'https://www.example.com'
 
     def test_get_authorization_header_nominal(self):
@@ -122,16 +122,10 @@ class OAuthTest(unittest.TestCase):
         future = executor.submit(task)
         future.result()
 
-        self.assertEqual(OAuthTest.list_duplicates(list_of_nonce), [])
+        counter = Counter(list_of_nonce)
+        res = [k for k, v in counter.items() if v > 1]
 
-    @staticmethod
-    def list_duplicates(seq):
-        seen = set()
-        seen_add = seen.add
-        # adds all elements it doesn't know yet to seen and all other to seen_twice
-        seen_twice = set(x for x in seq if x in seen or seen_add(x))
-        # turn the set into a list (as requested)
-        return list(seen_twice)
+        self.assertEqual(len(res), 0)
 
     def test_params_string_rfc_example_1(self):
         uri = "https://sandbox.api.mastercard.com"
