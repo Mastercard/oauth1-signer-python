@@ -69,7 +69,7 @@ class OAuthTest(unittest.TestCase):
                       '%3Dxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx%26oauth_nonce%3D1111111111111111111' \
                       '%26oauth_signature_method%3DRSA-SHA1%26oauth_timestamp%3D1111111111%26oauth_version%3D1.0'
         signature = OAuth.sign_message(base_string, OAuthTest.signing_key)
-        signature = util.uri_rfc3986_encode(signature)
+        signature = util.percent_encode(signature)
         self.assertEqual(signature,
                          "DvyS3R795sUb%2FcvBfiFYZzPDU%2BRVefW6X%2BAfyu%2B9fxjudQft"
                          "%2BShXhpounzJxYCwOkkjZWXOR0ICTMn6MOuG04TTtmPMrOxj5feGwD3leMBsi"
@@ -104,7 +104,7 @@ class OAuthTest(unittest.TestCase):
         oauth_parameters_base = oauth_parameters.get_base_parameters_dict()
         merge_parameters = oauth_parameters_base.copy()
         query_params = util.normalize_params(uri, merge_parameters)
-        self.assertEqual(query_params, "param1=plus%20value&param2=colon%3Avalue")
+        self.assertEqual(query_params, "param1=plus+value&param2=colon:value")
 
     def test_nonce_length(self):
         nonce = util.get_nonce()
@@ -278,14 +278,14 @@ class OAuthTest(unittest.TestCase):
         self.assertEqual("+Z+PWW2TJDnPvRcTgol+nKO3LT7xm8smnsg+//XMIyI=", encoded_hash)
 
     def test_url_encode1(self):
-        self.assertEqual("Format%3DXML", util.uri_rfc3986_encode("Format=XML"))
+        self.assertEqual("Format%3DXML", util.percent_encode("Format=XML"))
 
     def test_url_encode2(self):
-        self.assertEqual("WhqqH%2BTU95VgZMItpdq78BWb4cE%3D", util.uri_rfc3986_encode("WhqqH+TU95VgZMItpdq78BWb4cE="))
+        self.assertEqual("WhqqH%2BTU95VgZMItpdq78BWb4cE%3D", util.percent_encode("WhqqH+TU95VgZMItpdq78BWb4cE="))
 
     def test_url_encode3(self):
         self.assertEqual("WhqqH%2BTU95VgZMItpdq78BWb4cE%3D%26o",
-                         util.uri_rfc3986_encode("WhqqH+TU95VgZMItpdq78BWb4cE=&o"))
+                         util.percent_encode("WhqqH+TU95VgZMItpdq78BWb4cE=&o"))
 
     def test_get_oauth_nonce_param(self):
         oauth_parameters = OAuthParameters()
@@ -354,6 +354,88 @@ class OAuthTest(unittest.TestCase):
                          'YFyRlcIU7xMU1e1lA%2FtPTTHDSmIBfq4CtpCPvYMcd7ywoiHsi4hfI0d%2BTGS9pe0ez00mkne8C3%2FAHt'
                          'uRIp564D02Hhl6s%2BTUGdUvlXTaFaIH9GVdZ15n%2FUcTCqSKFjorwA9guiJQlFpZtQy04BBD19VbN6%2F%2BS'
                          'JvMAnVFQM5FJhgZ%2F5T9OP9%2BmjXz47EhG9MAx3raBjIw%3D%3D"', auth_header)
+
+    def test_auth_header_when_uri_created_with_encoded_params(self):
+        url = 'https://example.com/request?colon=%3A&plus=%2B&comma=%2C'
+        util.get_nonce = MagicMock(return_value='Wpe3LF09z1e3xQRI')
+        util.get_timestamp = MagicMock(return_value=1626728330)
+        auth_header = OAuth.get_authorization_header(url,
+                                                     'GET', None,
+                                                     'abc-abc-abc!123', OAuthTest.signing_key)
+
+        self.assertEqual('OAuth oauth_consumer_key="abc-abc-abc!123",oauth_nonce="Wpe3LF09z1e3xQRI",'
+                         'oauth_timestamp="1626728330",oauth_signature_method="RSA-SHA256",oauth_version="1.0",'
+                         'oauth_body_hash="47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",'
+                         'oauth_signature="BJGTHj7bxDWKRpES4KyLxrg0jTgk11b8RCdQzOMbY%2BQoltCaocwk3'
+                         '%2BI1MlYyX5oT8xMCKcjvH6EhF2J%2BMojheBdomDuNqVlr7NvS0uRjbD1Iem%2Bo0RXMU'
+                         '%2Bag62XBMYnGdzhk3Nr1Ifwsb1seTND%2B%2Bf%2BDFjAWoD7UoY'
+                         '%2Fo2aWg1xbkXgKtykV1QIfKRsZfyJJUARUB6yhnMegryPURrGI8yAwoxGI37o0RsbCQ'
+                         'drnzIdpQYm6C5a9FPhPTqREAXEMpBVvY2e3Fk922IXiAd6Ph%2FLdIAOnIE8RRXmc5gYmzf'
+                         'tl8jcztjG4EJNhD2jk6YVG5tt9yq%2FrcvbokgDnZ%2F7qPeg%3D%3D"', auth_header)
+
+        url = 'https://example.com/?param=token1%3Atoken2'
+        util.get_nonce = MagicMock(return_value='Wpe3LF09z1e3xQRI')
+        util.get_timestamp = MagicMock(return_value=1626728330)
+        auth_header = OAuth.get_authorization_header(url,
+                                                     'GET', None,
+                                                     'abc-abc-abc!123', OAuthTest.signing_key)
+
+        self.assertEqual('OAuth oauth_consumer_key="abc-abc-abc!123",oauth_nonce="Wpe3LF09z1e3xQRI",'
+                         'oauth_timestamp="1626728330",oauth_signature_method="RSA-SHA256",oauth_version="1.0",'
+                         'oauth_body_hash="47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",'
+                         'oauth_signature="B473PPrHLU4KIJ5763HLGk6OR2Lo5FPXTXN72K5ihc4cZMYkfAUxAfANJU'
+                         'oKx5fHrcNPkGWeLkLdpqRLXfMNi39tB3WNOKZqYd0AgeAH9OkhFnJ0J%2FJ8oiXsaTcWK1tBm%2B'
+                         'PMtIFaAzA1MhILuns8p1GVPBOCK4ZAfdHMOf19TVV7uCO%2BwaeQgEmzNsGt6L6%2FgIRwpFnTwr9i'
+                         'EQCWju9LCxHpRDJIzA%2Fx4JT%2BRn5fOa3KyjPJkY70EPWmvMhdciBVYNpv%2BjEjPmrQTNN0RZDY'
+                         'RPX%2Buj6ZRspAo%2BwHQDqAU3Fd1%2BD4lBEjY9fmK%2B3tz%2B9Ckhk%2FOfDvyIhSY4BtvsNoag'
+                         '%3D%3D"', auth_header)
+
+    def test_auth_header_when_uri_created_with_non_encoded_params(self):
+        url = 'https://example.com/?param=token1:token2'
+        util.get_nonce = MagicMock(return_value='Wpe3LF09z1e3xQRI')
+        util.get_timestamp = MagicMock(return_value=1626728330)
+        auth_header = OAuth.get_authorization_header(url,
+                                                     'GET', None,
+                                                     'abc-abc-abc!123', OAuthTest.signing_key)
+
+        self.assertEqual('OAuth oauth_consumer_key="abc-abc-abc!123",oauth_nonce="Wpe3LF09z1e3xQRI",'
+                         'oauth_timestamp="1626728330",oauth_signature_method="RSA-SHA256",oauth_version="1.0",'
+                         'oauth_body_hash="47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",'
+                         'oauth_signature="iD%2FTWBltcpIpyWJY7vDLaB2fjjEKVuBvhQje5OTOX0Cx6q%2BJnIEeRjkWx'
+                         'cmy4UclR2hn3zugQv9IIzPuQzOMnHZA%2FyS%2BZQRtY1pR2DgWSifTr0mkiIuVNB5zNcc1ZvFbjqY'
+                         '5I7u5%2Bd1tseEWchRLUbuUZDiQP7XVdfsjJpfynDi3qbU67naKXf7HWhR%2Fbg4AglVH8xxn0hUqy'
+                         'Ms5uHk8pmx4%2BUGzgtzDT3vs5%2FZqUALZiElm9oq0DvWvY5cgRVm%2FyCPvPBIz%2BD3e8RSKtbi'
+                         'ZXCqzJF6zddvyUOOmp0nrso065LsvG6PLR2DYjE62XIFXy1urqiMUoHu2f52YpEzCGg%3D%3D"',
+                         auth_header)
+
+    def test_auth_header_when_uri_created_with_non_encoded_params_2(self):
+        url = "https://sandbox.api.mastercard.com?param1=plus+value&param2=colon:value"
+        util.get_nonce = MagicMock(return_value='Wpe3LF09z1e3xQRI')
+        util.get_timestamp = MagicMock(return_value=1626728330)
+        auth_header = OAuth.get_authorization_header(url,
+                                                     'GET', None,
+                                                     'abc-abc-abc!123', OAuthTest.signing_key)
+
+        self.assertEqual('OAuth oauth_consumer_key="abc-abc-abc!123",oauth_nonce="Wpe3LF09z1e3xQRI",'
+                         'oauth_timestamp="1626728330",oauth_signature_method="RSA-SHA256",oauth_version="1.0",'
+                         'oauth_body_hash="47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",'
+                         'oauth_signature="BSbz5UAdn1iRFpFCs0y6U4HhBCm4gR56690cYyGVvkYoqcYB4PsMrurMu8aojktsKmgz0o'
+                         'YM77YylUJMVlbWclwW2I1hexLfErvGWA91AsJT557g6kbV9ON8daDy1u33LezMjTrrmErSb%2BMtgLQ5NE8pAwo4'
+                         'tPDBx33rjckZ7SPewrZS63EQAkc6wjt%2BnWhzkRU8%2Fuze0cLUemaVExHSwUULV38OXxOxOa3VBrBi2p%2FyEF'
+                         'qKgTWXJmNlZ2nzHsZVcwE2TNJdZjLP0bHn2tg3MRi112u51Tag5bT4RrkwkCg6gcGc9Pn6gxIgH%2FFWBCbjgdBnR'
+                         '0plo3Z9SX3uQcDrvw%3D%3D"',
+                         auth_header)
+
+    def test_params_percent_encoding(self):
+        params = 'oauth_body_hash=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=&oauth_consumer_key=abc-abc-abc!123&oa' \
+                 'uth_nonce=Wpe3LF09z1e3xQRI&oauth_signature_method=RSA-SHA256&oauth_timestamp=1626728330&oauth_versi' \
+                 'on=1.0&param=token1:token2'
+        encoded = util.percent_encode(params)
+        self.assertEqual(
+            'oauth_body_hash%3D47DEQpj8HBSa%2B%2FTImW%2B5JCeuQeRkm5NMpJWZG3hSuFU%3D%26oauth_consumer_key%3Dabc-abc-'
+            'abc%21123%26oauth_nonce%3DWpe3LF09z1e3xQRI%26oauth_signature_method%3DRSA-SHA256%26oauth_timestamp%3D1626'
+            '728330%26oauth_version%3D1.0%26param%3Dtoken1%3Atoken2',
+            encoded)
 
 
 if __name__ == '__main__':

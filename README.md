@@ -60,7 +60,7 @@ signing_key = authenticationutils.load_signing_key('<insert PKCS#12 key file pat
 ```
 
 ### Creating the OAuth Authorization Header <a name="creating-the-oauth-authorization-header"></a>
-The method that does all the heavy lifting is `OAuth().get_authorization_header`. You can call into it directly and as long as you provide the correct parameters, it will return a string that you can add into your request's `Authorization` header.
+The method that does all the heavy lifting is `OAuth.get_authorization_header`. You can call into it directly and as long as you provide the correct parameters, it will return a string that you can add into your request's `Authorization` header.
 
 #### POST example
 

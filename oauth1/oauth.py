@@ -41,7 +41,8 @@ class OAuth:
         oauth_base_parameters_dict = oauth_parameters.get_base_parameters_dict()
 
         # Generate the header value for OAuth Header
-        oauth_key = OAuthParameters.OAUTH_KEY + " " + ",".join([str(key) + "=\"" + str(value) + "\"" for (key, value) in oauth_base_parameters_dict.items()])
+        oauth_key = OAuthParameters.OAUTH_KEY + " " + ",".join(
+            [str(key) + "=\"" + str(value) + "\"" for (key, value) in oauth_base_parameters_dict.items()])
         return oauth_key
 
     @staticmethod
@@ -69,7 +70,7 @@ class OAuth:
         signature = OAuth.sign_message(base_string, signing_key)
 
         # Set the signature in the Base parameters
-        oauth_parameters.set_oauth_signature(util.uri_rfc3986_encode(signature))
+        oauth_parameters.set_oauth_signature(util.percent_encode(signature))
 
         return oauth_parameters
 

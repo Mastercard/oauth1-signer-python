@@ -47,11 +47,12 @@ def normalize_params(url, params):
 
     # Get the query list
     qs_list = parse_qsl(parse.query, keep_blank_values=True)
+    must_encode = False if parse.query == urllib.parse.unquote(parse.query) else True
     if params is None:
         combined_list = qs_list
     else:
         # Needs to be encoded before sorting
-        combined_list = [encode_pair(key, value) for (key, value) in list(qs_list)]
+        combined_list = [encode_pair(must_encode, key, value) for (key, value) in list(qs_list)]
         combined_list += params.items()
 
     encoded_list = ["%s=%s" % (key, value) for (key, value) in combined_list]
@@ -60,9 +61,10 @@ def normalize_params(url, params):
     return "&".join(sorted_list)
 
 
-def encode_pair(key, value):
-    encoded_key = oauth_query_string_element_encode(key)
-    encoded_value = oauth_query_string_element_encode(value if isinstance(value, bytes) else str(value))
+def encode_pair(must_encode, key, value):
+    encoded_key = percent_encode(key) if must_encode else key.replace(' ', '+')
+    value = value if isinstance(value, bytes) else str(value)
+    encoded_value = percent_encode(value) if must_encode else value.replace(' ', '+')
     return encoded_key, encoded_value
 
 
@@ -102,13 +104,6 @@ def normalize_url(url):
     return "{}://{}{}".format(parse.scheme, netloc, parse.path)
 
 
-def uri_rfc3986_encode(value):
-    """
-    RFC 3986 encodes the value
-    """
-    return quote(value, safe='%')
-
-
 def sha256_encode(text):
     """
     Returns the digest of SHA-256 of the text
@@ -143,7 +138,11 @@ def percent_encode(text):
     """
     if text is None:
         return ''
-    return urllib.parse.quote_plus(text).replace('+', '%20').replace('*', '%2A').replace('%7E', '~')
+    text = text.encode('utf-8') if isinstance(text, str) else text
+    text = urllib.parse.quote(text, safe=b'~')
+    if isinstance(text, bytes):
+        text = text.decode('utf-8')
+    return text.replace('+', '%20').replace('*', '%2A').replace('%7E', '~')
 
 
 def get_nonce(length=16):
