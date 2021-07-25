@@ -32,7 +32,7 @@ from unittest.mock import MagicMock
 
 import oauth1.authenticationutils as authenticationutils
 import oauth1.coreutils as util
-from oauth1.coreutils import get_nonce
+from importlib import reload
 from oauth1.oauth import OAuth
 from oauth1.oauth import OAuthParameters
 
@@ -114,7 +114,7 @@ class OAuthTest(unittest.TestCase):
         list_of_nonce = []
 
         for _ in range(0, 100000):
-            list_of_nonce.append(get_nonce())
+            list_of_nonce.append(util.get_nonce())
 
         counter = Counter(list_of_nonce)
         res = [k for k, v in counter.items() if v > 1]
@@ -345,7 +345,7 @@ class OAuthTest(unittest.TestCase):
         auth_header = OAuth.get_authorization_header('https://api.mastercard.com/abc/%123/service?a=123&b=%2a2b3',
                                                      'GET', None,
                                                      'abc-abc-abc!123', OAuthTest.signing_key)
-
+        reload(util)
         self.assertEqual('OAuth oauth_consumer_key="abc-abc-abc!123",oauth_nonce="Wpe3LF09z1e3xQRI",'
                          'oauth_timestamp="1626728330",oauth_signature_method="RSA-SHA256",oauth_version="1.0",'
                          'oauth_body_hash="47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",'
@@ -362,7 +362,7 @@ class OAuthTest(unittest.TestCase):
         auth_header = OAuth.get_authorization_header(url,
                                                      'GET', None,
                                                      'abc-abc-abc!123', OAuthTest.signing_key)
-
+        reload(util)
         self.assertEqual('OAuth oauth_consumer_key="abc-abc-abc!123",oauth_nonce="Wpe3LF09z1e3xQRI",'
                          'oauth_timestamp="1626728330",oauth_signature_method="RSA-SHA256",oauth_version="1.0",'
                          'oauth_body_hash="47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",'
@@ -379,7 +379,7 @@ class OAuthTest(unittest.TestCase):
         auth_header = OAuth.get_authorization_header(url,
                                                      'GET', None,
                                                      'abc-abc-abc!123', OAuthTest.signing_key)
-
+        reload(util)
         self.assertEqual('OAuth oauth_consumer_key="abc-abc-abc!123",oauth_nonce="Wpe3LF09z1e3xQRI",'
                          'oauth_timestamp="1626728330",oauth_signature_method="RSA-SHA256",oauth_version="1.0",'
                          'oauth_body_hash="47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",'
@@ -397,7 +397,7 @@ class OAuthTest(unittest.TestCase):
         auth_header = OAuth.get_authorization_header(url,
                                                      'GET', None,
                                                      'abc-abc-abc!123', OAuthTest.signing_key)
-
+        reload(util)
         self.assertEqual('OAuth oauth_consumer_key="abc-abc-abc!123",oauth_nonce="Wpe3LF09z1e3xQRI",'
                          'oauth_timestamp="1626728330",oauth_signature_method="RSA-SHA256",oauth_version="1.0",'
                          'oauth_body_hash="47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",'
@@ -415,7 +415,7 @@ class OAuthTest(unittest.TestCase):
         auth_header = OAuth.get_authorization_header(url,
                                                      'GET', None,
                                                      'abc-abc-abc!123', OAuthTest.signing_key)
-
+        reload(util)
         self.assertEqual('OAuth oauth_consumer_key="abc-abc-abc!123",oauth_nonce="Wpe3LF09z1e3xQRI",'
                          'oauth_timestamp="1626728330",oauth_signature_method="RSA-SHA256",oauth_version="1.0",'
                          'oauth_body_hash="47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",'
@@ -436,6 +436,17 @@ class OAuthTest(unittest.TestCase):
             'abc%21123%26oauth_nonce%3DWpe3LF09z1e3xQRI%26oauth_signature_method%3DRSA-SHA256%26oauth_timestamp%3D1626'
             '728330%26oauth_version%3D1.0%26param%3Dtoken1%3Atoken2',
             encoded)
+
+    def test_sha256_encoding_when_no_str_or_byte(self):
+        val = util.sha256_encode(123)
+        self.assertEqual(b'\xa6e\xa4Y B/\x9dA~Hg\xef\xdcO\xb8\xa0J\x1f?\xff\x1f\xa0~\x99\x8e\x86\xf7\xf7\xa2z\xe3', val)
+
+    def test_percent_encoding_of_None(self):
+        self.assertEqual('', util.percent_encode(None))
+
+    def test_string_b64_encoding(self):
+        t = util.base64_encode('foo bar foo bar')
+        self.assertEqual('Zm9vIGJhciBmb28gYmFy', t)
 
 
 if __name__ == '__main__':

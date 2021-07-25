@@ -34,7 +34,7 @@ import urllib
 import time
 from random import SystemRandom
 
-from urllib.parse import urlparse, quote, parse_qsl
+from urllib.parse import urlparse, parse_qsl
 
 
 def normalize_params(url, params):
@@ -111,11 +111,10 @@ def base64_encode(text):
     """
     Base64 encodes the given input
     """
+    if not isinstance(text, (bytes, bytearray)):
+        text = bytes(text.encode())
     encode = base64.b64encode(text)
-    if isinstance(encode, (bytearray, bytes)):
-        return encode.decode('ascii')
-    else:
-        return encode
+    return encode.decode('ascii')
 
 
 def percent_encode(text):
@@ -126,8 +125,6 @@ def percent_encode(text):
         return ''
     text = text.encode('utf-8') if isinstance(text, str) else text
     text = urllib.parse.quote(text, safe=b'~')
-    if isinstance(text, bytes):
-        text = text.decode('utf-8')
     return text.replace('+', '%20').replace('*', '%2A').replace('%7E', '~')
 
 
