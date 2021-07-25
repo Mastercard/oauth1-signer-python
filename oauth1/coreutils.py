@@ -68,20 +68,6 @@ def encode_pair(must_encode, key, value):
     return encoded_key, encoded_value
 
 
-def oauth_query_string_element_encode(value):
-    """
-    RFC 3986 encodes the value
-
-    Note. This is based on RFC3986 but according to https://tools.ietf.org/html/rfc5849#section-3.6
-    it replaces space with %20 not "+".
-    """
-    encoded = quote(value)
-    encoded = str.replace(encoded, ':', '%3A')
-    encoded = str.replace(encoded, '+', '%2B')
-    encoded = str.replace(encoded, '*', '%2A')
-    return encoded
-
-
 def normalize_url(url):
     """
     Removes the query parameters from the URL
