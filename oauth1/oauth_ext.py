@@ -49,7 +49,7 @@ class OAuth1RSA(AuthBase):
         self.signing_key = signing_key
 
     def __call__(self, r: PreparedRequest):
-        method = '' if r.method is None else r.method.upper()
+        method = r.method.upper() if r.method is not None else r.method
         if all(v is not None for v in [r, self.consumer_key, self.signing_key]):
             r.headers['Authorization'] = \
                 OAuth.get_authorization_header(uri=r.url,
