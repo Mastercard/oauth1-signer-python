@@ -30,6 +30,7 @@ import unittest
 
 import hashlib
 import re
+from importlib import reload
 from unittest.mock import MagicMock
 
 from requests import PreparedRequest
@@ -157,9 +158,15 @@ class OAuthExtTest(unittest.TestCase):
                                                 OAuthExtTest.mock_prepared_request.method,
                                                 OAuthExtTest.mock_prepared_request.body,
                                                 OAuthExtTest.consumer_key, OAuthExtTest.signing_key)
-
+        reload(util)
         self.assertTrue("Authorization" in call_object.headers)
         self.assertEqual(header, call_object.headers['Authorization'])
+
+    def test_with_none_arguments(self):
+        oauth_object = OAuth1RSA(None, None)
+        request = PreparedRequest()
+        call_object = oauth_object(request)
+        self.assertIsNone(call_object.headers)
 
     @staticmethod
     def to_pair(obj):
