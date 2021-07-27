@@ -1,8 +1,7 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-#
 #
 #
-# Copyright 2019-2020 Mastercard
+# Copyright 2019-2021 Mastercard
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification, are
@@ -31,20 +30,22 @@ import unittest
 import oauth1.authenticationutils as authenticationutils
 from OpenSSL import crypto
 
+
 class UtilsTest(unittest.TestCase):
 
     def test_load_signing_key_should_return_key(self):
-        key_container_path = "./test_key_container.p12";
-        key_password = "Password1";
+        key_container_path = "./test_key_container.p12"
+        key_password = "Password1"
 
         signing_key = authenticationutils.load_signing_key(key_container_path, key_password)
         self.assertTrue(signing_key.check)
-       
+
         bits = signing_key.bits()
         self.assertEqual(bits, 2048)
 
         private_key_bytes = crypto.dump_privatekey(crypto.FILETYPE_PEM, signing_key)
         self.assertTrue(private_key_bytes)
-        
+
+
 if __name__ == '__main__':
     unittest.main()

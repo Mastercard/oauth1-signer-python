@@ -1,8 +1,7 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-#
 #
 #
-# Copyright 2019-2020 Mastercard
+# Copyright 2019-2021 Mastercard
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification, are
@@ -32,9 +31,10 @@ import requests
 from oauth1.signer_interceptor import add_signer_layer
 from oauth1.signer_interceptor import get_signer_layer
 
-class OAuthInterceptorTest(unittest.TestCase):
 
+class OAuthInterceptorTest(unittest.TestCase):
     """ add an interceptor, check api client has changed """
+
     def test_add_interceptor(self):
         key_file = './test_key_container.p12'
         key_password = "Password1"
@@ -43,7 +43,8 @@ class OAuthInterceptorTest(unittest.TestCase):
         signing_layer1 = get_signer_layer(requests)
         add_signer_layer(requests, key_file, key_password, consumer_key)
         signing_layer2 = get_signer_layer(requests)
-        self.assertNotEqual(signing_layer1, signing_layer2)            
+        self.assertNotEqual(signing_layer1, signing_layer2)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -60,20 +60,20 @@ signing_key = authenticationutils.load_signing_key('<insert PKCS#12 key file pat
 ```
 
 ### Creating the OAuth Authorization Header <a name="creating-the-oauth-authorization-header"></a>
-The method that does all the heavy lifting is `OAuth().get_authorization_header`. You can call into it directly and as long as you provide the correct parameters, it will return a string that you can add into your request's `Authorization` header.
+The method that does all the heavy lifting is `OAuth.get_authorization_header`. You can call into it directly and as long as you provide the correct parameters, it will return a string that you can add into your request's `Authorization` header.
 
 #### POST example
 
 ```python
 uri = 'https://sandbox.api.mastercard.com/service'
 payload = 'Hello world!'
-authHeader = OAuth().get_authorization_header(uri, 'POST', payload, '<insert consumer key>', signing_key)
+authHeader = OAuth.get_authorization_header(uri, 'POST', payload, '<insert consumer key>', signing_key)
 ```
 
 #### GET example
 ```python
 uri = 'https://sandbox.api.mastercard.com/service'
-authHeader = OAuth().get_authorization_header(uri, 'GET', None, '<insert consumer key>', signing_key)
+authHeader = OAuth.get_authorization_header(uri, 'GET', None, '<insert consumer key>', signing_key)
 ```
 
 #### Use of authHeader with requests module (POST and GET example)

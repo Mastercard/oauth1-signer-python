@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-#
 #
 #
@@ -30,89 +29,73 @@
 import unittest
 
 import hashlib
-import time
-from OpenSSL import crypto
-from requests import PreparedRequest
-from uuid import uuid4
+import re
+from importlib import reload
+from unittest.mock import MagicMock
 
-import oauth1.authenticationutils as authenticationutils
+from requests import PreparedRequest
+
+import oauth1.authenticationutils as authentication_utils
 from oauth1 import coreutils as util
-from oauth1.oauth_ext import HASH_SHA256
+from oauth1.oauth import OAuth
 from oauth1.oauth_ext import OAuth1RSA
 
 
 class OAuthExtTest(unittest.TestCase):
-    signing_key = authenticationutils.load_signing_key('./test_key_container.p12', "Password1")
+    signing_key = authentication_utils.load_signing_key('./test_key_container.p12', "Password1")
     consumer_key = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
     data = 'sensistive data'
     mock_prepared_request = PreparedRequest()
     mock_prepared_request.prepare(headers={'Content-type': 'application/json', 'Accept': 'application/json'},
                                   method="POST",
                                   url="http://www.example.com")
-    payload = {
-        'oauth_version': '1.0',
-        'oauth_nonce': str(uuid4()),
-        'oauth_timestamp': str(int(time.time())),
-        'oauth_signature_method': 'RSA-SHA256',
-        'oauth_consumer_key': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-    }
-
-    payload_ext = {'oauth_version': '1.0', 'oauth_nonce': 'xxxx213-1111-xx00-11xx-xxxx12xxxx12',
-                   'oauth_timestamp': '1111111111', 'oauth_signature_method': 'RSA-SHA256',
-                   'oauth_consumer_key': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-                   'oauth_body_hash': 'SamplEOaUthBoDYhASh', 'oauth_signature': 'OauTHSinaTUrESaMPle=='}
 
     def test_oauth_body_hash_with_body_string(self):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key)
-        OAuthExtTest.mock_prepared_request.body = "{'A' : 'sensistive data'}"
+        OAuthExtTest.mock_prepared_request.body = "{'A' : 'sensitive data'}"
 
-        # Passing mock data to the actual func to get the value
-        oauth_body_hash_object = oauth_object.oauth_body_hash(OAuthExtTest.mock_prepared_request, OAuthExtTest.payload)
+        oauth_object(OAuthExtTest.mock_prepared_request)
+        h = OAuthExtTest.extract_oauth_params(OAuthExtTest.mock_prepared_request)
 
-        # Using mock data to find the hash value
-        hashlib_val = hashlib.sha256((OAuthExtTest.mock_prepared_request.body).encode('utf8')).digest()
-        payload_hash_value = util.uri_rfc3986_encode(util.base64_encode(hashlib_val))
-
-        self.assertEqual(oauth_body_hash_object['oauth_body_hash'], payload_hash_value)
+        self.assertEqual(h['oauth_body_hash'], 'sKrMRMpmhyMJ05fETctDp3UnlDsm1rgOJxQroerFuMs=')
 
     def test_oauth_body_hash_with_body_bytes(self):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key)
         OAuthExtTest.mock_prepared_request.body = b'{"A" : OAuthExtTest.data}'
 
-        # Passing mock data to the actual func to get the value
-        oauth_body_hash_object = oauth_object.oauth_body_hash(OAuthExtTest.mock_prepared_request, OAuthExtTest.payload)
+        oauth_object(OAuthExtTest.mock_prepared_request)
+        h = OAuthExtTest.extract_oauth_params(OAuthExtTest.mock_prepared_request)
 
-        # Using mock data to find the hash value
         hashlib_val = hashlib.sha256(OAuthExtTest.mock_prepared_request.body).digest()
-        payload_hash_value = util.uri_rfc3986_encode(util.base64_encode(hashlib_val))
+        payload_hash_value = util.base64_encode(hashlib_val)
 
-        self.assertEqual(oauth_body_hash_object['oauth_body_hash'], payload_hash_value)
+        self.assertEqual(h['oauth_body_hash'], '9MoCOjWt0ke+o8ZAGij+kZ1goHpfzLIG9ZGty05eIOo=')
+        self.assertEqual(h['oauth_body_hash'], payload_hash_value)
 
     def test_oauth_body_hash_with_body_empty(self):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key)
         OAuthExtTest.mock_prepared_request.body = ''
 
-        # Passing mock data to the actual func to get the value
-        oauth_body_hash_object = oauth_object.oauth_body_hash(OAuthExtTest.mock_prepared_request, OAuthExtTest.payload)
+        oauth_object(OAuthExtTest.mock_prepared_request)
+        h = OAuthExtTest.extract_oauth_params(OAuthExtTest.mock_prepared_request)
 
-        # Using mock data to find the hash value
         hashlib_val = hashlib.sha256(str(OAuthExtTest.mock_prepared_request.body).encode('utf8')).digest()
-        payload_hash_value = util.uri_rfc3986_encode(util.base64_encode(hashlib_val))
+        payload_hash_value = util.base64_encode(hashlib_val)
 
-        self.assertEqual(oauth_body_hash_object['oauth_body_hash'], payload_hash_value)
+        self.assertEqual(h['oauth_body_hash'], payload_hash_value)
+        self.assertEqual(h['oauth_body_hash'], '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=')
 
     def test_oauth_body_hash_with_body_none(self):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key)
         OAuthExtTest.mock_prepared_request.body = None
 
-        # Passing mock data to the actual func to get the value
-        oauth_body_hash_object = oauth_object.oauth_body_hash(OAuthExtTest.mock_prepared_request, OAuthExtTest.payload)
+        oauth_object(OAuthExtTest.mock_prepared_request)
+        h = OAuthExtTest.extract_oauth_params(OAuthExtTest.mock_prepared_request)
 
-        # Using mock data to find the hash value
         hashlib_val = hashlib.sha256(str("").encode('utf8')).digest()
-        payload_hash_value = util.uri_rfc3986_encode(util.base64_encode(hashlib_val))
+        payload_hash_value = util.base64_encode(hashlib_val)
 
-        self.assertEqual(oauth_body_hash_object['oauth_body_hash'], payload_hash_value)
+        self.assertEqual(h['oauth_body_hash'], payload_hash_value)
 
     def test_oauth_body_hash_with_body_empty_or_none(self):
         def prep_request():
@@ -129,16 +112,19 @@ class OAuthExtTest(unittest.TestCase):
         request_empty.body = ""
         request_none.body = None
 
-        # Passing data to the actual func to get the value
-        empty_body_hash = oauth_object.oauth_body_hash(request_empty, OAuthExtTest.payload)
-        none_body_hash = oauth_object.oauth_body_hash(request_none, OAuthExtTest.payload)
+        oauth_object(request_empty)
+        request_empty_header = OAuthExtTest.extract_oauth_params(request_empty)
 
-        # Using mock data to find the hash value
+        oauth_object(request_none)
+        request_none_header = OAuthExtTest.extract_oauth_params(request_none)
+
         empty_string_hash = hashlib.sha256(str("").encode('utf8')).digest()
-        empty_string_encoded = util.uri_rfc3986_encode(util.base64_encode(empty_string_hash))
+        empty_string_encoded = util.base64_encode(empty_string_hash)
 
-        self.assertEqual(empty_body_hash['oauth_body_hash'], empty_string_encoded)
-        self.assertEqual(none_body_hash['oauth_body_hash'], empty_string_encoded)
+        self.assertEqual(request_empty_header['oauth_body_hash'], empty_string_encoded)
+        self.assertEqual(request_empty_header['oauth_body_hash'], '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=')
+        self.assertEqual(request_none_header['oauth_body_hash'], empty_string_encoded)
+        self.assertEqual(request_none_header['oauth_body_hash'], '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=')
 
     def test_oauth_body_hash_with_body_multipart(self):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key)
@@ -147,60 +133,54 @@ class OAuthExtTest(unittest.TestCase):
                              method="GET",
                              url="http://www.mastercard.com")
 
-        # Passing mock data to the actual func to get the value
-        oauth_body_hash_object = oauth_object.oauth_body_hash(mock_request, OAuthExtTest.payload)
+        oauth_object(mock_request)
+        h = OAuthExtTest.extract_oauth_params(mock_request)
 
-        # Using mock data to find the hash value
         hashlib_val = hashlib.sha256(str(OAuthExtTest.mock_prepared_request.body).encode('utf8')).digest()
-        payload_hash_value = util.uri_rfc3986_encode(util.base64_encode(hashlib_val))
+        payload_hash_value = util.base64_encode(hashlib_val)
 
-        self.assertEqual(oauth_body_hash_object['oauth_body_hash'], payload_hash_value)
-
-    def test_signature(self):
-        oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key)
-        oauth_signature_object = oauth_object.signature(OAuthExtTest.data)
-        signature = util.base64_encode(crypto.sign(OAuthExtTest.signing_key, OAuthExtTest.data, HASH_SHA256))
-        self.assertEqual(signature, oauth_signature_object)
-
-    def test_get_nonce(self):
-        nonce = OAuth1RSA.nonce()
-        self.assertEqual(len(nonce), 36)
-
-    def test_get_timestamp(self):
-        timestamp = OAuth1RSA.timestamp()
-        self.assertEqual(len(str(timestamp)), 10)
-
-    def test_helper_hash_string(self):
-        oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key)
-        hash_object = oauth_object._hash(OAuthExtTest.data)
-        self.assertEqual(hash_object,
-                         b'\xe8@\x97\xa0\x07H\x0b\xb2\x81"1\xcb\xf8\xa6@|&\xb9\xd7\xdf.\x80\xa9\x0b\xed,\x8f2\x88\xd7\xf7\xe5')
-
-    def test_helper_hash_bytes(self):
-        oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key)
-        hash_object = oauth_object._hash(b"value in bytes")
-        self.assertEqual(hash_object,
-                         b'\\\n\x0e\xa3\xfe\x01\xd6T\x9fE\x97\x06\x937\x9d\\\xeaSz^\xe8\xab\xb1\xff:n\x9bY\xf5iV|')
-
-    def test_helper_hash_nonetype(self):
-        oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key)
-        hash_object = oauth_object._hash('')
-        self.assertEqual(hash_object,
-                         b"\xe3\xb0\xc4B\x98\xfc\x1c\x14\x9a\xfb\xf4\xc8\x99o\xb9$'\xaeA\xe4d\x9b\x93L\xa4\x95\x99\x1bxR\xb8U")
-
-    def test_signable_message(self):
-        oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key)
-        signable_message = oauth_object.signable_message(OAuthExtTest.mock_prepared_request, OAuthExtTest.payload_ext)
-        self.assertTrue(OAuthExtTest.mock_prepared_request.method in signable_message)
-
-    def test_helper_generate_header(self):
-        generate_header = OAuth1RSA._generate_header(OAuthExtTest.payload_ext)
-        self.assertTrue("OAuth" in generate_header)
+        self.assertEqual(h['oauth_body_hash'], payload_hash_value)
+        self.assertEqual(h['oauth_body_hash'], '47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=')
 
     def test_call(self):
         oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key)
         call_object = oauth_object.__call__(OAuthExtTest.mock_prepared_request)
         self.assertTrue("Authorization" in call_object.headers)
+
+    def test_ext_oauth_header_equals_to_non_ext_generated(self):
+        util.get_nonce = MagicMock(return_value=util.get_nonce())
+        util.get_timestamp = MagicMock(return_value=util.get_timestamp())
+
+        oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key)
+        call_object = oauth_object(OAuthExtTest.mock_prepared_request)
+
+        header = OAuth.get_authorization_header(OAuthExtTest.mock_prepared_request.url,
+                                                OAuthExtTest.mock_prepared_request.method,
+                                                OAuthExtTest.mock_prepared_request.body,
+                                                OAuthExtTest.consumer_key, OAuthExtTest.signing_key)
+        reload(util)
+        self.assertTrue("Authorization" in call_object.headers)
+        self.assertEqual(header, call_object.headers['Authorization'])
+
+    def test_with_none_arguments(self):
+        oauth_object = OAuth1RSA(None, None)
+        request = PreparedRequest()
+        call_object = oauth_object(request)
+        self.assertIsNone(call_object.headers)
+
+    @staticmethod
+    def to_pair(obj):
+        split_index = obj.index('=')
+        key = obj[:split_index]
+        value = obj[split_index + 2:]
+        return key, value[:-1]
+
+    @staticmethod
+    def extract_oauth_params(prepared_request: PreparedRequest):
+        oauth_header = prepared_request.headers['Authorization']
+        h = str(re.sub(r'^OAuth ', '', oauth_header))
+        res = dict([OAuthExtTest.to_pair(item) for item in h.split(',')])
+        return res
 
 
 if __name__ == '__main__':

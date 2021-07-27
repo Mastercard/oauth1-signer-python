@@ -1,0 +1,18 @@
+name: Linter
+'on':
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: 0 16 * * *
+jobs:
+  sonarcloud:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Python Style Checker
+        uses: andymckay/pycodestyle-action@0.1.3
