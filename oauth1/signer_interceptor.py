@@ -60,7 +60,9 @@ class SignerInterceptor(object):
 
             in_headers["Authorization"] = auth_header
 
-            return func(*args, **kwargs)
+            res = func(*args, **kwargs)
+
+            return res
 
         request_function.__oauth__ = True
         return request_function
@@ -75,7 +77,8 @@ def add_signer_layer(api_client, key_file, key_password, consumer_key):
     """Create and load configuration. Decorate APIClient.request with header signing"""
 
     api_signer = SignerInterceptor(key_file, key_password, consumer_key)
-    api_client.request = api_signer.oauth_signing(api_client.request)
+
+    api_client.rest_client.request = api_signer.oauth_signing(api_client.rest_client.request)
 
 
 @deprecated(version='1.1.3', reason="Use get_signer_layer(api_client) instead")
@@ -84,4 +87,4 @@ def get_signing_layer(self, api_client):
 
 
 def get_signer_layer(api_client):
-    return api_client.request
+    return api_client.rest_client.request

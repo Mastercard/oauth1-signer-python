@@ -40,10 +40,18 @@ class OAuthInterceptorTest(unittest.TestCase):
         key_password = "Password1"
         consumer_key = 'dummy'
 
-        signing_layer1 = get_signer_layer(requests)
-        add_signer_layer(requests, key_file, key_password, consumer_key)
-        signing_layer2 = get_signer_layer(requests)
+        signer_request = MockApiRestClient(requests)
+
+        signing_layer1 = get_signer_layer(signer_request)
+        add_signer_layer(signer_request, key_file, key_password, consumer_key)
+        signing_layer2 = get_signer_layer(signer_request)
         self.assertNotEqual(signing_layer1, signing_layer2)
+
+
+class MockApiRestClient(object):
+    def __init__(self, request):
+        self.request = request
+        self.rest_client = request
 
 
 if __name__ == '__main__':
