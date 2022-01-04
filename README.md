@@ -102,7 +102,7 @@ Usage:
 uri = "https://sandbox.api.mastercard.com/service"
 request = Request()
 request.method = "POST"
-# ...
+# …
 
 signer = OAuthSigner(consumer_key, signing_key)
 request = signer.sign_request(uri, request)
@@ -165,10 +165,10 @@ Generators currently supported:
 
 Client libraries can be generated using the following command:
 ```shell
-java -jar openapi-generator-cli.jar generate -i openapi-spec.yaml -g python -o out
+openapi-generator-cli generate -i openapi-spec.yaml -g python -o out
 ```
 See also:
-* [OpenAPI Generator (executable)](https://mvnrepository.com/artifact/org.openapitools/openapi-generator-cli)
+* [OpenAPI Generator CLI Installation](https://openapi-generator.tech/docs/installation/)
 * [CONFIG OPTIONS for python](https://github.com/OpenAPITools/openapi-generator/blob/master/docs/generators/python.md)
 
 ##### Usage of the `oauth1.signer_interceptor`
@@ -177,12 +177,12 @@ See also:
 import openapi_client
 from oauth1.signer_interceptor import add_signer_layer
 
-# ...
+# …
 config = openapi_client.Configuration()
 config.host = 'https://sandbox.api.mastercard.com'
 client = openapi_client.ApiClient(config)
 add_signer_layer(client, '<insert PKCS#12 key file path>', '<insert key password>', '<insert consumer key>')
 some_api = openapi_client.SomeApi(client)
 result = some_api.do_something()
-# ...
+# …
 ```
