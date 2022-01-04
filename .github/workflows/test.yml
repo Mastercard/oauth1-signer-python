@@ -2,14 +2,13 @@ name: Build & Test
 'on':
   push:
     branches:
-      - main
+      - "**"
   pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
+    branches:
+      - "**"
   schedule:
     - cron: 0 16 * * *
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
