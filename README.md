@@ -125,15 +125,15 @@ header = {'Content-type' : 'application/json', 'Accept' : 'application/json'}
 
 # Passing payload for data parameter as string
 payload = '{"key" : "value"}'
-request = requests.post(uri, data=payload, auth=oauth, headers=header)
+response = requests.post(uri, data=payload, auth=oauth, headers=header)
 
 # Passing payload for data parameter as Json object
 payload = {'key' : 'value'}
-request = requests.post(uri, data=json.dumps(payload), auth=oauth, headers=header)
+response = requests.post(uri, data=json.dumps(payload), auth=oauth, headers=header)
 
 # Passing payload for json parameter Json object
 payload = {'key' : 'value'}
-request = requests.post(uri, json=payload, auth=oauth, headers=header)
+response = requests.post(uri, json=payload, auth=oauth, headers=header)
 ```
 
 ###### GET example
@@ -146,7 +146,7 @@ uri = 'https://sandbox.api.mastercard.com/service'
 oauth = OAuth1RSA(consumer_key, signing_key)
 
 # Operation for get call
-request = requests.get(uri, auth=oauth)
+response = requests.get(uri, auth=oauth)
 ```
 
 ### Integrating with OpenAPI Generator API Client Libraries <a name="integrating-with-openapi-generator-api-client-libraries"></a>
