@@ -66,7 +66,10 @@ class SignerTest(unittest.TestCase):
         signer = MCSigner(SignerTest.consumer_key, SignerTest.signing_key)
         requests.get(SignerTest.uri, auth=signer)
 
-        auth_header = mock_send.call_args.args[0].headers['Authorization']
+        auth_header = (
+            mock_send.call_args[0][0].headers if isinstance(mock_send.call_args, tuple) else mock_send.call_args.args
+            [0].headers)['Authorization']
+
         self.assertTrue("OAuth" in auth_header)
         self.assertTrue("oauth_consumer_key=\"dummy\"" in auth_header)
 
