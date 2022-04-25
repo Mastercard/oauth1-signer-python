@@ -27,27 +27,48 @@
 # SUCH DAMAGE.
 #
 import unittest
-from requests import Request
-from oauth1.signer import OAuthSigner
+from unittest.mock import patch
+
+import requests
+from requests import Request, Session
+from requests.auth import AuthBase
+
 import oauth1.authenticationutils as authenticationutils
+from oauth1.signer import OAuthSigner
 
 
 class SignerTest(unittest.TestCase):
+    signing_key = authenticationutils.load_signing_key('./test_key_container.p12', "Password1")
+    consumer_key = 'dummy'
+    uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
 
     def test_sign_request(self):
-        signing_key = authenticationutils.load_signing_key('./test_key_container.p12', "Password1")
-        consumer_key = 'dummy'
-        uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
-
         request = Request()
         request.method = "POST"
         request.data = ""
 
-        signer = OAuthSigner(consumer_key, signing_key)
-        request = signer.sign_request(uri, request)
+        signer = OAuthSigner(SignerTest.consumer_key, SignerTest.signing_key)
+        request = signer.sign_request(SignerTest.uri, request)
         auth_header = request.headers['Authorization']
         self.assertTrue("OAuth" in auth_header)
         self.assertTrue("dummy" in auth_header)
+
+    @patch.object(Session, 'send')
+    def test_sign_prepared_request(self, mock_send):
+        class MCSigner(AuthBase):
+            def __init__(self, consumer_key, signing_key):
+                self.signer = OAuthSigner(consumer_key, signing_key)
+
+            def __call__(self, request):
+                self.signer.sign_request(request.url, request)
+                return request
+
+        signer = MCSigner(SignerTest.consumer_key, SignerTest.signing_key)
+        requests.get(SignerTest.uri, auth=signer)
+
+        auth_header = mock_send.call_args.args[0].headers['Authorization']
+        self.assertTrue("OAuth" in auth_header)
+        self.assertTrue("oauth_consumer_key=\"dummy\"" in auth_header)
 
 
 if __name__ == '__main__':
