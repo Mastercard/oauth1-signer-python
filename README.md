@@ -95,7 +95,7 @@ Usage briefly described below, but you can also refer to the test project for ex
 
 #### Requests: HTTP for Humans™ <a name="requests"></a>
 
-You can sign [request](https://docs.python-requests.org/en/latest/user/quickstart#make-a-request) objects using the `OAuthSigner` class. 
+You can sign [request](https://requests.readthedocs.io/en/latest/user/quickstart#make-a-request) objects using the `OAuthSigner` class. 
 
 Usage:
 ```python
