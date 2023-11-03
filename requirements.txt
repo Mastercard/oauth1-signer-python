@@ -1,4 +1,4 @@
-pyOpenSSL==23.3.0
+pyOpenSSL>=22.1.0,<=23.2.0
 requests==2.27.1
 Deprecated==1.2.5
 cryptography>=39.0.0
