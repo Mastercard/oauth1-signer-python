@@ -28,6 +28,8 @@
 import json
 import oauth1.coreutils as util
 from OpenSSL import crypto
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
 
 
 class OAuth:
@@ -84,8 +86,14 @@ class OAuth:
     @staticmethod
     def sign_message(message, signing_key):
         #    Signs the message using the private signing key
-        sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-        return util.base64_encode(sign)
+        signature = signing_key.sign(message.encode("utf-8"),
+                            padding.OAEP(
+                                 mgf=padding.MGF1(hashes.SHA256()),
+                                 algorithm=hashes.SHA256(), 
+                                 label=None),
+                            hashes.SHA256())
+        
+        return util.base64_encode(signature)
 
 
 class OAuthParameters(object):

@@ -43,7 +43,7 @@ class UtilsTest(unittest.TestCase):
 
         self.assertEqual(signing_key.key_size, 2048)
 
-        private_key_bytes= signing_key.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.TraditionalOpenSSL, serialization.NoEncryption())
+        private_key_bytes = signing_key.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.TraditionalOpenSSL, serialization.NoEncryption())
         self.assertTrue(private_key_bytes)
 
 
