@@ -5,11 +5,9 @@ Ran 0 tests in 0.000s
 OK
 .
 ----------------------------------------------------------------------
-Ran 1 test in 0.152s
+Ran 1 test in 0.158s
 
 OK
-/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py:87: DeprecationWarning: sign() is deprecated. Use the equivalent APIs in cryptography.
-  sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
 EEEE...EEE.........FE..........EE...............E
 ======================================================================
 ERROR: test_auth_header_when_uri_created_with_encoded_params (tests.test_oauth.OAuthTest)
@@ -17,15 +15,21 @@ ERROR: test_auth_header_when_uri_created_with_encoded_params (tests.test_oauth.O
 Traceback (most recent call last):
   File "/Users/e142756/work/oauth1-signer-python/tests/test_oauth.py", line 362, in test_auth_header_when_uri_created_with_encoded_params
     auth_header = OAuth.get_authorization_header(url,
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 38, in get_authorization_header
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 40, in get_authorization_header
     oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 70, in get_oauth_parameters
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 72, in get_oauth_parameters
     signature = OAuth.sign_message(base_string, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ======================================================================
 ERROR: test_auth_header_when_uri_created_with_non_encoded_params (tests.test_oauth.OAuthTest)
@@ -33,15 +37,21 @@ ERROR: test_auth_header_when_uri_created_with_non_encoded_params (tests.test_oau
 Traceback (most recent call last):
   File "/Users/e142756/work/oauth1-signer-python/tests/test_oauth.py", line 397, in test_auth_header_when_uri_created_with_non_encoded_params
     auth_header = OAuth.get_authorization_header(url,
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 38, in get_authorization_header
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 40, in get_authorization_header
     oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 70, in get_oauth_parameters
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 72, in get_oauth_parameters
     signature = OAuth.sign_message(base_string, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ======================================================================
 ERROR: test_auth_header_when_uri_created_with_non_encoded_params_2 (tests.test_oauth.OAuthTest)
@@ -49,15 +59,21 @@ ERROR: test_auth_header_when_uri_created_with_non_encoded_params_2 (tests.test_o
 Traceback (most recent call last):
   File "/Users/e142756/work/oauth1-signer-python/tests/test_oauth.py", line 415, in test_auth_header_when_uri_created_with_non_encoded_params_2
     auth_header = OAuth.get_authorization_header(url,
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 38, in get_authorization_header
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 40, in get_authorization_header
     oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 70, in get_oauth_parameters
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 72, in get_oauth_parameters
     signature = OAuth.sign_message(base_string, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ======================================================================
 ERROR: test_backward_compatibility_with_static_method (tests.test_oauth.OAuthTest)
@@ -65,15 +81,21 @@ ERROR: test_backward_compatibility_with_static_method (tests.test_oauth.OAuthTes
 Traceback (most recent call last):
   File "/Users/e142756/work/oauth1-signer-python/tests/test_oauth.py", line 327, in test_backward_compatibility_with_static_method
     header = OAuth().get_authorization_header(OAuthTest.uri, 'POST', 'payload', 'dummy', OAuthTest.signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 38, in get_authorization_header
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 40, in get_authorization_header
     oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 70, in get_oauth_parameters
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 72, in get_oauth_parameters
     signature = OAuth.sign_message(base_string, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ======================================================================
 ERROR: test_get_authorization_header_nominal (tests.test_oauth.OAuthTest)
@@ -81,15 +103,21 @@ ERROR: test_get_authorization_header_nominal (tests.test_oauth.OAuthTest)
 Traceback (most recent call last):
   File "/Users/e142756/work/oauth1-signer-python/tests/test_oauth.py", line 45, in test_get_authorization_header_nominal
     header = OAuth.get_authorization_header(OAuthTest.uri, 'POST', 'payload', 'dummy', OAuthTest.signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 38, in get_authorization_header
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 40, in get_authorization_header
     oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 70, in get_oauth_parameters
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 72, in get_oauth_parameters
     signature = OAuth.sign_message(base_string, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ======================================================================
 ERROR: test_get_authorization_header_should_compute_body_hash (tests.test_oauth.OAuthTest)
@@ -97,15 +125,21 @@ ERROR: test_get_authorization_header_should_compute_body_hash (tests.test_oauth.
 Traceback (most recent call last):
   File "/Users/e142756/work/oauth1-signer-python/tests/test_oauth.py", line 50, in test_get_authorization_header_should_compute_body_hash
     header = OAuth.get_authorization_header(OAuthTest.uri, 'POST', '{}', 'dummy', OAuthTest.signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 38, in get_authorization_header
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 40, in get_authorization_header
     oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 70, in get_oauth_parameters
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 72, in get_oauth_parameters
     signature = OAuth.sign_message(base_string, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ======================================================================
 ERROR: test_get_authorization_header_should_return_empty_string_body_hash (tests.test_oauth.OAuthTest)
@@ -113,15 +147,21 @@ ERROR: test_get_authorization_header_should_return_empty_string_body_hash (tests
 Traceback (most recent call last):
   File "/Users/e142756/work/oauth1-signer-python/tests/test_oauth.py", line 54, in test_get_authorization_header_should_return_empty_string_body_hash
     header = OAuth.get_authorization_header(OAuthTest.uri, 'GET', None, 'dummy', OAuthTest.signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 38, in get_authorization_header
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 40, in get_authorization_header
     oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 70, in get_oauth_parameters
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 72, in get_oauth_parameters
     signature = OAuth.sign_message(base_string, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ======================================================================
 ERROR: test_oauth_parameters (tests.test_oauth.OAuthTest)
@@ -129,13 +169,19 @@ ERROR: test_oauth_parameters (tests.test_oauth.OAuthTest)
 Traceback (most recent call last):
   File "/Users/e142756/work/oauth1-signer-python/tests/test_oauth.py", line 84, in test_oauth_parameters
     parameters = OAuth.get_oauth_parameters(uri, method, 'payload', 'dummy', OAuthTest.signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 70, in get_oauth_parameters
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 72, in get_oauth_parameters
     signature = OAuth.sign_message(base_string, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ======================================================================
 ERROR: test_sign_message (tests.test_oauth.OAuthTest)
@@ -143,11 +189,17 @@ ERROR: test_sign_message (tests.test_oauth.OAuthTest)
 Traceback (most recent call last):
   File "/Users/e142756/work/oauth1-signer-python/tests/test_oauth.py", line 71, in test_sign_message
     signature = OAuth.sign_message(base_string, OAuthTest.signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ======================================================================
 ERROR: test_sign_signature_base_string (tests.test_oauth.OAuthTest)
@@ -155,11 +207,17 @@ ERROR: test_sign_signature_base_string (tests.test_oauth.OAuthTest)
 Traceback (most recent call last):
   File "/Users/e142756/work/oauth1-signer-python/tests/test_oauth.py", line 219, in test_sign_signature_base_string
     signing_string = OAuth.sign_message("baseString", OAuthTest.signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ======================================================================
 ERROR: test_valid_oauth_signature_with_percent (tests.test_oauth.OAuthTest)
@@ -167,15 +225,21 @@ ERROR: test_valid_oauth_signature_with_percent (tests.test_oauth.OAuthTest)
 Traceback (most recent call last):
   File "/Users/e142756/work/oauth1-signer-python/tests/test_oauth.py", line 345, in test_valid_oauth_signature_with_percent
     auth_header = OAuth.get_authorization_header('https://api.mastercard.com/abc/%123/service?a=123&b=%2a2b3',
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 38, in get_authorization_header
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 40, in get_authorization_header
     oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 70, in get_oauth_parameters
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 72, in get_oauth_parameters
     signature = OAuth.sign_message(base_string, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ======================================================================
 FAIL: test_nonce_uniqueness (tests.test_oauth.OAuthTest)
@@ -186,11 +250,9 @@ Traceback (most recent call last):
 AssertionError: 1 != 0
 
 ----------------------------------------------------------------------
-Ran 49 tests in 0.621s
+Ran 49 tests in 0.652s
 
 FAILED (failures=1, errors=11)
-/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py:87: DeprecationWarning: sign() is deprecated. Use the equivalent APIs in cryptography.
-  sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
 EEEEEEEE.
 ======================================================================
 ERROR: test_call (tests.test_oauth_ext.OAuthExtTest)
@@ -200,15 +262,21 @@ Traceback (most recent call last):
     call_object = oauth_object.__call__(OAuthExtTest.mock_prepared_request)
   File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth_ext.py", line 55, in __call__
     OAuth.get_authorization_header(uri=r.url,
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 38, in get_authorization_header
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 40, in get_authorization_header
     oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 70, in get_oauth_parameters
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 72, in get_oauth_parameters
     signature = OAuth.sign_message(base_string, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ======================================================================
 ERROR: test_ext_oauth_header_equals_to_non_ext_generated (tests.test_oauth_ext.OAuthExtTest)
@@ -218,15 +286,21 @@ Traceback (most recent call last):
     call_object = oauth_object(OAuthExtTest.mock_prepared_request)
   File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth_ext.py", line 55, in __call__
     OAuth.get_authorization_header(uri=r.url,
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 38, in get_authorization_header
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 40, in get_authorization_header
     oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 70, in get_oauth_parameters
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 72, in get_oauth_parameters
     signature = OAuth.sign_message(base_string, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ======================================================================
 ERROR: test_oauth_body_hash_with_body_bytes (tests.test_oauth_ext.OAuthExtTest)
@@ -236,15 +310,21 @@ Traceback (most recent call last):
     oauth_object(OAuthExtTest.mock_prepared_request)
   File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth_ext.py", line 55, in __call__
     OAuth.get_authorization_header(uri=r.url,
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 38, in get_authorization_header
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 40, in get_authorization_header
     oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 70, in get_oauth_parameters
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 72, in get_oauth_parameters
     signature = OAuth.sign_message(base_string, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ======================================================================
 ERROR: test_oauth_body_hash_with_body_empty (tests.test_oauth_ext.OAuthExtTest)
@@ -254,15 +334,21 @@ Traceback (most recent call last):
     oauth_object(OAuthExtTest.mock_prepared_request)
   File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth_ext.py", line 55, in __call__
     OAuth.get_authorization_header(uri=r.url,
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 38, in get_authorization_header
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 40, in get_authorization_header
     oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 70, in get_oauth_parameters
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 72, in get_oauth_parameters
     signature = OAuth.sign_message(base_string, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ======================================================================
 ERROR: test_oauth_body_hash_with_body_empty_or_none (tests.test_oauth_ext.OAuthExtTest)
@@ -272,15 +358,21 @@ Traceback (most recent call last):
     oauth_object(request_empty)
   File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth_ext.py", line 55, in __call__
     OAuth.get_authorization_header(uri=r.url,
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 38, in get_authorization_header
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 40, in get_authorization_header
     oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 70, in get_oauth_parameters
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 72, in get_oauth_parameters
     signature = OAuth.sign_message(base_string, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ======================================================================
 ERROR: test_oauth_body_hash_with_body_multipart (tests.test_oauth_ext.OAuthExtTest)
@@ -290,15 +382,21 @@ Traceback (most recent call last):
     oauth_object(mock_request)
   File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth_ext.py", line 55, in __call__
     OAuth.get_authorization_header(uri=r.url,
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 38, in get_authorization_header
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 40, in get_authorization_header
     oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 70, in get_oauth_parameters
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 72, in get_oauth_parameters
     signature = OAuth.sign_message(base_string, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ======================================================================
 ERROR: test_oauth_body_hash_with_body_none (tests.test_oauth_ext.OAuthExtTest)
@@ -308,15 +406,21 @@ Traceback (most recent call last):
     oauth_object(OAuthExtTest.mock_prepared_request)
   File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth_ext.py", line 55, in __call__
     OAuth.get_authorization_header(uri=r.url,
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 38, in get_authorization_header
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 40, in get_authorization_header
     oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 70, in get_oauth_parameters
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 72, in get_oauth_parameters
     signature = OAuth.sign_message(base_string, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ======================================================================
 ERROR: test_oauth_body_hash_with_body_string (tests.test_oauth_ext.OAuthExtTest)
@@ -326,22 +430,26 @@ Traceback (most recent call last):
     oauth_object(OAuthExtTest.mock_prepared_request)
   File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth_ext.py", line 55, in __call__
     OAuth.get_authorization_header(uri=r.url,
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 38, in get_authorization_header
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 40, in get_authorization_header
     oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 70, in get_oauth_parameters
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 72, in get_oauth_parameters
     signature = OAuth.sign_message(base_string, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ----------------------------------------------------------------------
-Ran 9 tests in 0.004s
+Ran 9 tests in 0.029s
 
 FAILED (errors=8)
-/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py:87: DeprecationWarning: sign() is deprecated. Use the equivalent APIs in cryptography.
-  sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
 EE
 ======================================================================
 ERROR: test_sign_prepared_request (tests.test_signer.SignerTest)
@@ -367,15 +475,21 @@ Traceback (most recent call last):
     self.signer.sign_request(request.url, request)
   File "/Users/e142756/work/oauth1-signer-python/oauth1/signer.py", line 42, in sign_request
     oauth_key = OAuth.get_authorization_header(uri, request.method, body, self.consumer_key,
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 38, in get_authorization_header
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 40, in get_authorization_header
     oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 70, in get_oauth_parameters
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 72, in get_oauth_parameters
     signature = OAuth.sign_message(base_string, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ======================================================================
 ERROR: test_sign_request (tests.test_signer.SignerTest)
@@ -385,15 +499,21 @@ Traceback (most recent call last):
     request = signer.sign_request(SignerTest.uri, request)
   File "/Users/e142756/work/oauth1-signer-python/oauth1/signer.py", line 42, in sign_request
     oauth_key = OAuth.get_authorization_header(uri, request.method, body, self.consumer_key,
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 38, in get_authorization_header
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 40, in get_authorization_header
     oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 70, in get_oauth_parameters
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 72, in get_oauth_parameters
     signature = OAuth.sign_message(base_string, signing_key)
-  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 87, in sign_message
-    sign = crypto.sign(signing_key, message.encode("utf-8"), 'SHA256')
-  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/OpenSSL/crypto.py", line 3150, in sign
-    length = _lib.EVP_PKEY_size(pkey._pkey)
-AttributeError: 'cryptography.hazmat.bindings._rust.openssl.rsa.RSA' object has no attribute '_pkey'
+  File "/Users/e142756/work/oauth1-signer-python/oauth1/oauth.py", line 89, in sign_message
+    signature = signing_key.sign(message.encode("utf-8"),
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 513, in sign
+    return _rsa_sig_sign(self._backend, padding, algorithm, self, data)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 275, in _rsa_sig_sign
+    pkey_ctx = _rsa_sig_setup(
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 222, in _rsa_sig_setup
+    padding_enum = _rsa_sig_determine_padding(backend, key, padding, algorithm)
+  File "/Users/e142756/Library/Python/3.9/lib/python/site-packages/cryptography/hazmat/backends/openssl/rsa.py", line 203, in _rsa_sig_determine_padding
+    raise UnsupportedAlgorithm(
+cryptography.exceptions.UnsupportedAlgorithm: EME-OAEP is not supported by this backend.
 
 ----------------------------------------------------------------------
 Ran 2 tests in 0.004s
@@ -401,6 +521,6 @@ Ran 2 tests in 0.004s
 FAILED (errors=2)
 .
 ----------------------------------------------------------------------
-Ran 1 test in 0.153s
+Ran 1 test in 0.152s
 
 OK
