@@ -25,12 +25,13 @@
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-from OpenSSL import crypto
+
+from cryptography.hazmat.primitives.serialization import pkcs12 
 
 
 def load_signing_key(pkcs12_filename, password):
-    private_key_file = open(pkcs12_filename, 'rb')
-    p12 = crypto.load_pkcs12(private_key_file.read(), password.encode("utf-8"))
-    private_key = p12.get_privatekey()
-    private_key_file.close()
-    return private_key
+    key_content = open(pkcs12_filename, 'rb')
+    private_key = key_content.read()
+    key_content.close()
+    key, certs, addcerts = pkcs12.load_key_and_certificates(private_key, password.encode("utf-8"))
+    return key
