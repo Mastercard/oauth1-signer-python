@@ -35,4 +35,4 @@ def load_signing_key(pkcs12_filename, password):
     private_key = key_content.read()
     key_content.close()
     key, certs, addcerts = pkcs12.load_key_and_certificates(private_key, password.encode("utf-8"))
-    return key#.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.TraditionalOpenSSL, encryption_algorithm=serialization.NoEncryption())
+    return key
