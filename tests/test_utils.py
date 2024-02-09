@@ -29,6 +29,7 @@
 import unittest
 import oauth1.authenticationutils as authenticationutils
 from OpenSSL import crypto
+from cryptography.hazmat.primitives import serialization
 
 
 class UtilsTest(unittest.TestCase):
@@ -38,12 +39,11 @@ class UtilsTest(unittest.TestCase):
         key_password = "Password1"
 
         signing_key = authenticationutils.load_signing_key(key_container_path, key_password)
-        self.assertTrue(signing_key.check)
+        self.assertTrue(signing_key.key_size)
 
-        bits = signing_key.bits()
-        self.assertEqual(bits, 2048)
+        self.assertEqual(signing_key.key_size, 2048)
 
-        private_key_bytes = crypto.dump_privatekey(crypto.FILETYPE_PEM, signing_key)
+        private_key_bytes= signing_key.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.TraditionalOpenSSL, serialization.NoEncryption())
         self.assertTrue(private_key_bytes)
 
 

@@ -56,3 +56,7 @@ class MockApiRestClient(object):
 
 if __name__ == '__main__':
     unittest.main()
+
+def __del__(self):
+        self.child.terminate()
+        self.child.communicate()
