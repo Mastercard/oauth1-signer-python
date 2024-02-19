@@ -87,10 +87,8 @@ class OAuth:
     def sign_message(message, signing_key):
         #    Signs the message using the private signing key
         signature = signing_key.sign(message.encode("utf-8"),
-                            padding.PSS(
-                                mgf=padding.MGF1(hashes.SHA256()),
-                                salt_length=padding.PSS.MAX_LENGTH),
-                            hashes.SHA256())
+                            padding.PKCS1v15(),
+           hashes.SHA256()) 
         
         return util.base64_encode(signature)
 

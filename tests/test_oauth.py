@@ -350,7 +350,11 @@ class OAuthTest(unittest.TestCase):
         self.assertEqual('OAuth oauth_consumer_key="abc-abc-abc!123",oauth_nonce="Wpe3LF09z1e3xQRI",'
                          'oauth_timestamp="1626728330",oauth_signature_method="RSA-SHA256",oauth_version="1.0",'
                          'oauth_body_hash="47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",'
-                         'oauth_signature="WOuVpsF08d%2FYXt6uOfK83WH%2BNrJdNveynUwacYapGoz4R%2BWbplYQdGxb86qMlNqxPtojbZc7y5Fhzvq4XxgUp0PbTsSPxsO3q55b63izeevXtlabyhDTeT6eS0sYxXeBArsA2SNAhQJ10DzNNqXZLN3%2Fu6OyniGrOYz4Xyj4CoQfz0eMpvwzcVoEcexCX13CkWSL3VN5hj8J8nZKpa5LsyCVfqy2n218r1At6yxssB7rfQxVH6SO3fR8xDzrtctahSBtJeL72ASn8Yy2qG1xwYqgiwkcBaW67s%2Fc%2FY2sTX0m07u%2BWaMi7iWKEQr5dQwfOY28aEBy1kCUzX1v8yPK9g%3D%3D"', auth_header)
+                         'oauth_signature="GFdvCNe14%2FQdPi6KLgdFtYnqz9QVsqlzRwT1P5wvZCgyBzfTol69SRz4cIkeDx'
+                         '%2BIEeUfkbrPdVA9JPy0S9lgpMzs0KfIAX064Bz5mBbTni8NWD74ulN5eEDQRWB47BqEsvNPSJlJLGapVe'
+                         'YFyRlcIU7xMU1e1lA%2FtPTTHDSmIBfq4CtpCPvYMcd7ywoiHsi4hfI0d%2BTGS9pe0ez00mkne8C3%2FAHt'
+                         'uRIp564D02Hhl6s%2BTUGdUvlXTaFaIH9GVdZ15n%2FUcTCqSKFjorwA9guiJQlFpZtQy04BBD19VbN6%2F%2BS'
+                         'JvMAnVFQM5FJhgZ%2F5T9OP9%2BmjXz47EhG9MAx3raBjIw%3D%3D"', auth_header)
 
     def test_auth_header_when_uri_created_with_encoded_params(self):
         url = 'https://example.com/request?colon=%3A&plus=%2B&comma=%2C'
