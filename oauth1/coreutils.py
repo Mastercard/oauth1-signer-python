@@ -28,12 +28,11 @@
 """
 Utility file having common functions
 """
-import hashlib
 import base64
-import urllib
+import hashlib
 import time
+import urllib
 from random import SystemRandom
-
 from urllib.parse import urlparse, parse_qsl
 
 

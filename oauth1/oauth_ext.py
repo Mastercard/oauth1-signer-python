@@ -25,7 +25,6 @@
 # IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 #
-from OpenSSL.crypto import PKey
 from requests import PreparedRequest
 from requests.auth import AuthBase
 
@@ -44,7 +43,7 @@ class OAuth1RSA(AuthBase):
         >>> requests.post('https://endpoint.com/the/route', data={'foo': 'bar'}, auth=oauth)
     """
 
-    def __init__(self, consumer_key: str, signing_key: PKey):
+    def __init__(self, consumer_key: str, signing_key: bytes):
         self.consumer_key = consumer_key
         self.signing_key = signing_key
 

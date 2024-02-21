@@ -1,5 +1,5 @@
 #
-# Copyright 2019-2021 Mastercard
+# Copyright 2019-2024 Mastercard
 #
 # Redistribution and use in source and binary forms, with or without modification, are
 # permitted provided that the following conditions are met:
@@ -46,5 +46,5 @@ setup(name='mastercard-oauth1-signer',
         'Topic :: Software Development :: Libraries :: Python Modules'
         ],
       tests_require=['coverage'],
-      install_requires=['requests','pyOpenSSL>=22.1.0,<=23.2.0','urllib3', 'Deprecated']
+      install_requires=['requests','cryptography>=42.0.0','urllib3', 'Deprecated']
       )

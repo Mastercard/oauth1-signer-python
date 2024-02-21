@@ -26,10 +26,12 @@
 # SUCH DAMAGE.
 #
 from functools import wraps
-from oauth1.oauth import OAuth
-from oauth1 import authenticationutils
 from urllib.parse import urlencode
+
 from deprecated import deprecated
+
+from oauth1 import authenticationutils
+from oauth1.oauth import OAuth
 
 
 class SignerInterceptor(object):
