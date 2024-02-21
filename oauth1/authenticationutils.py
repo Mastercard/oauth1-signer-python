@@ -26,8 +26,7 @@
 # SUCH DAMAGE.
 #
 
-from cryptography.hazmat.primitives.serialization import pkcs12 
-from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.serialization import pkcs12
 
 
 def load_signing_key(pkcs12_filename, password):

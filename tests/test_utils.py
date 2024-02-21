@@ -28,7 +28,6 @@
 #
 import unittest
 import oauth1.authenticationutils as authenticationutils
-from OpenSSL import crypto
 from cryptography.hazmat.primitives import serialization
 
 
