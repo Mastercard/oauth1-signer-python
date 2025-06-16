@@ -30,6 +30,10 @@ jobs:
           
       - name: Publish to PyPI
         run: |
+          echo TEST
           python3 setup.py sdist bdist_wheel &> package_setup.log
+          echo TEST2
           curl --connect-timeout 10 -kI https://test.pypi.org
+          echo TEST3
           twine upload -u ${{ secrets.USER }} -p ${{ secrets.PASS }} 'dist/*'
+          echo TEST4
