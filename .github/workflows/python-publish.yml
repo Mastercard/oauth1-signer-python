@@ -1,0 +1,35 @@
+name: Upload Python Package
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  release-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.8"
+
+      - name: Install dependencies
+        run: |
+          pip3 install -r requirements.txt
+          pip3 install pytest
+          pip3 install twine
+          
+      - name: Build and Test
+        run: |
+          python3 setup.py build
+          pytest
+          
+      - name: Publish to PyPI
+        run: |
+          python3 setup.py sdist bdist_wheel &> package_setup.log
+          curl --connect-timeout 10 -kI https://test.pypi.org
+          twine upload -u ${{ secrets.USER }} -p ${{ secrets.PASS }} 'dist/*'
