@@ -31,8 +31,8 @@ jobs:
         run: |
           pip3 install -r requirements.txt
           pip3 install .
-          pip3 install coverage
+          pip install pytest coverage
       - name: Run Tests
         run: |
-          coverage run setup.py
+          coverage run -m pytest
           coverage xml
