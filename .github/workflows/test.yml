@@ -36,6 +36,8 @@ jobs:
           pip3 install .
           pip install pytest coverage
       - name: Run Tests
+        env:
+          PYTHONWARNINGS: default
         run: |
-          coverage run -m pytest
+          coverage run -m pytest -W default
           coverage xml
