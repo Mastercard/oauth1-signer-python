@@ -35,7 +35,8 @@ jobs:
           pip3 install coverage
       - name: Run Tests
         run: |
-          coverage run setup.py test
+          pip3 install pytest
+          coverage run -m pytest
           coverage xml
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
