@@ -17,6 +17,7 @@
 ## Table of Contents
 - [Overview](#overview)
   * [Compatibility](#compatibility)
+  * [Supported Signature Methods](#supported-signature-methods)
   * [References](#references)
   * [Versioning and Deprecation Policy](#versioning)
 - [Usage](#usage)
@@ -43,6 +44,19 @@ A `DeprecationWarning` is emitted when importing this package on Python 3.8/3.9.
 
 Release notes: see [CHANGELOG.md](CHANGELOG.md) (or GitHub Releases).
 
+### Supported Signature Methods <a name="supported-signature-methods"></a>
+Two cryptographic methods are available for generating OAuth signatures, selected via the `SignatureMethod` enum:
+
+**Important:** the `signature_method` parameter expects a **`SignatureMethod` enum member**. Do not pass raw strings
+(e.g. `"RSA-SHA256"`, `"RSA-PSS-SHA256"`).
+
+| Enum Value | Algorithm | Specification |
+|---|---|---|
+| `SignatureMethod.RSA_SHA256` (default) | RSASSA-PKCS1-v1_5 with SHA-256 | [RFC 8017 §8.2](https://tools.ietf.org/html/rfc8017#section-8.2) |
+| `SignatureMethod.RSA_PSS_SHA256` | RSASSA-PSS (Digest: SHA-256, MGF: MGF1 with SHA-256, Salt length: 32 bytes) | [RFC 8017 §8.1](https://tools.ietf.org/html/rfc8017#section-8.1) |
+
+`OAuth.get_authorization_header` accepts an optional `signature_method` parameter. When omitted, `SignatureMethod.RSA_SHA256` is used by default. See the usage examples below for both the default flow and explicit `RSA_PSS_SHA256` calls.
+
 ### References <a name="references"></a>
 * [OAuth 1.0a specification](https://tools.ietf.org/html/rfc5849)
 * [Body hash extension for non application/x-www-form-urlencoded payloads](https://tools.ietf.org/id/draft-eaton-oauth-bodyhash-00.html)
@@ -67,7 +81,7 @@ pip install mastercard-oauth1-signer
 
 ``` python
 import oauth1.authenticationutils as authenticationutils
-from oauth1.oauth import OAuth
+from oauth1.oauth import OAuth, SignatureMethod
 ```
 ### Loading the Signing Key <a name="loading-the-signing-key"></a>
 
@@ -79,19 +93,54 @@ signing_key = authenticationutils.load_signing_key('<insert PKCS#12 key file pat
 ### Creating the OAuth Authorization Header <a name="creating-the-oauth-authorization-header"></a>
 The method that does all the heavy lifting is `OAuth.get_authorization_header`. You can call into it directly and as long as you provide the correct parameters, it will return a string that you can add into your request's `Authorization` header.
 
+If you do not provide `signature_method`, `SignatureMethod.RSA_SHA256` is used by default.
+
 #### POST example
 
 ```python
+consumer_key = '<insert consumer key>'
 uri = 'https://sandbox.api.mastercard.com/service'
 payload = 'Hello world!'
-authHeader = OAuth.get_authorization_header(uri, 'POST', payload, '<insert consumer key>', signing_key)
+authHeader = OAuth.get_authorization_header(uri, 'POST', payload, consumer_key, signing_key)
 ```
 
 #### GET example
 ```python
+consumer_key = '<insert consumer key>'
 uri = 'https://sandbox.api.mastercard.com/service'
-authHeader = OAuth.get_authorization_header(uri, 'GET', None, '<insert consumer key>', signing_key)
+authHeader = OAuth.get_authorization_header(uri, 'GET', None, consumer_key, signing_key)
 ```
+
+#### POST example with RSA-PSS
+
+```python
+consumer_key = '<insert consumer key>'
+uri = 'https://sandbox.api.mastercard.com/service'
+payload = 'Hello world!'
+authHeader = OAuth.get_authorization_header(
+    uri,
+    'POST',
+    payload,
+    consumer_key,
+    signing_key,
+    signature_method=SignatureMethod.RSA_PSS_SHA256,
+)
+```
+
+  #### GET example with RSA-PSS
+
+  ```python
+  consumer_key = '<insert consumer key>'
+  uri = 'https://sandbox.api.mastercard.com/service'
+  authHeader = OAuth.get_authorization_header(
+    uri,
+    'GET',
+    None,
+    consumer_key,
+    signing_key,
+    signature_method=SignatureMethod.RSA_PSS_SHA256,
+  )
+  ```
 
 #### Use of authHeader with requests module (POST and GET example)
 ```python
@@ -116,12 +165,30 @@ You can sign [request](https://requests.readthedocs.io/en/latest/user/quickstart
 
 Usage:
 ```python
+from oauth1.signer import OAuthSigner
+
 uri = "https://sandbox.api.mastercard.com/service"
 request = Request()
 request.method = "POST"
 # …
 
 signer = OAuthSigner(consumer_key, signing_key)
+request = signer.sign_request(uri, request)
+```
+
+When `signature_method` is omitted, `OAuthSigner` uses `SignatureMethod.RSA_SHA256`.
+
+To use RSA-PSS instead of the default RSA-SHA256:
+
+```python
+from oauth1.oauth import SignatureMethod
+from oauth1.signer import OAuthSigner
+
+signer = OAuthSigner(
+    consumer_key,
+    signing_key,
+    signature_method=SignatureMethod.RSA_PSS_SHA256,
+)
 request = signer.sign_request(uri, request)
 ```
 
@@ -133,7 +200,6 @@ The requests library supports custom authentication extensions, with which the p
 
 ```python
 from oauth1.oauth_ext import OAuth1RSA
-from oauth1.oauth_ext import HASH_SHA256
 import requests
 
 uri = 'https://sandbox.api.mastercard.com/service'
@@ -163,6 +229,38 @@ uri = 'https://sandbox.api.mastercard.com/service'
 oauth = OAuth1RSA(consumer_key, signing_key)
 
 # Operation for get call
+response = requests.get(uri, auth=oauth)
+```
+
+When `signature_method` is omitted, `OAuth1RSA` uses `SignatureMethod.RSA_SHA256`.
+
+###### POST example with RSA-PSS
+
+```python
+from oauth1.oauth_ext import OAuth1RSA
+from oauth1.oauth import SignatureMethod
+import requests
+
+uri = 'https://sandbox.api.mastercard.com/service'
+oauth_auth = OAuth1RSA(
+    consumer_key,
+    signing_key,
+    signature_method=SignatureMethod.RSA_PSS_SHA256,
+)
+header = {'Content-type' : 'application/json', 'Accept' : 'application/json'}
+payload = '{"key" : "value"}'
+response = requests.post(uri, data=payload, auth=oauth_auth, headers=header)
+```
+
+###### GET example with RSA-PSS
+
+```python
+from oauth1.oauth_ext import OAuth1RSA
+from oauth1.oauth import SignatureMethod
+import requests
+
+uri = 'https://sandbox.api.mastercard.com/service'
+oauth = OAuth1RSA(consumer_key, signing_key, signature_method=SignatureMethod.RSA_PSS_SHA256)
 response = requests.get(uri, auth=oauth)
 ```
 
@@ -202,4 +300,25 @@ add_signer_layer(client, '<insert PKCS#12 key file path>', '<insert key password
 some_api = openapi_client.SomeApi(client)
 result = some_api.do_something()
 # …
+```
+
+When `signature_method` is omitted, `add_signer_layer` uses `SignatureMethod.RSA_SHA256`.
+
+To use RSA-PSS with an OpenAPI Generator client:
+
+```python
+import openapi_client
+from oauth1.oauth import SignatureMethod
+from oauth1.signer_interceptor import add_signer_layer
+
+config = openapi_client.Configuration()
+config.host = 'https://sandbox.api.mastercard.com'
+client = openapi_client.ApiClient(config)
+add_signer_layer(
+    client,
+    '<insert PKCS#12 key file path>',
+    '<insert key password>',
+    '<insert consumer key>',
+    signature_method=SignatureMethod.RSA_PSS_SHA256,
+)
 ```

@@ -27,14 +27,15 @@
 #
 from requests import PreparedRequest
 
-from oauth1.oauth import OAuth
+from oauth1.oauth import OAuth, SignatureMethod, DEFAULT_SIGNATURE_METHOD
 
 
 class OAuthSigner:
 
-    def __init__(self, consumer_key, signing_key):
+    def __init__(self, consumer_key, signing_key, signature_method: SignatureMethod = DEFAULT_SIGNATURE_METHOD):
         self.consumer_key = consumer_key
         self.signing_key = signing_key
+        self.signature_method = signature_method
 
     def sign_request(self, uri, request):
         body = request.body if isinstance(request, PreparedRequest) else request.data

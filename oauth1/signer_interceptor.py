@@ -31,15 +31,17 @@ from urllib.parse import urlencode
 from deprecated import deprecated
 
 from oauth1 import authenticationutils
-from oauth1.oauth import OAuth
+from oauth1.oauth import OAuth, SignatureMethod, DEFAULT_SIGNATURE_METHOD
 
 
 class SignerInterceptor(object):
 
-    def __init__(self, key_file, key_password, consumer_key):
+    def __init__(self, key_file, key_password, consumer_key,
+                 signature_method: SignatureMethod = DEFAULT_SIGNATURE_METHOD):
         """Load signing key."""
         self.signing_key = authenticationutils.load_signing_key(key_file, key_password)
         self.consumer_key = consumer_key
+        self.signature_method = signature_method
 
     def oauth_signing(self, func):
         """Decorator for API request. func is APIClient.request"""
@@ -53,7 +55,8 @@ class SignerInterceptor(object):
             if query_params:
                 uri += '?' + urlencode(query_params)
 
-            auth_header = OAuth.get_authorization_header(uri, args[0], in_body, self.consumer_key, self.signing_key)
+            auth_header = OAuth.get_authorization_header(uri, args[0], in_body, self.consumer_key, self.signing_key,
+                                                         signature_method=self.signature_method)
 
             in_headers = kwargs.get("headers", None)
             if not in_headers:
@@ -71,14 +74,17 @@ class SignerInterceptor(object):
 
 
 @deprecated(version='1.1.3', reason="Use add_signer_layer(api_client, key_file, key_password, consumer_key) instead")
-def add_signing_layer(self, api_client, key_file, key_password, consumer_key):
-    add_signer_layer(api_client, key_file, key_password, consumer_key)
+def add_signing_layer(self, api_client, key_file, key_password, consumer_key,
+                      signature_method: SignatureMethod = DEFAULT_SIGNATURE_METHOD):
+    add_signer_layer(api_client, key_file, key_password, consumer_key, signature_method=signature_method)
 
 
-def add_signer_layer(api_client, key_file, key_password, consumer_key):
+
+def add_signer_layer(api_client, key_file, key_password, consumer_key,
+                     signature_method: SignatureMethod = DEFAULT_SIGNATURE_METHOD):
     """Create and load configuration. Decorate APIClient.request with header signing"""
 
-    api_signer = SignerInterceptor(key_file, key_password, consumer_key)
+    api_signer = SignerInterceptor(key_file, key_password, consumer_key, signature_method=signature_method)
 
     api_client.rest_client.request = api_signer.oauth_signing(api_client.rest_client.request)
 

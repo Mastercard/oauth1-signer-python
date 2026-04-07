@@ -7,9 +7,11 @@
 
 ### Added
 - Support for Python 3.10, 3.11, 3.12.
+- Support for selecting the OAuth signature method via `SignatureMethod`, including `RSA-PSS-SHA256`.
 
 ### Changed
-- Declared `python_requires=">=3.8,<4.0"`.
+- Declared `python_requires=">=3.8,<3.13"`.
+- `RSA-SHA256` remains the default when `signature_method` is not provided.
 
 ## [2.0.0] - 2026-05-01 (Planned)
 
