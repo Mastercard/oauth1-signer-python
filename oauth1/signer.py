@@ -41,6 +41,7 @@ class OAuthSigner:
         body = request.body if isinstance(request, PreparedRequest) else request.data
         #  Generates the OAuth header for the request, adds the header to the request and returns the request object
         oauth_key = OAuth.get_authorization_header(uri, request.method, body, self.consumer_key,
-                                                   self.signing_key)
+                                                   self.signing_key,
+                                                   signature_method=self.signature_method)
         request.headers["Authorization"] = oauth_key
         return request

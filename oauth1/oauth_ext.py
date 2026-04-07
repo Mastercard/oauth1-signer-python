@@ -57,5 +57,6 @@ class OAuth1RSA(AuthBase):
                                                method=method,
                                                payload=r.body,
                                                consumer_key=self.consumer_key,
-                                               signing_key=self.signing_key)
+                                               signing_key=self.signing_key,
+                                               signature_method=self.signature_method)
         return r
