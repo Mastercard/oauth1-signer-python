@@ -48,13 +48,11 @@ class OAuth:
     @staticmethod
     def _signature_method_type_error(signature_method) -> ValueError:
         supported_members = ", ".join([f"SignatureMethod.{m.name}" for m in SignatureMethod])
-        supported_values = ", ".join([m.value for m in SignatureMethod])
         typename = type(signature_method).__name__
         return ValueError(
             "Invalid signature_method argument. "
-            f"Expected a SignatureMethod enum member, got {typename}: {signature_method!r}. "
-            f"Supported enum members: {supported_members}. "
-            f" (Underlying values: {supported_values})"
+            f"Expected a SignatureMethod enum member, got {typename}. "
+            f"Supported enum members: {supported_members}."
         )
 
     @staticmethod
@@ -90,7 +88,7 @@ class OAuth:
         oauth_parameters.set_oauth_timestamp(util.get_timestamp())
         # Emit 'RSA-PSS' for PSS or the default method name otherwise
         oauth_parameters.set_oauth_signature_method(
-            "RSA-PSS" if signature_method is SignatureMethod.RSA_PSS_SHA256 else DEFAULT_SIGNATURE_METHOD.value
+            "RSA-PSS" if signature_method is SignatureMethod.RSA_PSS_SHA256 else "RSA-SHA256"
         )
         oauth_parameters.set_oauth_version("1.0")
 
@@ -131,12 +129,9 @@ class OAuth:
                 salt_length=32,
             )
             hash_algorithm = hashes.SHA256()
-        elif signature_method is SignatureMethod.RSA_SHA256:
+        else:
             padding_scheme = padding.PKCS1v15()
             hash_algorithm = hashes.SHA256()
-        else:
-            # Defensive: _validate_signature_method should reject unsupported values.
-            raise OAuth._signature_method_type_error(signature_method)
 
         signature = signing_key.sign(
             message.encode("utf-8"),
