@@ -41,8 +41,7 @@ from oauth1.oauth import OAuth
 from oauth1.oauth import OAuthParameters
 from oauth1.oauth import SignatureMethod
 
-from tests.oauth_assertions import assert_oauth_header_is_valid
-from tests.oauth_assertions import expected_body_hash
+from tests.oauth_assertions import assert_oauth_header_is_valid, expected_body_hash
 
 
 class OAuthTest(unittest.TestCase):

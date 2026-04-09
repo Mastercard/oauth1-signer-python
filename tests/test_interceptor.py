@@ -36,8 +36,7 @@ from oauth1.signer_interceptor import SignerInterceptor
 from oauth1.signer_interceptor import add_signer_layer
 from oauth1.signer_interceptor import get_signer_layer
 
-from tests.oauth_assertions import assert_oauth_header_is_valid
-from tests.oauth_assertions import expected_body_hash
+from tests.oauth_assertions import assert_oauth_header_is_valid, expected_body_hash
 
 
 class OAuthInterceptorTest(unittest.TestCase):

@@ -36,8 +36,7 @@ from requests.auth import AuthBase
 import oauth1.authenticationutils as authenticationutils
 from oauth1.oauth import SignatureMethod
 from oauth1.signer import OAuthSigner
-from tests.oauth_assertions import assert_oauth_header_is_valid
-from tests.oauth_assertions import expected_body_hash
+from tests.oauth_assertions import assert_oauth_header_is_valid, expected_body_hash
 
 
 class SignerTest(unittest.TestCase):

@@ -39,8 +39,7 @@ import oauth1.authenticationutils as authentication_utils
 from oauth1 import coreutils as util
 from oauth1.oauth import OAuth, SignatureMethod
 from oauth1.oauth_ext import OAuth1RSA
-from tests.oauth_assertions import assert_oauth_header_is_valid
-from tests.oauth_assertions import expected_body_hash
+from tests.oauth_assertions import assert_oauth_header_is_valid, expected_body_hash
 
 
 class OAuthExtTest(unittest.TestCase):
