@@ -26,6 +26,7 @@
 # SUCH DAMAGE.
 #
 import json
+from enum import Enum
 
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
@@ -33,12 +34,41 @@ from cryptography.hazmat.primitives.asymmetric import padding
 import oauth1.coreutils as util
 
 
+class SignatureMethod(str, Enum):
+    """Signature methods supported by the API gateway."""
+
+    RSA_SHA256 = "RSA-SHA256"
+    RSA_PSS_SHA256 = "RSA-PSS"
+
+
+DEFAULT_SIGNATURE_METHOD = SignatureMethod.RSA_SHA256
+
+
 class OAuth:
     EMPTY_STRING = ""
 
     @staticmethod
-    def get_authorization_header(uri, method, payload, consumer_key, signing_key):
-        oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key)
+    def _signature_method_type_error(signature_method) -> ValueError:
+        supported_members = ", ".join([f"SignatureMethod.{m.name}" for m in SignatureMethod])
+        typename = type(signature_method).__name__
+        return ValueError(
+            "Invalid signature_method argument. "
+            f"Expected a SignatureMethod enum member, got {typename}. "
+            f"Supported enum members: {supported_members}."
+        )
+
+    @staticmethod
+    def _validate_signature_method(signature_method: SignatureMethod):
+        if isinstance(signature_method, SignatureMethod):
+            return
+
+        raise OAuth._signature_method_type_error(signature_method)
+
+    @staticmethod
+    def get_authorization_header(uri, method, payload, consumer_key, signing_key,
+                                 signature_method: SignatureMethod = DEFAULT_SIGNATURE_METHOD):
+        oauth_parameters = OAuth.get_oauth_parameters(uri, method, payload, consumer_key, signing_key,
+                                                     signature_method=signature_method)
 
         # Get the updated base parameters dict
         oauth_base_parameters_dict = oauth_parameters.get_base_parameters_dict()
@@ -49,13 +79,16 @@ class OAuth:
         return oauth_key
 
     @staticmethod
-    def get_oauth_parameters(uri, method, payload, consumer_key, signing_key):
+    def get_oauth_parameters(uri, method, payload, consumer_key, signing_key,
+                             signature_method: SignatureMethod = DEFAULT_SIGNATURE_METHOD):
+        OAuth._validate_signature_method(signature_method)
+
         # Get all the base parameters such as nonce and timestamp
         oauth_parameters = OAuthParameters()
         oauth_parameters.set_oauth_consumer_key(consumer_key)
         oauth_parameters.set_oauth_nonce(util.get_nonce())
         oauth_parameters.set_oauth_timestamp(util.get_timestamp())
-        oauth_parameters.set_oauth_signature_method("RSA-SHA256")
+        oauth_parameters.set_oauth_signature_method(signature_method.value)
         oauth_parameters.set_oauth_version("1.0")
 
         payload_str = json.dumps(payload) if type(payload) is dict or type(payload) is list else payload
@@ -70,7 +103,7 @@ class OAuth:
         base_string = OAuth.get_base_string(uri, method, oauth_parameters.get_base_parameters_dict())
 
         # Sign the base string using the private key
-        signature = OAuth.sign_message(base_string, signing_key)
+        signature = OAuth.sign_message(base_string, signing_key, signature_method=signature_method)
 
         # Set the signature in the Base parameters
         oauth_parameters.set_oauth_signature(util.percent_encode(signature))
@@ -85,11 +118,25 @@ class OAuth:
                                  util.percent_encode(util.normalize_params(url, merge_params)))
 
     @staticmethod
-    def sign_message(message, signing_key):
-        #    Signs the message using the private signing key
-        signature = signing_key.sign(message.encode("utf-8"),
-                                     padding.PKCS1v15(),
-                                     hashes.SHA256())
+    def sign_message(message, signing_key, signature_method: SignatureMethod = DEFAULT_SIGNATURE_METHOD):
+        OAuth._validate_signature_method(signature_method)
+
+        # Choose padding and hash algorithm based on the signature method
+        if signature_method is SignatureMethod.RSA_PSS_SHA256:
+            padding_scheme = padding.PSS(
+                mgf=padding.MGF1(hashes.SHA256()),
+                salt_length=32,
+            )
+            hash_algorithm = hashes.SHA256()
+        else:
+            padding_scheme = padding.PKCS1v15()
+            hash_algorithm = hashes.SHA256()
+
+        signature = signing_key.sign(
+            message.encode("utf-8"),
+            padding_scheme,
+            hash_algorithm,
+        )
 
         return util.base64_encode(signature)
 

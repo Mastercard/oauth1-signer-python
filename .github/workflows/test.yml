@@ -15,8 +15,11 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - 3.8
-          - 3.9
+          - "3.8"
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          - "3.12"
         include:
           - os: "ubuntu-latest"
     steps:
@@ -33,6 +36,8 @@ jobs:
           pip3 install .
           pip install pytest coverage
       - name: Run Tests
+        env:
+          PYTHONWARNINGS: default
         run: |
-          coverage run -m pytest
+          coverage run -m pytest -W default
           coverage xml

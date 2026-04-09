@@ -31,14 +31,15 @@ import unittest
 import hashlib
 import re
 from importlib import reload
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from requests import PreparedRequest
 
 import oauth1.authenticationutils as authentication_utils
 from oauth1 import coreutils as util
-from oauth1.oauth import OAuth
+from oauth1.oauth import OAuth, SignatureMethod
 from oauth1.oauth_ext import OAuth1RSA
+from tests.oauth_assertions import assert_oauth_header_is_valid, expected_body_hash
 
 
 class OAuthExtTest(unittest.TestCase):
@@ -167,6 +168,131 @@ class OAuthExtTest(unittest.TestCase):
         request = PreparedRequest()
         call_object = oauth_object(request)
         self.assertIsNone(call_object.headers)
+
+    def test_pss_call_adds_expected_params_and_valid_signature(self):
+        nonce = 'fixednonce123456'
+        timestamp = 1700000000
+        request = PreparedRequest()
+        request.prepare(headers={'Content-type': 'application/json'},
+                        method='POST',
+                        url='https://www.example.com/resource?alpha=1')
+        request.body = '{"A": "sensitive data"}'
+        oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key,
+                                 signature_method=SignatureMethod.RSA_PSS_SHA256)
+
+        with patch('oauth1.coreutils.get_nonce', return_value=nonce), \
+                patch('oauth1.coreutils.get_timestamp', return_value=timestamp):
+            oauth_object(request)
+
+        assert_oauth_header_is_valid(
+            self,
+            uri=request.url,
+            method=request.method,
+            payload=request.body,
+            header=request.headers['Authorization'],
+            public_key=OAuthExtTest.signing_key.public_key(),
+            expected_consumer_key=OAuthExtTest.consumer_key,
+            expected_nonce=nonce,
+            expected_timestamp=timestamp,
+            expected_signature_method='RSA-PSS',
+            signature_method=SignatureMethod.RSA_PSS_SHA256,
+        )
+
+    def test_default_signature_method_call_adds_expected_params_and_valid_signature(self):
+        nonce = 'fixednonce123456'
+        timestamp = 1700000000
+        request = PreparedRequest()
+        request.prepare(headers={'Content-type': 'application/json'},
+                        method='POST',
+                        url='https://www.example.com/resource?alpha=1')
+        request.body = '{"A": "sensitive data"}'
+        oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key)
+
+        with patch('oauth1.coreutils.get_nonce', return_value=nonce), \
+                patch('oauth1.coreutils.get_timestamp', return_value=timestamp):
+            oauth_object(request)
+
+        assert_oauth_header_is_valid(
+            self,
+            uri=request.url,
+            method=request.method,
+            payload=request.body,
+            header=request.headers['Authorization'],
+            public_key=OAuthExtTest.signing_key.public_key(),
+            expected_consumer_key=OAuthExtTest.consumer_key,
+            expected_nonce=nonce,
+            expected_timestamp=timestamp,
+            expected_signature_method='RSA-SHA256',
+            signature_method=SignatureMethod.RSA_SHA256,
+        )
+
+    def test_call_with_invalid_signature_method_raises_value_error(self):
+        request = PreparedRequest()
+        request.prepare(headers={'Content-type': 'application/json'},
+                        method='POST',
+                        url='https://www.example.com/resource')
+        request.body = 'payload'
+        oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key,
+                                 signature_method='invalid')
+
+        with self.assertRaisesRegex(
+                ValueError,
+                r"Invalid signature_method argument\."):
+            oauth_object(request)
+
+    # The crypto-validation test above proves the emitted RSA-PSS signature is valid.
+    # Here we stub the signature output so the test can lock down the exact header
+    # string shape, ordering, and percent-encoding deterministically.
+    def test_call_pss_snapshot_header(self):
+        nonce = 'fixednonce123456'
+        timestamp = 1700000000
+        body_hash = expected_body_hash('{"A": "sensitive data"}')
+        request = PreparedRequest()
+        request.prepare(headers={'Content-type': 'application/json'},
+                        method='POST',
+                        url='https://www.example.com/resource?alpha=1')
+        request.body = '{"A": "sensitive data"}'
+        oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key,
+                                 signature_method=SignatureMethod.RSA_PSS_SHA256)
+
+        with patch('oauth1.coreutils.get_nonce', return_value=nonce), \
+                patch('oauth1.coreutils.get_timestamp', return_value=timestamp), \
+                patch.object(OAuth, 'sign_message', return_value='fixed+/sig='):
+            oauth_object(request)
+
+        self.assertEqual(
+            'OAuth oauth_consumer_key="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",'
+            'oauth_nonce="fixednonce123456",oauth_timestamp="1700000000",'
+            'oauth_signature_method="RSA-PSS",oauth_version="1.0",'
+            f'oauth_body_hash="{body_hash}",'
+            'oauth_signature="fixed%2B%2Fsig%3D"',
+            request.headers['Authorization'],
+        )
+
+    def test_call_default_signature_method_snapshot_header(self):
+        nonce = 'fixednonce123456'
+        timestamp = 1700000000
+        body_hash = expected_body_hash('{"A": "sensitive data"}')
+        request = PreparedRequest()
+        request.prepare(headers={'Content-type': 'application/json'},
+                        method='POST',
+                        url='https://www.example.com/resource?alpha=1')
+        request.body = '{"A": "sensitive data"}'
+        oauth_object = OAuth1RSA(OAuthExtTest.consumer_key, OAuthExtTest.signing_key)
+
+        with patch('oauth1.coreutils.get_nonce', return_value=nonce), \
+                patch('oauth1.coreutils.get_timestamp', return_value=timestamp), \
+                patch.object(OAuth, 'sign_message', return_value='fixed+/sig='):
+            oauth_object(request)
+
+        self.assertEqual(
+            'OAuth oauth_consumer_key="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",'
+            'oauth_nonce="fixednonce123456",oauth_timestamp="1700000000",'
+            'oauth_signature_method="RSA-SHA256",oauth_version="1.0",'
+            f'oauth_body_hash="{body_hash}",'
+            'oauth_signature="fixed%2B%2Fsig%3D"',
+            request.headers['Authorization'],
+        )
 
     @staticmethod
     def to_pair(obj):

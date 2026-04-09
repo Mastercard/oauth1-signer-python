@@ -28,7 +28,7 @@
 from requests import PreparedRequest
 from requests.auth import AuthBase
 
-from .oauth import OAuth
+from .oauth import OAuth, SignatureMethod, DEFAULT_SIGNATURE_METHOD
 
 
 class OAuth1RSA(AuthBase):
@@ -43,9 +43,11 @@ class OAuth1RSA(AuthBase):
         >>> requests.post('https://endpoint.com/the/route', data={'foo': 'bar'}, auth=oauth)
     """
 
-    def __init__(self, consumer_key: str, signing_key: bytes):
+    def __init__(self, consumer_key: str, signing_key: bytes,
+                 signature_method: SignatureMethod = DEFAULT_SIGNATURE_METHOD):
         self.consumer_key = consumer_key
         self.signing_key = signing_key
+        self.signature_method = signature_method
 
     def __call__(self, r: PreparedRequest):
         method = r.method.upper() if r.method is not None else r.method
@@ -55,5 +57,6 @@ class OAuth1RSA(AuthBase):
                                                method=method,
                                                payload=r.body,
                                                consumer_key=self.consumer_key,
-                                               signing_key=self.signing_key)
+                                               signing_key=self.signing_key,
+                                               signature_method=self.signature_method)
         return r

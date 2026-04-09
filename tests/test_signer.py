@@ -34,7 +34,9 @@ from requests import Request, Session
 from requests.auth import AuthBase
 
 import oauth1.authenticationutils as authenticationutils
+from oauth1.oauth import SignatureMethod
 from oauth1.signer import OAuthSigner
+from tests.oauth_assertions import assert_oauth_header_is_valid, expected_body_hash
 
 
 class SignerTest(unittest.TestCase):
@@ -52,6 +54,124 @@ class SignerTest(unittest.TestCase):
         auth_header = request.headers['Authorization']
         self.assertTrue("OAuth" in auth_header)
         self.assertTrue("dummy" in auth_header)
+
+    def test_sign_request_pss(self):
+        request = Request()
+        request.method = 'POST'
+        request.data = 'payload'
+        request.headers = {}
+        nonce = 'fixednonce123456'
+        timestamp = 1700000000
+
+        signer = OAuthSigner(SignerTest.consumer_key, SignerTest.signing_key,
+                             signature_method=SignatureMethod.RSA_PSS_SHA256)
+
+        with patch('oauth1.coreutils.get_nonce', return_value=nonce), \
+                patch('oauth1.coreutils.get_timestamp', return_value=timestamp):
+            request = signer.sign_request(SignerTest.uri, request)
+
+        assert_oauth_header_is_valid(
+            self,
+            uri=SignerTest.uri,
+            method=request.method,
+            payload=request.data,
+            header=request.headers['Authorization'],
+            public_key=SignerTest.signing_key.public_key(),
+            expected_consumer_key=SignerTest.consumer_key,
+            expected_nonce=nonce,
+            expected_timestamp=timestamp,
+            expected_signature_method='RSA-PSS',
+            signature_method=SignatureMethod.RSA_PSS_SHA256,
+        )
+
+    def test_sign_request_with_default_signature_method(self):
+        request = Request()
+        request.method = 'POST'
+        request.data = 'payload'
+        request.headers = {}
+        nonce = 'fixednonce123456'
+        timestamp = 1700000000
+
+        signer = OAuthSigner(SignerTest.consumer_key, SignerTest.signing_key)
+
+        with patch('oauth1.coreutils.get_nonce', return_value=nonce), \
+                patch('oauth1.coreutils.get_timestamp', return_value=timestamp):
+            request = signer.sign_request(SignerTest.uri, request)
+
+        assert_oauth_header_is_valid(
+            self,
+            uri=SignerTest.uri,
+            method=request.method,
+            payload=request.data,
+            header=request.headers['Authorization'],
+            public_key=SignerTest.signing_key.public_key(),
+            expected_consumer_key=SignerTest.consumer_key,
+            expected_nonce=nonce,
+            expected_timestamp=timestamp,
+            expected_signature_method='RSA-SHA256',
+            signature_method=SignatureMethod.RSA_SHA256,
+        )
+
+    def test_sign_request_invalid_signature_method_raises_value_error(self):
+        request = Request()
+        request.method = 'POST'
+        request.data = 'payload'
+        request.headers = {}
+        signer = OAuthSigner(SignerTest.consumer_key, SignerTest.signing_key,
+                             signature_method='invalid')
+
+        with self.assertRaisesRegex(
+                ValueError,
+                r"Invalid signature_method argument\."):
+            signer.sign_request(SignerTest.uri, request)
+
+    # The real-signature test above verifies the RSA-PSS branch cryptographically.
+    # This one fixes the signature output so the final Authorization header string
+    # can be asserted exactly without PSS salt randomness changing the result.
+    def test_sign_request_pss_snapshot_header(self):
+        request = Request()
+        request.method = 'POST'
+        request.data = 'payload'
+        request.headers = {}
+        signer = OAuthSigner(SignerTest.consumer_key, SignerTest.signing_key,
+                             signature_method=SignatureMethod.RSA_PSS_SHA256)
+
+        body_hash = expected_body_hash('payload')
+
+        with patch('oauth1.coreutils.get_nonce', return_value='fixednonce123456'), \
+                patch('oauth1.coreutils.get_timestamp', return_value=1700000000), \
+                patch('oauth1.oauth.OAuth.sign_message', return_value='fixed+/sig='):
+            request = signer.sign_request(SignerTest.uri, request)
+
+        self.assertEqual(
+            'OAuth oauth_consumer_key="dummy",oauth_nonce="fixednonce123456",'
+            'oauth_timestamp="1700000000",oauth_signature_method="RSA-PSS",oauth_version="1.0",'
+            f'oauth_body_hash="{body_hash}",'
+            'oauth_signature="fixed%2B%2Fsig%3D"',
+            request.headers['Authorization'],
+        )
+
+    def test_sign_request_with_default_signature_method_snapshot_header(self):
+        request = Request()
+        request.method = 'POST'
+        request.data = 'payload'
+        request.headers = {}
+        signer = OAuthSigner(SignerTest.consumer_key, SignerTest.signing_key)
+
+        body_hash = expected_body_hash('payload')
+
+        with patch('oauth1.coreutils.get_nonce', return_value='fixednonce123456'), \
+                patch('oauth1.coreutils.get_timestamp', return_value=1700000000), \
+                patch('oauth1.oauth.OAuth.sign_message', return_value='fixed+/sig='):
+            request = signer.sign_request(SignerTest.uri, request)
+
+        self.assertEqual(
+            'OAuth oauth_consumer_key="dummy",oauth_nonce="fixednonce123456",'
+            'oauth_timestamp="1700000000",oauth_signature_method="RSA-SHA256",oauth_version="1.0",'
+            f'oauth_body_hash="{body_hash}",'
+            'oauth_signature="fixed%2B%2Fsig%3D"',
+            request.headers['Authorization'],
+        )
 
     @patch.object(Session, 'send')
     def test_sign_prepared_request(self, mock_send):

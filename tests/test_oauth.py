@@ -27,14 +27,21 @@
 # SUCH DAMAGE.
 #
 import unittest
+from base64 import b64decode
 from collections import Counter
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
+
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
 
 import oauth1.authenticationutils as authenticationutils
 import oauth1.coreutils as util
 from importlib import reload
 from oauth1.oauth import OAuth
 from oauth1.oauth import OAuthParameters
+from oauth1.oauth import SignatureMethod
+
+from tests.oauth_assertions import assert_oauth_header_is_valid, expected_body_hash
 
 
 class OAuthTest(unittest.TestCase):
@@ -218,6 +225,23 @@ class OAuthTest(unittest.TestCase):
                                     "+veJXHekLVzWg4qHRtzNBLz1mA=="
         signing_string = OAuth.sign_message("baseString", OAuthTest.signing_key)
         self.assertEqual(expected_signature_string, signing_string)
+
+    def test_sign_message_pss(self):
+        signature = OAuth.sign_message("baseString", OAuthTest.signing_key,
+                                       signature_method=SignatureMethod.RSA_PSS_SHA256)
+
+        OAuthTest.signing_key.public_key().verify(
+            b64decode(signature),
+            b"baseString",
+            padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=32),
+            hashes.SHA256(),
+        )
+
+    def test_sign_message_invalid_signature_method_raises_value_error(self):
+        with self.assertRaisesRegex(
+                ValueError,
+                r"Invalid signature_method argument\."):
+            OAuth.sign_message('baseString', OAuthTest.signing_key, signature_method='invalid')
 
     def test_url_normalization_rfc_examples1(self):
         uri = "https://www.example.net:8080"
@@ -449,6 +473,147 @@ class OAuthTest(unittest.TestCase):
         t = util.base64_encode('foo bar foo bar')
         self.assertEqual('Zm9vIGJhciBmb28gYmFy', t)
 
+    def test_get_oauth_parameters_signature_method_default(self):
+        params = OAuth.get_oauth_parameters(OAuthTest.uri, 'POST', 'payload', 'dummy', OAuthTest.signing_key)
+        self.assertEqual('RSA-SHA256', params.get_oauth_signature_method())
+
+    def test_get_oauth_parameters_signature_method_pss(self):
+        params = OAuth.get_oauth_parameters(OAuthTest.uri, 'POST', 'payload', 'dummy', OAuthTest.signing_key,
+                                            signature_method=SignatureMethod.RSA_PSS_SHA256)
+        self.assertEqual('RSA-PSS', params.get_oauth_signature_method())
+
+    def test_get_authorization_header_signature_method_pss(self):
+        nonce = 'fixednonce123456'
+        timestamp = 1700000000
+
+        with patch('oauth1.coreutils.get_nonce', return_value=nonce), \
+                patch('oauth1.coreutils.get_timestamp', return_value=timestamp):
+            header = OAuth.get_authorization_header(OAuthTest.uri, 'POST', 'payload', 'dummy', OAuthTest.signing_key,
+                                                    signature_method=SignatureMethod.RSA_PSS_SHA256)
+
+        assert_oauth_header_is_valid(
+            self,
+            uri=OAuthTest.uri,
+            method='POST',
+            payload='payload',
+            header=header,
+            public_key=OAuthTest.signing_key.public_key(),
+            expected_consumer_key='dummy',
+            expected_nonce=nonce,
+            expected_timestamp=timestamp,
+            expected_signature_method='RSA-PSS',
+            signature_method=SignatureMethod.RSA_PSS_SHA256,
+        )
+
+    def test_get_authorization_header_signature_method_default(self):
+        nonce = 'fixednonce123456'
+        timestamp = 1700000000
+
+        with patch('oauth1.coreutils.get_nonce', return_value=nonce), \
+                patch('oauth1.coreutils.get_timestamp', return_value=timestamp):
+            header = OAuth.get_authorization_header(OAuthTest.uri, 'POST', 'payload', 'dummy', OAuthTest.signing_key)
+
+        assert_oauth_header_is_valid(
+            self,
+            uri=OAuthTest.uri,
+            method='POST',
+            payload='payload',
+            header=header,
+            public_key=OAuthTest.signing_key.public_key(),
+            expected_consumer_key='dummy',
+            expected_nonce=nonce,
+            expected_timestamp=timestamp,
+            expected_signature_method='RSA-SHA256',
+            signature_method=SignatureMethod.RSA_SHA256,
+        )
+
+    def test_get_authorization_header_signature_method_pss_get_request(self):
+        nonce = 'fixednonce123456'
+        timestamp = 1700000000
+
+        with patch('oauth1.coreutils.get_nonce', return_value=nonce), \
+                patch('oauth1.coreutils.get_timestamp', return_value=timestamp):
+            header = OAuth.get_authorization_header(
+                OAuthTest.uri,
+                'GET',
+                None,
+                'dummy',
+                OAuthTest.signing_key,
+                signature_method=SignatureMethod.RSA_PSS_SHA256,
+            )
+
+        assert_oauth_header_is_valid(
+            self,
+            uri=OAuthTest.uri,
+            method='GET',
+            payload=None,
+            header=header,
+            public_key=OAuthTest.signing_key.public_key(),
+            expected_consumer_key='dummy',
+            expected_nonce=nonce,
+            expected_timestamp=timestamp,
+            expected_signature_method='RSA-PSS',
+            signature_method=SignatureMethod.RSA_PSS_SHA256,
+        )
+
+    # The companion tests above verify the real RSA-PSS signature cryptographically.
+    # This snapshot test stubs the signature bytes so PSS randomness is removed and
+    # the exact Authorization header serialization stays stable for comparison.
+    def test_get_authorization_header_signature_method_pss_snapshot(self):
+        nonce = 'fixednonce123456'
+        timestamp = 1700000000
+        body_hash = expected_body_hash('payload')
+
+        with patch('oauth1.coreutils.get_nonce', return_value=nonce), \
+                patch('oauth1.coreutils.get_timestamp', return_value=timestamp), \
+                patch.object(OAuth, 'sign_message', return_value='fixed+/sig='):
+            header = OAuth.get_authorization_header(
+                OAuthTest.uri,
+                'POST',
+                'payload',
+                'dummy',
+                OAuthTest.signing_key,
+                signature_method=SignatureMethod.RSA_PSS_SHA256,
+            )
+
+        self.assertEqual(
+            'OAuth oauth_consumer_key="dummy",oauth_nonce="fixednonce123456",'
+            'oauth_timestamp="1700000000",oauth_signature_method="RSA-PSS",oauth_version="1.0",'
+            f'oauth_body_hash="{body_hash}",'
+            'oauth_signature="fixed%2B%2Fsig%3D"',
+            header,
+        )
+
+    def test_get_authorization_header_signature_method_default_snapshot(self):
+        nonce = 'fixednonce123456'
+        timestamp = 1700000000
+        body_hash = expected_body_hash('payload')
+
+        with patch('oauth1.coreutils.get_nonce', return_value=nonce), \
+                patch('oauth1.coreutils.get_timestamp', return_value=timestamp), \
+                patch.object(OAuth, 'sign_message', return_value='fixed+/sig='):
+            header = OAuth.get_authorization_header(
+                OAuthTest.uri,
+                'POST',
+                'payload',
+                'dummy',
+                OAuthTest.signing_key
+            )
+
+        self.assertEqual(
+            'OAuth oauth_consumer_key="dummy",oauth_nonce="fixednonce123456",'
+            'oauth_timestamp="1700000000",oauth_signature_method="RSA-SHA256",oauth_version="1.0",'
+            f'oauth_body_hash="{body_hash}",'
+            'oauth_signature="fixed%2B%2Fsig%3D"',
+            header,
+        )
+
+    def test_get_oauth_parameters_invalid_signature_method_raises_value_error(self):
+        with self.assertRaisesRegex(
+                ValueError,
+                r"Invalid signature_method argument\."):
+            OAuth.get_oauth_parameters(OAuthTest.uri, 'POST', 'payload', 'dummy', OAuthTest.signing_key,
+                                       signature_method='invalid')
 
 if __name__ == '__main__':
     unittest.main()
