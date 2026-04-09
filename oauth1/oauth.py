@@ -35,8 +35,10 @@ import oauth1.coreutils as util
 
 
 class SignatureMethod(str, Enum):
+    """Signature methods supported by the API gateway."""
+
     RSA_SHA256 = "RSA-SHA256"
-    RSA_PSS_SHA256 = "RSA-PSS-SHA256"
+    RSA_PSS_SHA256 = "RSA-PSS"
 
 
 DEFAULT_SIGNATURE_METHOD = SignatureMethod.RSA_SHA256
@@ -86,10 +88,7 @@ class OAuth:
         oauth_parameters.set_oauth_consumer_key(consumer_key)
         oauth_parameters.set_oauth_nonce(util.get_nonce())
         oauth_parameters.set_oauth_timestamp(util.get_timestamp())
-        # Emit 'RSA-PSS' for PSS or the default method name otherwise
-        oauth_parameters.set_oauth_signature_method(
-            "RSA-PSS" if signature_method is SignatureMethod.RSA_PSS_SHA256 else "RSA-SHA256"
-        )
+        oauth_parameters.set_oauth_signature_method(signature_method.value)
         oauth_parameters.set_oauth_version("1.0")
 
         payload_str = json.dumps(payload) if type(payload) is dict or type(payload) is list else payload
