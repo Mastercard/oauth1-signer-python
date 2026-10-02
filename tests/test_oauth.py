@@ -100,6 +100,17 @@ class OAuthTest(unittest.TestCase):
         query_params = util.normalize_params(uri, merge_parameters)
         self.assertEqual(query_params, "empty=&length=10&odd=&offset=0&offset=1")
 
+    def test_query_parser_sorts_names_before_values(self):
+        uri = "https://example.com/resource?a0=z&a=z&a=a&a%21=x"
+        self.assertEqual(
+            util.normalize_params(uri, {}),
+            "a=a&a=z&a%21=x&a0=z")
+
+    def test_base_string_sorts_prefix_parameter_names(self):
+        self.assertEqual(
+            OAuth.get_base_string("https://example.com/resource?a0=z&a=z", "GET", {}),
+            "GET&https%3A%2F%2Fexample.com%2Fresource&a%3Dz%26a0%3Dz")
+
     def test_query_parser_when_params_is_None(self):
         uri = "https://sandbox.api.mastercard.com/audiences/v1/getcountries"
         query_params = util.normalize_params(uri, None)
