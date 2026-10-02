@@ -73,8 +73,8 @@ def normalize_url(url):
     """
     parse = urlparse(url)
 
-    # netloc should be lowercase
-    netloc = parse.netloc.lower()
+    # The base URI contains the HTTP host and port, not URL user information.
+    netloc = parse.netloc.rsplit('@', 1)[-1].lower()
     if parse.scheme == "http":
         if netloc.endswith(":80"):
             netloc = netloc[:-3]
