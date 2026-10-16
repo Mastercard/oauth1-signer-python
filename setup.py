@@ -46,6 +46,5 @@ setup(name='mastercard-oauth1-signer',
         'Programming Language :: Python :: 3.13',
         'Topic :: Software Development :: Libraries :: Python Modules'
         ],
-      tests_require=['coverage'],
       install_requires=['cryptography>=42.0.0','urllib3', 'Deprecated', 'requests>=2.33.0']
       )
