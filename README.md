@@ -33,14 +33,13 @@
 Python library for generating a Mastercard API compliant OAuth signature.
 
 ### Compatibility <a name="compatibility"></a>
-| Version                | Python | Status | Notes |
-|------------------------|--------|--------|-------|
-| **1.9.2**              | 3.8, 3.9, 3.10, 3.11, 3.12 | Current | Maintenance & security fixes |
-| **2.0.0** (coming soon) | 3.10, 3.11, 3.12 | Planned | Drops 3.8/3.9 support |
+| Version    | Supported Python Versions        |
+|------------|----------------------------------|
+| **1.10.0** | 3.8, 3.9, 3.10, 3.11, 3.12, 3.13 |
 
-⚠️ **Deprecation Notice:** Python 3.8 (EOL Oct 2024) and 3.9 (EOL Oct 2025) support will be removed in v2.0.0.
-Python 3.8 and 3.9 are deprecated and will be removed in v2.0.0 (Python 3.10+ only).
-A `DeprecationWarning` is emitted when importing this package on Python 3.8/3.9.
+⚠️ **Deprecation Notice:**
+Python 3.8 (EOL Oct 2024), 3.9 (EOL Oct 2025) and 3.10 (EOL Oct 2026) have reached end-of-life.
+We will not be providing ongoing support for these versions.
 
 Release notes: see [CHANGELOG.md](CHANGELOG.md) (or GitHub Releases).
 
