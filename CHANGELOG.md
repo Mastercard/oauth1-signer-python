@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.10.0] - 2026-10-XX (TODO UPDATE)
+## [1.10.0] - 2026-11-01
 
 ### Added
 - Support for Python 3.13.
