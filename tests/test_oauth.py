@@ -268,6 +268,21 @@ class OAuthTest(unittest.TestCase):
         base_uri = util.normalize_url(uri)
         self.assertEqual("https://api.mastercard.com:17443/test", base_uri)
 
+    def test_url_normalization_excludes_userinfo(self):
+        cases = (
+            ("https://user:password@EXAMPLE.COM:443/test?q=1", "https://example.com/test"),
+            ("http://user@EXAMPLE.COM:80", "http://example.com/"),
+            ("https://user:p%40ss@example.com:8443/Test", "https://example.com:8443/Test"),
+            ("https://user:password@[2001:DB8::1]:443/test", "https://[2001:db8::1]/test"),
+        )
+        for uri, expected in cases:
+            with self.subTest(uri=uri):
+                self.assertEqual(expected, util.normalize_url(uri))
+                self.assertEqual(
+                    OAuth.get_base_string(expected, "GET", {}),
+                    OAuth.get_base_string(uri.split("?")[0], "GET", {}),
+                )
+
     def test_url_normalization_remove_fragment(self):
         uri = "https://api.mastercard.com/test?query=param#fragment"
         base_uri = util.normalize_url(uri)
