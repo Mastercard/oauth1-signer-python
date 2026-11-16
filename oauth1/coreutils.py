@@ -54,10 +54,9 @@ def normalize_params(url, params):
         combined_list = [encode_pair(must_encode, key, value) for (key, value) in list(qs_list)]
         combined_list += params.items()
 
-    encoded_list = ["%s=%s" % (key, value) for (key, value) in combined_list]
-    sorted_list = sorted(encoded_list, key=lambda x: x)
-
-    return "&".join(sorted_list)
+    # Sort names and values before adding separators (RFC 5849, section 3.4.1.3.2).
+    sorted_pairs = sorted(combined_list, key=lambda pair: (str(pair[0]), str(pair[1])))
+    return "&".join("%s=%s" % (key, value) for key, value in sorted_pairs)
 
 
 def encode_pair(must_encode, key, value):
