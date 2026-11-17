@@ -36,7 +36,7 @@ setup(name='mastercard-oauth1-signer',
       url='https://github.com/Mastercard/oauth1-signer-python',
       license='MIT',
       packages=find_packages(),
-      python_requires='>=3.8,<3.14',
+      python_requires='>=3.8,<3.15',
       classifiers=[
         'Intended Audience :: Developers',
         'Natural Language :: English',
@@ -47,7 +47,8 @@ setup(name='mastercard-oauth1-signer',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
         'Programming Language :: Python :: 3.13',
+        'Programming Language :: Python :: 3.14',
         'Topic :: Software Development :: Libraries :: Python Modules'
         ],
-      install_requires=['cryptography>=42.0.0','urllib3', 'Deprecated', 'requests>=2.31.0,<2.32.5; python_version<"3.10"', 'requests>=2.33.0; python_version>="3.10"']
+      install_requires=['cryptography>=42.0.0; python_version<"3.14"', 'cryptography>=46.0.1; python_version>="3.14"', 'urllib3', 'Deprecated', 'requests>=2.31.0,<2.32.5; python_version<"3.10"', 'requests>=2.33.0; python_version>="3.10" and python_version<"3.14"', 'requests>=2.34.0; python_version>="3.14"']
       )
