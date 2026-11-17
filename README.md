@@ -35,7 +35,7 @@ Python library for generating a Mastercard API compliant OAuth signature.
 ### Compatibility <a name="compatibility"></a>
 | Version    | Supported Python Versions        |
 |------------|----------------------------------|
-| **1.10.0** | 3.8, 3.9, 3.10, 3.11, 3.12, 3.13 |
+| **1.10.0** | 3.8, 3.9, 3.10, 3.11, 3.12, 3.13, 3.14 |
 
 ⚠️ **Deprecation Notice:**
 Python 3.8 (EOL Oct 2024), 3.9 (EOL Oct 2025) and 3.10 (EOL Oct 2026) have reached end-of-life.
